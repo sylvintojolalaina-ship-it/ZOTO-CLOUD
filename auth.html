@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZOTO CLOUD - Connexion</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f4f7fb;
+            padding: 20px;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 18px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+        }
+
+        .main-btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .main-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .switch {
+            margin-top: 20px;
+            text-align: center;
+            color: #2563eb;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="logo">🧳 ZOTO CLOUD</div>
+
+    <p class="subtitle">
+        Votre espace personnel de stockage
+    </p>
+
+    <!-- CONNEXION -->
+
+    <div class="form active" id="loginForm">
+
+        <h2>Connexion</h2>
+
+        <label>E-mail</label>
+
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="Votre e-mail"
+        >
+
+        <label>Mot de passe</label>
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Votre mot de passe"
+        >
+
+        <button class="main-btn" onclick="login()">
+            Se connecter
+        </button>
+
+        <p class="switch" onclick="showRegister()">
+            Créer un compte
+        </p>
+
+    </div>
+
+
+    <!-- INSCRIPTION -->
+
+    <div class="form" id="registerForm">
+
+        <h2>Créer un compte</h2>
+
+        <label>Nom complet</label>
+
+        <input
+            type="text"
+            id="registerName"
+            placeholder="Votre nom"
+        >
+
+        <label>E-mail</label>
+
+        <input
+            type="email"
+            id="registerEmail"
+            placeholder="Votre e-mail"
+        >
+
+        <label>Mot de passe</label>
+
+        <input
+            type="password"
+            id="registerPassword"
+            placeholder="Créer un mot de passe"
+        >
+
+        <button class="main-btn" onclick="register()">
+            Créer mon compte
+        </button>
+
+        <p class="switch" onclick="showLogin()">
+            J'ai déjà un compte
+        </p>
+
+    </div>
+
+    <div class="message" id="message"></div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+    "https://sbsixeaxhbvxezoylong.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable__ZUPst8S6Vnl0U6jFhuUCw_g8bvahh6";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+function showRegister() {
+
+    document
+        .getElementById("loginForm")
+        .classList.remove("active");
+
+    document
+        .getElementById("registerForm")
+        .classList.add("active");
+
+    document
+        .getElementById("message")
+        .textContent = "";
+}
+
+
+function showLogin() {
+
+    document
+        .getElementById("registerForm")
+        .classList.remove("active");
+
+    document
+        .getElementById("loginForm")
+        .classList.add("active");
+
+    document
+        .getElementById("message")
+        .textContent = "";
+}
+
+
+async function register() {
+
+    const name =
+        document.getElementById("registerName").value.trim();
+
+    const email =
+        document.getElementById("registerEmail").value.trim();
+
+    const password =
+        document.getElementById("registerPassword").value;
+
+    const message =
+        document.getElementById("message");
+
+
+    if (!name || !email || !password) {
+
+        message.textContent =
+            "Veuillez remplir tous les champs.";
+
+        return;
+    }
+
+
+    if (password.length < 6) {
+
+        message.textContent =
+            "Le mot de passe doit contenir au moins 6 caractères.";
+
+        return;
+    }
+
+
+    message.textContent =
+        "Création du compte...";
+
+
+    const { data, error } =
+        await supabaseClient.auth.signUp({
+
+            email: email,
+
+            password: password,
+
+            options: {
+
+                data: {
+                    full_name: name
+                },
+
+                emailRedirectTo:
+                    window.location.origin + "/auth.html"
+            }
+        });
+
+
+    if (error) {
+
+        message.textContent =
+            "Erreur : " + error.message;
+
+        return;
+    }
+
+
+    if (data.user) {
+
+        message.textContent =
+            "Compte créé ! Vérifiez votre e-mail pour continuer.";
+
+        document.getElementById("registerName").value = "";
+        document.getElementById("registerEmail").value = "";
+        document.getElementById("registerPassword").value = "";
+    }
+}
+
+
+async function login() {
+
+    const email =
+        document.getElementById("loginEmail").value.trim();
+
+    const password =
+        document.getElementById("loginPassword").value;
+
+    const message =
+        document.getElementById("message");
+
+
+    if (!email || !password) {
+
+        message.textContent =
+            "Veuillez remplir tous les champs.";
+
+        return;
+    }
+
+
+    message.textContent =
+        "Connexion...";
+
+
+    const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+
+            email: email,
+
+            password: password
+        });
+
+
+    if (error) {
+
+        message.textContent =
+            "Erreur : " + error.message;
+
+        return;
+    }
+
+
+    if (data.user) {
+
+        message.textContent =
+            "Connexion réussie !";
+
+
+        setTimeout(() => {
+
+            window.location.href =
+                "/";
+
+        }, 800);
+    }
+}
+
+</script>
+
+</body>
+</html>
