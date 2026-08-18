@@ -15,4 +15,10 @@ app.get("/auth.html", (req, res) => {
     res.sendFile(path.join(__dirname, "auth.html"));
 });
 
+// Sitemap Google
+app.get("/sitemap.xml", (req, res) => {
+    res.type("application/xml");
+    res.sendFile(path.join(__dirname, "sitemap.xml"));
+});
+
 module.exports = app;
