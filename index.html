@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/manifest.json">
 <title>ZOTO CLOUD</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -348,7 +349,15 @@ main{
 }
 </style>
 </head>
-
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+            .then(() => console.log("ZOTO CLOUD PWA activée"))
+            .catch((error) => console.error("PWA erreur:", error));
+    });
+}
+</script>
 <body>
 
 <header>
@@ -434,7 +443,7 @@ main{
 <main>
 
     <h1 id="pageTitle">
-       <marquee> Bienvenue sur ZOTO CLOUD 👋</marquee>
+       Bienvenue sur ZOTO CLOUD 👋
     </h1>
 
     <p class="welcome">
