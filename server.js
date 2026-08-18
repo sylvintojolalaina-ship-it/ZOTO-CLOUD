@@ -20,5 +20,10 @@ app.get("/sitemap.xml", (req, res) => {
     res.type("application/xml");
     res.sendFile(path.join(__dirname, "sitemap.xml"));
 });
+// Manifest PWA
+app.get("/manifest.json", (req, res) => {
+    res.type("application/json");
+    res.sendFile(path.join(__dirname, "manifest.json"));
+});
 
 module.exports = app;
