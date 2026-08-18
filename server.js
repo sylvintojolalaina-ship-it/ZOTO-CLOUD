@@ -25,5 +25,10 @@ app.get("/manifest.json", (req, res) => {
     res.type("application/json");
     res.sendFile(path.join(__dirname, "manifest.json"));
 });
+// Service Worker PWA
+app.get("/service-worker.js", (req, res) => {
+    res.type("application/javascript");
+    res.sendFile(path.join(__dirname, "service-worker.js"));
+});
 
 module.exports = app;
