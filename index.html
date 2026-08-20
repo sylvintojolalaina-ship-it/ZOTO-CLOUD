@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>ZOTO CLOUD</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -16,254 +23,378 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f5f7fb;
-            color: #222;
+            background: #f4f7fb;
+            color: #1f2937;
         }
 
         header {
-            background: #ffffff;
-            padding: 16px 25px;
+            background: #111827;
+            color: white;
+            padding: 16px 20px;
+
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
         }
 
-        nav {
+        .user-info {
             display: flex;
-            gap: 10px;
             align-items: center;
+            gap: 12px;
         }
 
-        nav a,
-        nav button {
-            text-decoration: none;
+        .logout {
             border: none;
-            background: none;
-            color: #333;
-            cursor: pointer;
-            font-size: 15px;
-            padding: 9px 12px;
+            background: #dc2626;
+            color: white;
+            padding: 8px 13px;
             border-radius: 8px;
+            cursor: pointer;
         }
 
-        nav a:hover,
-        nav button:hover {
-            background: #eef2ff;
-        }
-
-        .container {
+        main {
             max-width: 1100px;
             margin: 30px auto;
             padding: 0 20px;
         }
 
-        .welcome {
+        .box {
             background: white;
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 25px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+
+            box-shadow:
+                0 4px 18px rgba(0,0,0,0.06);
         }
 
-        .upload-box {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+        .box h2 {
+            margin-top: 0;
         }
 
-        input[type="file"] {
-            width: 100%;
-            padding: 15px;
-            border: 2px dashed #bbb;
-            border-radius: 10px;
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 35px 20px;
+            text-align: center;
+        }
+
+        .upload-area input {
             margin: 15px 0;
         }
 
-        button.primary {
+        .upload-button {
+            border: none;
             background: #2563eb;
             color: white;
-            border: none;
-            padding: 12px 20px;
+            padding: 11px 18px;
             border-radius: 9px;
             cursor: pointer;
-            font-size: 15px;
         }
 
-        button.primary:hover {
+        .upload-button:hover {
             background: #1d4ed8;
         }
 
-        .files-box {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+        #fileName {
+            margin-top: 10px;
+            color: #6b7280;
+        }
+
+        #fileList {
+            margin-top: 20px;
         }
 
         .file-item {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            padding: 13px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        .file-item:last-child {
-            border-bottom: none;
+        .delete-button {
+            background: #dc2626;
+            border: none;
+            color: white;
+            padding: 7px 10px;
+            border-radius: 7px;
+            cursor: pointer;
         }
 
-        .file-name {
+        /* ==========================
+           NOTIFICATION
+        ========================== */
+
+        .notification-popup {
+
+            display: none;
+
+            position: fixed;
+
+            top: 20px;
+            right: 20px;
+
+            width: 350px;
+            max-width: calc(100% - 40px);
+
+            background: white;
+
+            border-radius: 14px;
+
+            padding: 17px;
+
+            box-shadow:
+                0 8px 30px rgba(0,0,0,0.20);
+
+            z-index: 99999;
+
+            border-left:
+                5px solid #2563eb;
+
+            animation:
+                notificationIn
+                0.3s ease;
+        }
+
+        .notification-header {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            margin-bottom: 12px;
+        }
+
+        .notification-title {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .notification-close {
+
+            border: none;
+
+            background:
+                transparent;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+            color: #6b7280;
+        }
+
+        .notification-close:hover {
+            color: #111827;
+        }
+
+        #notificationText {
+
+            color: #374151;
+
+            line-height: 1.5;
+
             word-break: break-word;
         }
 
-        .download {
-            text-decoration: none;
-            background: #16a34a;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 7px;
-            white-space: nowrap;
+        @keyframes notificationIn {
+
+            from {
+                opacity: 0;
+                transform:
+                    translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
+
         }
 
-        .empty {
-            color: #777;
-            text-align: center;
-            padding: 30px;
-        }
-
-        #loading {
+        .loading {
             text-align: center;
             padding: 50px;
         }
 
-        #app {
-            display: none;
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #6b7280;
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 600px) {
+
             header {
                 flex-direction: column;
                 gap: 10px;
             }
 
-            nav {
-                flex-wrap: wrap;
-                justify-content: center;
+            .notification-popup {
+                top: 10px;
+                right: 10px;
+                width: calc(100% - 20px);
             }
 
-            .file-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-<div id="loading">
-    Chargement...
-</div>
 
-<div id="app">
+<header>
 
-    <header>
+    <div class="logo">
+        ☁️ ZOTO CLOUD
+    </div>
 
-        <div class="logo">
-            ☁️ ZOTO CLOUD
+    <div class="user-info">
+
+        <span id="userEmail">
+            ...
+        </span>
+
+        <button
+            class="logout"
+            onclick="logout()"
+        >
+            🚪 Déconnexion
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ==========================
+     NOTIFICATION POPUP
+=========================== -->
+
+<div
+    id="notificationPopup"
+    class="notification-popup"
+>
+
+    <div class="notification-header">
+
+        <div class="notification-title">
+            📢 Notification ZOTO CLOUD
         </div>
 
-        <!--
-            MENU UTILISATEUR
-            Aucun lien Admin ici.
-        -->
-        <nav>
-            <a href="index.html">🏠 Accueil</a>
-
-            <a href="#files">📁 Mes fichiers</a>
-
-            <a href="#profile">👤 Profil</a>
-
-            <button onclick="logout()">
-                🚪 Déconnexion
-            </button>
-        </nav>
-
-    </header>
-
-
-    <main class="container">
-
-        <section class="welcome">
-
-            <h1>Bienvenue sur ZOTO CLOUD ☁️</h1>
-
-            <p>
-                Votre espace personnel de stockage.
-            </p>
-
-            <p>
-                Connecté avec :
-                <strong id="userEmail">...</strong>
-            </p>
-
-        </section>
-
-
-        <section class="upload-box">
-
-            <h2>📤 Envoyer un fichier</h2>
-
-            <input
-                type="file"
-                id="fileInput"
-            >
-
-            <button
-                class="primary"
-                onclick="uploadFile()"
-            >
-                📤 Télécharger
-            </button>
-
-            <p id="uploadStatus"></p>
-
-        </section>
-
-
-        <section
-            class="files-box"
-            id="files"
+        <button
+            class="notification-close"
+            onclick="closeNotification()"
         >
+            ✕
+        </button>
 
-            <h2>📁 Mes fichiers</h2>
+    </div>
 
-            <div id="filesList">
+    <div id="notificationText">
+        Notification...
+    </div>
+
+</div>
+
+
+<main id="mainContent">
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        🔄 Chargement...
+    </div>
+
+
+    <div
+        id="cloudContent"
+        style="display:none;"
+    >
+
+
+        <!-- ==========================
+             UPLOAD
+        =========================== -->
+
+        <section class="box">
+
+            <h2>
+                📤 Envoyer un fichier
+            </h2>
+
+            <div class="upload-area">
+
+                <input
+                    type="file"
+                    id="fileInput"
+                    onchange="showSelectedFile()"
+                >
+
+                <br>
+
+                <button
+                    class="upload-button"
+                    onclick="uploadFile()"
+                >
+                    📤 Télécharger dans le Cloud
+                </button>
+
+                <div id="fileName">
+                    Aucun fichier sélectionné
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==========================
+             MES FICHIERS
+        =========================== -->
+
+        <section class="box">
+
+            <h2>
+                📁 Mes fichiers
+            </h2>
+
+            <div id="fileList">
                 Chargement...
             </div>
 
         </section>
 
-    </main>
 
-</div>
+    </div>
+
+</main>
 
 
 <script>
 
+
 let supabaseClient = null;
+
 let currentUser = null;
 
 
@@ -278,26 +409,39 @@ async function init() {
         const response =
             await fetch("/api/config");
 
+
         if (!response.ok) {
+
             throw new Error(
-                "Impossible de récupérer la configuration."
+                "Impossible de récupérer la configuration Supabase."
             );
+
         }
+
 
         const config =
             await response.json();
 
+
         if (!config.url || !config.key) {
+
             throw new Error(
                 "Configuration Supabase manquante."
             );
+
         }
+
 
         /*
          * IMPORTANT :
-         * Ici on utilise uniquement la
-         * PUBLISHABLE KEY.
+         *
+         * config.key doit être
+         * SUPABASE_PUBLISHABLE_KEY.
+         *
+         * NE JAMAIS mettre sb_secret_...
+         * dans ce fichier.
          */
+
         supabaseClient =
             window.supabase.createClient(
                 config.url,
@@ -311,31 +455,27 @@ async function init() {
         } =
             await supabaseClient
                 .auth
-                .getSession();
+                .getUser();
 
 
-        if (error) {
-            throw error;
-        }
-
-
-        currentUser =
-            data.session?.user || null;
-
-
-        if (!currentUser) {
+        if (error || !data.user) {
 
             window.location.href =
                 "auth.html";
 
             return;
+
         }
+
+
+        currentUser =
+            data.user;
 
 
         document.getElementById(
             "userEmail"
         ).textContent =
-            currentUser.email || "-";
+            currentUser.email || "";
 
 
         document.getElementById(
@@ -345,14 +485,33 @@ async function init() {
 
 
         document.getElementById(
-            "app"
+            "cloudContent"
         ).style.display =
             "block";
 
 
         await loadFiles();
 
+
+        /*
+         * Charger notification
+         */
+
+        await loadNotifications();
+
+
+        /*
+         * Vérifier régulièrement
+         * s'il y a une nouvelle notification.
+         */
+
+        setInterval(
+            loadNotifications,
+            10000
+        );
+
     }
+
 
     catch (error) {
 
@@ -361,13 +520,207 @@ async function init() {
             error
         );
 
+
         document.getElementById(
             "loading"
         ).innerHTML =
-            "Erreur : " +
-            escapeHtml(error.message);
+            "❌ Erreur : " +
+            escapeHtml(
+                error.message
+            );
 
     }
+
+}
+
+
+/* ==========================================
+   NOTIFICATIONS
+========================================== */
+
+async function loadNotifications() {
+
+    if (!supabaseClient) {
+        return;
+    }
+
+
+    if (!currentUser) {
+
+        const {
+            data
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
+
+
+        currentUser =
+            data?.user || null;
+
+    }
+
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("notifications")
+            .select(
+                "id,message,created_at"
+            )
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .eq(
+                "is_read",
+                false
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+            .limit(1);
+
+
+    if (error) {
+
+        console.error(
+            "NOTIFICATION ERROR:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const notification =
+        data[0];
+
+
+    /*
+     * Afficher la notification
+     */
+
+    document.getElementById(
+        "notificationText"
+    ).textContent =
+        notification.message;
+
+
+    document.getElementById(
+        "notificationPopup"
+    ).style.display =
+        "block";
+
+
+    /*
+     * Marquer comme lue
+     */
+
+    const {
+        error:
+            updateError
+    } =
+        await supabaseClient
+            .from("notifications")
+            .update({
+                is_read: true
+            })
+            .eq(
+                "id",
+                notification.id
+            );
+
+
+    if (updateError) {
+
+        console.error(
+            "READ NOTIFICATION ERROR:",
+            updateError
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   FERMER NOTIFICATION
+========================================== */
+
+function closeNotification() {
+
+    document.getElementById(
+        "notificationPopup"
+    ).style.display =
+        "none";
+
+}
+
+
+/* ==========================================
+   AFFICHER FICHIER
+========================================== */
+
+function showSelectedFile() {
+
+    const input =
+        document.getElementById(
+            "fileInput"
+        );
+
+
+    const file =
+        input.files[0];
+
+
+    if (!file) {
+
+        document.getElementById(
+            "fileName"
+        ).textContent =
+            "Aucun fichier sélectionné";
+
+        return;
+
+    }
+
+
+    const sizeMB =
+        (
+            file.size /
+            (1024 * 1024)
+        ).toFixed(2);
+
+
+    document.getElementById(
+        "fileName"
+    ).textContent =
+        file.name +
+        " — " +
+        sizeMB +
+        " MB";
 
 }
 
@@ -383,37 +736,45 @@ async function uploadFile() {
             "fileInput"
         );
 
-    const status =
-        document.getElementById(
-            "uploadStatus"
-        );
-
-
-    if (!input.files.length) {
-
-        alert(
-            "Veuillez choisir un fichier."
-        );
-
-        return;
-    }
-
 
     const file =
         input.files[0];
 
 
-    status.textContent =
-        "Upload en cours...";
+    if (!file) {
+
+        alert(
+            "⚠️ Misafidiana fichier aloha."
+        );
+
+        return;
+
+    }
+
+
+    if (!currentUser) {
+
+        alert(
+            "❌ Tsy misy session."
+        );
+
+        return;
+
+    }
 
 
     try {
+
+        /*
+         * Mamorona chemin
+         * manokana ho an'ny user.
+         */
 
         const filePath =
             currentUser.id +
             "/" +
             Date.now() +
-            "_" +
+            "-" +
             file.name;
 
 
@@ -430,20 +791,30 @@ async function uploadFile() {
 
 
         if (error) {
+
             throw error;
+
         }
 
 
-        status.textContent =
-            "✅ Fichier envoyé avec succès.";
+        alert(
+            "✅ Fichier envoyé avec succès !"
+        );
 
 
         input.value = "";
 
 
+        document.getElementById(
+            "fileName"
+        ).textContent =
+            "Aucun fichier sélectionné";
+
+
         await loadFiles();
 
     }
+
 
     catch (error) {
 
@@ -453,9 +824,10 @@ async function uploadFile() {
         );
 
 
-        status.textContent =
-            "❌ Erreur : " +
-            error.message;
+        alert(
+            "❌ Erreur upload : " +
+            error.message
+        );
 
     }
 
@@ -463,137 +835,193 @@ async function uploadFile() {
 
 
 /* ==========================================
-   LISTE DES FICHIERS
+   CHARGER FICHIERS
 ========================================== */
 
 async function loadFiles() {
 
+    if (!currentUser) {
+        return;
+    }
+
+
     const container =
         document.getElementById(
-            "filesList"
+            "fileList"
         );
 
 
     container.innerHTML =
-        "Chargement...";
+        "🔄 Chargement...";
 
 
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .storage
-                .from("zoto-files")
-                .list(
-                    currentUser.id,
-                    {
-                        limit: 100,
-                        sortBy: {
-                            column: "created_at",
-                            order: "desc"
-                        }
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .storage
+            .from("zoto-files")
+            .list(
+                currentUser.id,
+                {
+                    limit: 100,
+                    sortBy: {
+                        column:
+                            "created_at",
+                        order:
+                            "desc"
                     }
-                );
+                }
+            );
 
 
-        if (error) {
-            throw error;
-        }
+    if (error) {
+
+        container.innerHTML =
+            "❌ Erreur : " +
+            escapeHtml(
+                error.message
+            );
+
+        return;
+
+    }
 
 
-        if (!data || !data.length) {
+    if (!data || data.length === 0) {
 
-            container.innerHTML =
-                `<div class="empty">
-                    Aucun fichier.
-                </div>`;
+        container.innerHTML =
+            '<div class="empty">📁 Aucun fichier.</div>';
 
-            return;
-        }
+        return;
 
-
-        container.innerHTML = "";
+    }
 
 
-        for (const file of data) {
-
-            const path =
-                currentUser.id +
-                "/" +
-                file.name;
+    container.innerHTML = "";
 
 
-            const {
-                data: urlData,
-                error: urlError
-            } =
-                await supabaseClient
-                    .storage
-                    .from("zoto-files")
-                    .createSignedUrl(
-                        path,
-                        3600
-                    );
+    data.forEach(
+        file => {
 
-
-            if (urlError) {
-                continue;
-            }
-
-
-            const item =
+            const div =
                 document.createElement(
                     "div"
                 );
 
 
-            item.className =
+            div.className =
                 "file-item";
 
 
-            item.innerHTML = `
+            const left =
+                document.createElement(
+                    "span"
+                );
 
-                <div class="file-name">
-                    📄 ${escapeHtml(file.name)}
-                </div>
 
-                <a
-                    class="download"
-                    href="${urlData.signedUrl}"
-                    target="_blank"
-                    rel="noopener"
-                >
-                    Ouvrir
-                </a>
+            left.textContent =
+                "📄 " +
+                file.name;
 
-            `;
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "delete-button";
+
+
+            button.textContent =
+                "🗑️ Supprimer";
+
+
+            button.onclick =
+                function () {
+
+                    deleteFile(
+                        file.name
+                    );
+
+                };
+
+
+            div.appendChild(
+                left
+            );
+
+
+            div.appendChild(
+                button
+            );
 
 
             container.appendChild(
-                item
+                div
             );
 
         }
+    );
 
-    }
+}
 
-    catch (error) {
 
-        console.error(
-            "FILES ERROR:",
-            error
+/* ==========================================
+   SUPPRIMER FICHIER
+========================================== */
+
+async function deleteFile(fileName) {
+
+    const confirmation =
+        confirm(
+            "Tena hofafana ve ity fichier ity ?"
         );
 
 
-        container.innerHTML =
-            `<div class="empty">
-                ❌ ${escapeHtml(error.message)}
-            </div>`;
+    if (!confirmation) {
+        return;
+    }
+
+
+    const path =
+        currentUser.id +
+        "/" +
+        fileName;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .storage
+            .from("zoto-files")
+            .remove([
+                path
+            ]);
+
+
+    if (error) {
+
+        alert(
+            "❌ Erreur : " +
+            error.message
+        );
+
+        return;
 
     }
+
+
+    alert(
+        "✅ Fichier supprimé."
+    );
+
+
+    await loadFiles();
 
 }
 
@@ -604,25 +1032,24 @@ async function loadFiles() {
 
 async function logout() {
 
-    try {
-
-        await supabaseClient
-            .auth
-            .signOut();
-
-        window.location.href =
-            "auth.html";
-
-    }
-
-    catch (error) {
-
-        alert(
-            "Erreur déconnexion : " +
-            error.message
+    const confirmation =
+        confirm(
+            "Voulez-vous vraiment vous déconnecter ?"
         );
 
+
+    if (!confirmation) {
+        return;
     }
+
+
+    await supabaseClient
+        .auth
+        .signOut();
+
+
+    window.location.href =
+        "auth.html";
 
 }
 
@@ -671,5 +1098,8 @@ init();
 
 </script>
 
+
 </body>
+
 </html>
+
