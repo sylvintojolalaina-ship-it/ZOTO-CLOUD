@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ZOTO CLOUD - Administration</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 245px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 35px;
+        }
+
+        .logo span {
+            color: #3b82f6;
+        }
+
+        .menu button {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: #d1d5db;
+            padding: 14px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .menu button:hover,
+        .menu button.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .main {
+            margin-left: 245px;
+            padding: 25px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+        }
+
+        .admin {
+            background: white;
+            padding: 11px 16px;
+            border-radius: 9px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        }
+
+        .card-icon {
+            font-size: 30px;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .card-number {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .box {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.06);
+            margin-bottom: 25px;
+        }
+
+        .box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .box-header h2 {
+            font-size: 21px;
+        }
+
+        #searchInput {
+            width: 280px;
+            padding: 11px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        #searchInput:focus {
+            border-color: #2563eb;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        th {
+            color: #6b7280;
+            font-size: 13px;
+            background: #f9fafb;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-blocked {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .admin-badge {
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 7px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-block {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .btn-unblock {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .btn:hover {
+            opacity: .8;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+        }
+
+        .loading-users {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+        }
+
+        .notification-box textarea {
+            width: 100%;
+            height: 110px;
+            padding: 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+            margin: 12px 0;
+        }
+
+        .send-button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .country-box {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .location-card {
+            border: 1px solid #e5e7eb;
+            padding: 16px;
+            border-radius: 9px;
+        }
+
+        .location-card h3 {
+            margin-bottom: 7px;
+        }
+
+        .location-card p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 1000px) {
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .box-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            #searchInput {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                width: 70px;
+                padding: 20px 8px;
+            }
+
+            .logo {
+                font-size: 16px;
+            }
+
+            .menu button {
+                text-align: center;
+                font-size: 0;
+            }
+
+            .menu button::first-letter {
+                font-size: 20px;
+            }
+
+            .main {
+                margin-left: 70px;
+                padding: 15px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .country-box {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ==============================
+     LOADING
+================================ -->
+
+<div id="loading">
+    🔐 Vérification administrateur...
+</div>
+
+
+<!-- ==============================
+     SIDEBAR
+================================ -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        ZOTO <span>CLOUD</span>
+    </div>
+
+    <div class="menu">
+
+        <button class="active">
+            🏠 Dashboard
+        </button>
+
+        <button>
+            👥 Utilisateurs
+        </button>
+
+        <button>
+            🔔 Notifications
+        </button>
+
+        <button>
+            🚫 Comptes bloqués
+        </button>
+
+        <button>
+            ⚙️ Paramètres
+        </button>
+
+        <button onclick="logout()">
+            🚪 Déconnexion
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- ==============================
+     MAIN
+================================ -->
+
+<main class="main">
+
+    <div class="topbar">
+
+        <h1>Dashboard Admin</h1>
+
+        <div class="admin">
+            👑
+            <span id="adminEmail">
+                Administrateur
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- ==============================
+         STATISTIQUES
+    ================================= -->
+
+    <section class="cards">
+
+        <div class="card">
+
+            <div class="card-icon">
+                👥
+            </div>
+
+            <div class="card-title">
+                Total utilisateurs
+            </div>
+
+            <div
+                class="card-number"
+                id="totalUsers"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-icon">
+                🟢
+            </div>
+
+            <div class="card-title">
+                Utilisateurs actifs
+            </div>
+
+            <div
+                class="card-number"
+                id="activeUsers"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-icon">
+                🚫
+            </div>
+
+            <div class="card-title">
+                Comptes bloqués
+            </div>
+
+            <div
+                class="card-number"
+                id="blockedUsers"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-icon">
+                🌍
+            </div>
+
+            <div class="card-title">
+                Pays
+            </div>
+
+            <div
+                class="card-number"
+                id="totalCountries"
+            >
+                0
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==============================
+         UTILISATEURS
+    ================================= -->
+
+    <section class="box">
+
+        <div class="box-header">
+
+            <h2>
+                👥 Liste des utilisateurs
+            </h2>
+
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="🔎 Rechercher..."
+                oninput="filterUsers()"
+            >
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Nom
+                        </th>
+
+                        <th>
+                            E-mail
+                        </th>
+
+                        <th>
+                            Pays
+                        </th>
+
+                        <th>
+                            Ville
+                        </th>
+
+                        <th>
+                            Statut
+                        </th>
+
+                        <th>
+                            Rôle
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="usersTable">
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="loading-users"
+                        >
+                            Chargement des utilisateurs...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==============================
+         PAYS ET VILLES
+    ================================= -->
+
+    <section class="box">
+
+        <h2 style="margin-bottom:18px;">
+            🌍 Utilisateurs par pays et ville
+        </h2>
+
+        <div
+            id="locationStats"
+            class="country-box"
+        >
+
+            <div class="location-card">
+                Chargement...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==============================
+         NOTIFICATION
+    ================================= -->
+
+    <section class="box notification-box">
+
+        <h2>
+            📢 Notification
+        </h2>
+
+        <p>
+            Envoyer un message aux utilisateurs.
+        </p>
+
+        <textarea
+            id="notificationMessage"
+            placeholder="Écrivez votre message..."
+        ></textarea>
+
+        <button
+            class="send-button"
+            onclick="sendNotification()"
+        >
+            📤 Envoyer la notification
+        </button>
+
+    </section>
+
+</main>
+
+
+<script>
+
+let supabaseClient = null;
+
+let allUsers = [];
+
+
+/* =================================
+   INITIALISATION
+================================= */
+
+async function init() {
+
+    try {
+
+        const response =
+            await fetch("/api/config");
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Impossible de récupérer la configuration Supabase."
+            );
+
+        }
+
+
+        const config =
+            await response.json();
+
+
+        if (
+            !config.url ||
+            !config.key
+        ) {
+
+            throw new Error(
+                "SUPABASE_URL ou SUPABASE_PUBLISHABLE_KEY manquant."
+            );
+
+        }
+
+
+        supabaseClient =
+            window.supabase.createClient(
+                config.url,
+                config.key
+            );
+
+
+        await checkAdmin();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "INIT ERROR:",
+            error
+        );
+
+
+        alert(
+            "Erreur : " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =================================
+   VERIFICATION ADMIN
+================================= */
+
+async function checkAdmin() {
+
+    const {
+        data: {
+            user
+        },
+        error
+    } =
+        await supabaseClient
+            .auth
+            .getUser();
+
+
+    if (error) {
+
+        alert(
+            "Erreur utilisateur : " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    if (!user) {
+
+        alert(
+            "Vous devez être connecté."
+        );
+
+        window.location.href =
+            "auth.html";
+
+        return;
+    }
+
+
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id,email,full_name,role,status"
+            )
+            .eq(
+                "id",
+                user.id
+            )
+            .single();
+
+
+    if (profileError) {
+
+        console.error(
+            "PROFILE ERROR:",
+            profileError
+        );
+
+
+        alert(
+            "Erreur profile : " +
+            profileError.message
+        );
+
+        return;
+    }
+
+
+    if (!profile) {
+
+        alert(
+            "Profil introuvable."
+        );
+
+        return;
+    }
+
+
+    if (
+        profile.role !== "admin"
+    ) {
+
+        alert(
+            "Role actuel : " +
+            profile.role
+        );
+
+        return;
+    }
+
+
+    if (
+        profile.status !== "active"
+    ) {
+
+        alert(
+            "Status actuel : " +
+            profile.status
+        );
+
+        return;
+    }
+
+
+    document.getElementById(
+        "adminEmail"
+    ).textContent =
+        profile.email ||
+        user.email;
+
+
+    document.getElementById(
+        "loading"
+    ).style.display =
+        "none";
+
+
+    await loadUsers();
+
+}
+
+
+/* =================================
+   CHARGER LES UTILISATEURS
+================================= */
+
+async function loadUsers() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "USERS ERROR:",
+            error
+        );
+
+
+        document.getElementById(
+            "usersTable"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty"
+                >
+                    Erreur : ${
+                        escapeHtml(
+                            error.message
+                        )
+                    }
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+
+    allUsers =
+        data || [];
+
+
+    updateStatistics();
+
+    displayUsers(
+        allUsers
+    );
+
+    displayLocationStats(
+        allUsers
+    );
+
+}
+
+
+/* =================================
+   STATISTIQUES
+================================= */
+
+function updateStatistics() {
+
+    const total =
+        allUsers.length;
+
+
+    const active =
+        allUsers.filter(
+            user =>
+                user.status === "active"
+        ).length;
+
+
+    const blocked =
+        allUsers.filter(
+            user =>
+                user.status === "blocked"
+        ).length;
+
+
+    const countries =
+        new Set(
+            allUsers
+                .map(
+                    user =>
+                        user.country
+                )
+                .filter(Boolean)
+        );
+
+
+    document.getElementById(
+        "totalUsers"
+    ).textContent =
+        total;
+
+
+    document.getElementById(
+        "activeUsers"
+    ).textContent =
+        active;
+
+
+    document.getElementById(
+        "blockedUsers"
+    ).textContent =
+        blocked;
+
+
+    document.getElementById(
+        "totalCountries"
+    ).textContent =
+        countries.size;
+
+}
+
+
+/* =================================
+   AFFICHER LES UTILISATEURS
+================================= */
+
+function displayUsers(
+    users
+) {
+
+    const table =
+        document.getElementById(
+            "usersTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (!users.length) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty"
+                >
+                    Aucun utilisateur trouvé.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+
+    users.forEach(
+        user => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            const isBlocked =
+                user.status === "blocked";
+
+
+            let action = "";
+
+
+            if (
+                user.role === "admin"
+            ) {
+
+                action =
+                    "👑 Admin";
+
+            }
+
+            else if (
+                isBlocked
+            ) {
+
+                action = `
+
+                    <button
+                        class="btn btn-unblock"
+                        onclick="unblockUser('${user.id}')"
+                    >
+                        🔓 Débloquer
+                    </button>
+
+                `;
+
+            }
+
+            else {
+
+                action = `
+
+                    <button
+                        class="btn btn-block"
+                        onclick="blockUser('${user.id}')"
+                    >
+                        🚫 Bloquer
+                    </button>
+
+                `;
+
+            }
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${
+                        escapeHtml(
+                            user.full_name ||
+                            "Utilisateur"
+                        )
+                    }
+                </td>
+
+                <td>
+                    ${
+                        escapeHtml(
+                            user.email ||
+                            "-"
+                        )
+                    }
+                </td>
+
+                <td>
+                    ${
+                        escapeHtml(
+                            user.country ||
+                            "-"
+                        )
+                    }
+                </td>
+
+                <td>
+                    ${
+                        escapeHtml(
+                            user.city ||
+                            "-"
+                        )
+                    }
+                </td>
+
+                <td>
+
+                    <span
+                        class="status ${
+                            isBlocked
+                                ? "status-blocked"
+                                : "status-active"
+                        }"
+                    >
+
+                        ${
+                            isBlocked
+                                ? "Bloqué"
+                                : "Actif"
+                        }
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    ${
+                        user.role === "admin"
+
+                            ? `<span class="admin-badge">
+                                👑 Admin
+                               </span>`
+
+                            : "Utilisateur"
+                    }
+
+                </td>
+
+                <td>
+                    ${action}
+                </td>
+
+            `;
+
+
+            table.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* =================================
+   RECHERCHE
+================================= */
+
+function filterUsers() {
+
+    const search =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    if (!search) {
+
+        displayUsers(
+            allUsers
+        );
+
+        return;
+    }
+
+
+    const filtered =
+        allUsers.filter(
+            user => {
+
+                const text = `
+
+                    ${user.full_name || ""}
+
+                    ${user.email || ""}
+
+                    ${user.country || ""}
+
+                    ${user.city || ""}
+
+                    ${user.status || ""}
+
+                `.toLowerCase();
+
+
+                return text.includes(
+                    search
+                );
+
+            }
+        );
+
+
+    displayUsers(
+        filtered
+    );
+
+}
+
+
+/* =================================
+   PAYS + VILLE
+================================= */
+
+function displayLocationStats(
+    users
+) {
+
+    const container =
+        document.getElementById(
+            "locationStats"
+        );
+
+
+    const locations = {};
+
+
+    users.forEach(
+        user => {
+
+            const country =
+                user.country ||
+                "Pays inconnu";
+
+
+            const city =
+                user.city ||
+                "Ville inconnue";
+
+
+            if (
+                !locations[country]
+            ) {
+
+                locations[country] = {};
+
+            }
+
+
+            if (
+                !locations[country][city]
+            ) {
+
+                locations[country][city] =
+                    0;
+
+            }
+
+
+            locations[country][city]++;
+
+        }
+    );
+
+
+    container.innerHTML = "";
+
+
+    const countries =
+        Object.keys(
+            locations
+        );
+
+
+    if (!countries.length) {
+
+        container.innerHTML = `
+
+            <div class="location-card">
+                Aucun emplacement disponible.
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    countries.forEach(
+        country => {
+
+            let citiesHTML = "";
+
+
+            Object.entries(
+                locations[country]
+            ).forEach(
+                ([city, count]) => {
+
+                    citiesHTML += `
+                        <p>
+                            🏙️
+                            ${escapeHtml(city)}
+                            :
+                            <strong>
+                                ${count}
+                            </strong>
+                        </p>
+                    `;
+
+                }
+            );
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "location-card";
+
+
+            card.innerHTML = `
+
+                <h3>
+                    🌍
+                    ${escapeHtml(country)}
+                </h3>
+
+                ${citiesHTML}
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =================================
+   BLOQUER
+================================= */
+
+async function blockUser(
+    userId
+) {
+
+    const confirmation =
+        confirm(
+            "Voulez-vous vraiment bloquer cet utilisateur ?"
+        );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .update({
+                status: "blocked"
+            })
+            .eq(
+                "id",
+                userId
+            );
+
+
+    if (error) {
+
+        alert(
+            "Erreur : " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    alert(
+        "Compte bloqué avec succès."
+    );
+
+
+    await loadUsers();
+
+}
+
+
+/* =================================
+   DEBLOQUER
+================================= */
+
+async function unblockUser(
+    userId
+) {
+
+    const confirmation =
+        confirm(
+            "Voulez-vous débloquer cet utilisateur ?"
+        );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .update({
+                status: "active"
+            })
+            .eq(
+                "id",
+                userId
+            );
+
+
+    if (error) {
+
+        alert(
+            "Erreur : " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    alert(
+        "Compte débloqué avec succès."
+    );
+
+
+    await loadUsers();
+
+}
+
+
+/* =================================
+   NOTIFICATION
+================================= */
+
+function sendNotification() {
+
+    const message =
+        document
+            .getElementById(
+                "notificationMessage"
+            )
+            .value
+            .trim();
+
+
+    if (!message) {
+
+        alert(
+            "Veuillez écrire un message."
+        );
+
+        return;
+    }
+
+
+    alert(
+        "La fonction notification sera connectée à Supabase à l'étape suivante."
+    );
+
+}
+
+
+/* =================================
+   DECONNEXION
+================================= */
+
+async function logout() {
+
+    const confirmation =
+        confirm(
+            "Voulez-vous vraiment vous déconnecter ?"
+        );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    await supabaseClient
+        .auth
+        .signOut();
+
+
+    window.location.href =
+        "auth.html";
+
+}
+
+
+/* =================================
+   SECURITE HTML
+================================= */
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+/* =================================
+   START
+================================= */
+
+init();
+
+</script>
+
+</body>
+</html>

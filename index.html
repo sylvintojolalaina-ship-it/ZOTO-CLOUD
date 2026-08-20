@@ -1,49 +1,14 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta name="google-site-verification"
-content="yOA8EAmquWN18FdLJpZPtrMd74_GOF_F3eN_71cKxBk">
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<link rel="manifest" href="/manifest.json">
-
-<meta name="theme-color" content="#2563eb">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZOTO CLOUD - Stockage Cloud Gratuit</title>
-
-<meta name="description"
-content="ZOTO CLOUD est une plateforme de stockage cloud simple, rapide et sécurisée pour sauvegarder et gérer vos fichiers en ligne.">
-
-<meta name="robots" content="index, follow">
-
-<link rel="canonical"
-href="https://zoto-cloud.vercel.app/">
-
-<meta property="og:title"
-content="ZOTO CLOUD - Stockage Cloud Gratuit">
-
-<meta property="og:description"
-content="Stockez, gérez et retrouvez vos fichiers en ligne avec ZOTO CLOUD.">
-
-<meta property="og:type"
-content="website">
-
-<meta property="og:url"
-content="https://zoto-cloud.vercel.app/">
-
-<meta property="og:image"
-content="https://zoto-cloud.vercel.app/sary2.png">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
     margin:0;
@@ -51,10 +16,27 @@ content="https://zoto-cloud.vercel.app/sary2.png">
     font-family:Arial,sans-serif;
 }
 
+:root{
+    --text-color:#222;
+    --muted-color:#666;
+    --card-bg:rgba(255,255,255,.94);
+    --border-color:rgba(0,0,0,.12);
+}
+
 body{
     background:#f4f7fb;
-    color:#222;
+    color:var(--text-color);
     min-height:100vh;
+    transition:color .3s, background .3s;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(255,255,255,.08);
+    z-index:-1;
+    pointer-events:none;
 }
 
 /* WELCOME */
@@ -72,6 +54,7 @@ body{
 
 .welcome-box{
     background:white;
+    color:#222;
     width:100%;
     max-width:650px;
     border-radius:25px;
@@ -108,24 +91,22 @@ body{
     font-weight:bold;
 }
 
-.continue-btn:hover{
-    background:#1d4ed8;
-}
-
 /* HEADER */
 
 header{
     height:70px;
-    background:white;
+    background:var(--card-bg);
+    color:var(--text-color);
     display:flex;
     align-items:center;
     justify-content:space-between;
     padding:0 25px;
-    border-bottom:1px solid #ddd;
+    border-bottom:1px solid var(--border-color);
     gap:15px;
     position:sticky;
     top:0;
     z-index:100;
+    backdrop-filter:blur(10px);
 }
 
 .logo{
@@ -137,9 +118,11 @@ header{
 .search{
     width:350px;
     padding:12px 18px;
-    border:1px solid #ddd;
+    border:1px solid var(--border-color);
     border-radius:25px;
     outline:none;
+    background:rgba(255,255,255,.9);
+    color:#222;
 }
 
 .user-area{
@@ -164,8 +147,6 @@ header{
     cursor:pointer;
 }
 
-/* MOBILE MENU */
-
 .menu-button{
     display:none;
     border:none;
@@ -185,10 +166,12 @@ header{
 
 aside{
     width:230px;
-    background:white;
+    background:var(--card-bg);
+    color:var(--text-color);
     padding:20px 15px;
-    border-right:1px solid #ddd;
+    border-right:1px solid var(--border-color);
     flex-shrink:0;
+    backdrop-filter:blur(10px);
 }
 
 aside button{
@@ -198,24 +181,25 @@ aside button{
     border:none;
     border-radius:10px;
     background:transparent;
+    color:var(--text-color);
     text-align:left;
     cursor:pointer;
     font-size:15px;
 }
 
 aside button:hover{
-    background:#eef3ff;
+    background:rgba(37,99,235,.12);
 }
 
 .upload{
     background:#2563eb !important;
-    color:white;
+    color:white !important;
     text-align:center !important;
 }
 
 .settings-btn{
     margin-top:15px;
-    border-top:1px solid #eee !important;
+    border-top:1px solid var(--border-color) !important;
     padding-top:18px !important;
 }
 
@@ -225,31 +209,33 @@ main{
     min-width:0;
 }
 
+h1,h2,h3,p,strong,label{
+    color:var(--text-color);
+}
+
 .welcome{
-    color:#666;
+    color:var(--muted-color) !important;
     margin:8px 0 25px;
 }
 
 .status{
-    background:white;
+    background:var(--card-bg);
+    color:var(--text-color);
     padding:15px;
     border-radius:10px;
     margin-bottom:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,.04);
-}
-
-.section-title{
-    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
 /* STORAGE */
 
 .storage-box{
-    background:white;
+    background:var(--card-bg);
+    color:var(--text-color);
     padding:20px;
     border-radius:15px;
     margin-bottom:25px;
-    box-shadow:0 3px 12px rgba(0,0,0,.05);
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
 }
 
 .storage-header{
@@ -271,7 +257,6 @@ main{
     height:100%;
     background:#2563eb;
     border-radius:20px;
-    transition:.3s;
 }
 
 .storage-details{
@@ -279,7 +264,7 @@ main{
     justify-content:space-between;
     gap:10px;
     margin-top:10px;
-    color:#666;
+    color:var(--muted-color);
     font-size:13px;
 }
 
@@ -293,11 +278,12 @@ main{
 }
 
 .category{
-    background:white;
+    background:var(--card-bg);
+    color:var(--text-color);
     padding:25px;
     border-radius:15px;
     cursor:pointer;
-    box-shadow:0 3px 12px rgba(0,0,0,.06);
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
     transition:.2s;
 }
 
@@ -315,7 +301,7 @@ main{
 }
 
 .category p{
-    color:#777;
+    color:var(--muted-color) !important;
 }
 
 /* FILES */
@@ -326,14 +312,15 @@ main{
 }
 
 .file{
-    background:white;
+    background:var(--card-bg);
+    color:var(--text-color);
     padding:15px;
     border-radius:12px;
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:15px;
-    box-shadow:0 2px 8px rgba(0,0,0,.05);
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
 .file-info{
@@ -349,11 +336,12 @@ main{
 
 .file-name{
     font-weight:bold;
+    color:var(--text-color);
     word-break:break-word;
 }
 
 .file-details{
-    color:#777;
+    color:var(--muted-color);
     font-size:13px;
     margin-top:5px;
 }
@@ -372,25 +360,11 @@ main{
     cursor:pointer;
 }
 
-.view{
-    background:#16a34a;
-}
-
-.download{
-    background:#2563eb;
-}
-
-.trash{
-    background:#f59e0b;
-}
-
-.restore{
-    background:#16a34a;
-}
-
-.delete-permanent{
-    background:#dc2626;
-}
+.view{background:#16a34a}
+.download{background:#2563eb}
+.trash{background:#f59e0b}
+.restore{background:#16a34a}
+.delete-permanent{background:#dc2626}
 
 .back{
     border:none;
@@ -403,11 +377,11 @@ main{
 }
 
 .empty{
-    background:white;
+    background:var(--card-bg);
+    color:var(--muted-color);
     padding:30px;
     border-radius:12px;
     text-align:center;
-    color:#777;
 }
 
 /* PREVIEW */
@@ -425,6 +399,7 @@ main{
 
 .preview-box{
     background:white;
+    color:#222;
     width:95%;
     max-width:1000px;
     max-height:90vh;
@@ -477,17 +452,18 @@ main{
 /* SETTINGS */
 
 .settings-panel{
-    background:white;
+    background:var(--card-bg);
+    color:var(--text-color);
     max-width:700px;
     padding:25px;
     border-radius:15px;
-    box-shadow:0 3px 12px rgba(0,0,0,.06);
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
 }
 
 .setting-group{
     margin-bottom:25px;
     padding-bottom:20px;
-    border-bottom:1px solid #eee;
+    border-bottom:1px solid var(--border-color);
 }
 
 .setting-group:last-child{
@@ -504,13 +480,19 @@ main{
     font-weight:bold;
 }
 
+.setting-group p{
+    color:var(--muted-color) !important;
+}
+
 .setting-input,
 .setting-select{
     width:100%;
     padding:12px;
-    border:1px solid #ddd;
+    border:1px solid var(--border-color);
     border-radius:8px;
     margin-bottom:10px;
+    background:rgba(255,255,255,.9);
+    color:#222;
 }
 
 .setting-button{
@@ -533,13 +515,12 @@ main{
     background-size:cover;
     background-position:center;
     margin:10px 0;
-    border:1px solid #ddd;
+    border:1px solid var(--border-color);
 }
 
 /* MOBILE */
 
 @media(max-width:900px){
-
     .categories{
         grid-template-columns:repeat(2,1fr);
     }
@@ -547,7 +528,6 @@ main{
     .search{
         width:250px;
     }
-
 }
 
 @media(max-width:700px){
@@ -584,7 +564,7 @@ main{
         display:none;
         width:100%;
         border-right:none;
-        border-bottom:1px solid #ddd;
+        border-bottom:1px solid var(--border-color);
         padding:12px;
     }
 
@@ -633,7 +613,6 @@ main{
     .welcome-logo{
         font-size:55px;
     }
-
 }
 
 @media(max-width:430px){
@@ -650,65 +629,35 @@ main{
         padding:8px 10px;
         font-size:12px;
     }
-
 }
-
 </style>
-
 </head>
 
 <body>
 
-<!-- WELCOME -->
-
 <div id="welcomeScreen">
-
     <div class="welcome-box">
+        <div class="welcome-logo">☁️</div>
 
-        <div class="welcome-logo">
-            ☁️
-        </div>
-
-        <h1>
-            Tongasoa eto amin'ny ZOTO CLOUD !
-        </h1>
+        <h1>Tongasoa eto amin'ny ZOTO CLOUD !</h1>
 
         <p>
             Misaotra anao amin'ny fampiasanao ity fitaovana ity.
             Izy ity dia rafitra natao hitahirizana
-            <strong>données</strong> amin'ny tranonkala,
-            mba hahafahanao mitahiry sy mahazo azy
-            amin'ny fotoana rehetra.
+            <strong>données</strong> amin'ny tranonkala.
         </p>
 
-        <button
-            class="continue-btn"
-            onclick="continueToCloud()">
-
+        <button class="continue-btn" onclick="continueToCloud()">
             Continuer →
-
         </button>
-
     </div>
-
 </div>
-
-
-<!-- HEADER -->
 
 <header>
 
-    <button
-        class="menu-button"
-        onclick="toggleMenu()">
+    <button class="menu-button" onclick="toggleMenu()">☰</button>
 
-        ☰
-
-    </button>
-
-    <div class="logo">
-        ☁️ ZOTO CLOUD
-    </div>
+    <div class="logo">☁️ ZOTO CLOUD</div>
 
     <input
         id="search"
@@ -719,37 +668,22 @@ main{
     >
 
     <div class="user-area">
+        <span id="userEmail" class="user">👤 Chargement...</span>
 
-        <span id="userEmail" class="user">
-            👤 Chargement...
-        </span>
-
-        <button
-            class="logout"
-            onclick="logout()">
-
+        <button class="logout" onclick="logout()">
             Déconnexion
-
         </button>
-
     </div>
 
 </header>
 
-
 <div class="container">
-
-
-<!-- SIDEBAR -->
 
 <aside id="sidebar">
 
-    <button
-        class="upload"
+    <button class="upload"
         onclick="document.getElementById('fileInput').click()">
-
         📤 Téléverser fichiers
-
     </button>
 
     <input
@@ -760,12 +694,8 @@ main{
         onchange="uploadFiles(this.files)"
     >
 
-
-    <button
-        onclick="document.getElementById('folderInput').click()">
-
+    <button onclick="document.getElementById('folderInput').click()">
         📁 Téléverser un dossier
-
     </button>
 
     <input
@@ -778,51 +708,20 @@ main{
         onchange="uploadFiles(this.files,true)"
     >
 
+    <button onclick="showHome()">📁 Mes fichiers</button>
+    <button onclick="openCategory('image')">🖼️ Images</button>
+    <button onclick="openCategory('video')">🎥 Vidéos</button>
+    <button onclick="openCategory('document')">📄 Documents</button>
+    <button onclick="openCategory('pdf')">📕 PDF</button>
+    <button onclick="openCategory('audio')">🎵 Audio</button>
+    <button onclick="openCategory('other')">📦 Autres fichiers</button>
+    <button onclick="showTrash()">🗑️ Corbeille</button>
 
-    <button onclick="showHome()">
-        📁 Mes fichiers
-    </button>
-
-    <button onclick="openCategory('image')">
-        🖼️ Images
-    </button>
-
-    <button onclick="openCategory('video')">
-        🎥 Vidéos
-    </button>
-
-    <button onclick="openCategory('document')">
-        📄 Documents
-    </button>
-
-    <button onclick="openCategory('pdf')">
-        📕 PDF
-    </button>
-
-    <button onclick="openCategory('audio')">
-        🎵 Audio
-    </button>
-
-    <button onclick="openCategory('other')">
-        📦 Autres fichiers
-    </button>
-
-    <button onclick="showTrash()">
-        🗑️ Corbeille
-    </button>
-
-    <button
-        class="settings-btn"
-        onclick="showSettings()">
-
+    <button class="settings-btn" onclick="showSettings()">
         ⚙️ Paramètres
-
     </button>
 
 </aside>
-
-
-<!-- MAIN -->
 
 <main>
 
@@ -846,29 +745,17 @@ main{
 
 </div>
 
-
-<!-- PREVIEW -->
-
-<div
-    id="preview"
-    class="preview">
+<div id="preview" class="preview">
 
     <div class="preview-box">
 
-        <button
-            class="close"
-            onclick="closePreview()">
-
-            ✕
-
-        </button>
+        <button class="close" onclick="closePreview()">✕</button>
 
         <div id="previewContent"></div>
 
     </div>
 
 </div>
-
 
 <script>
 
@@ -890,18 +777,9 @@ window.supabase.createClient(
 /* VARIABLES */
 
 let allFiles = [];
-
 let currentFiles = [];
-
 let currentCategory = null;
-
 let currentUser = null;
-
-
-/*
-   QUOTA PERSONNELLE
-   1 GB
-*/
 
 const TOTAL_STORAGE =
 1024 * 1024 * 1024;
@@ -913,22 +791,17 @@ async function getUser(){
 
     const {
         data:{user}
-    } =
-    await supabaseClient.auth.getUser();
+    } = await supabaseClient.auth.getUser();
 
     if(!user){
 
-        window.location.href =
-        "/auth.html";
-
+        window.location.href="/auth.html";
         return null;
     }
 
-    currentUser = user;
+    currentUser=user;
 
-    document.getElementById(
-        "userEmail"
-    ).textContent =
+    document.getElementById("userEmail").textContent =
         "👤 " + user.email;
 
     return user;
@@ -949,9 +822,7 @@ function continueToCloud(){
     document.getElementById(
         "welcomeScreen"
     ).style.display="none";
-
 }
-
 
 function checkWelcome(){
 
@@ -959,8 +830,7 @@ function checkWelcome(){
 
     const seen =
         localStorage.getItem(
-            "zoto_welcome_" +
-            currentUser.id
+            "zoto_welcome_" + currentUser.id
         );
 
     if(seen==="true"){
@@ -968,236 +838,143 @@ function checkWelcome(){
         document.getElementById(
             "welcomeScreen"
         ).style.display="none";
-
     }
-
 }
 
 
-/* MOBILE MENU */
+/* MENU */
 
 function toggleMenu(){
 
     document
-    .getElementById("sidebar")
-    .classList.toggle("mobile-open");
-
+        .getElementById("sidebar")
+        .classList.toggle("mobile-open");
 }
 
 
-/* UPLOAD MULTIPLE */
+/* UPLOAD */
 
-async function uploadFiles(
-    files,
-    isFolder=false
-){
+async function uploadFiles(files,isFolder=false){
 
-    if(!files || !files.length)
-        return;
+    if(!files || !files.length) return;
 
-    const user =
-        await getUser();
+    const user=await getUser();
 
     if(!user) return;
 
-    const status =
-        document.getElementById("status");
-
-    const fileArray =
-        Array.from(files);
+    const status=document.getElementById("status");
+    const fileArray=Array.from(files);
 
     let success=0;
-
     let failed=0;
 
     for(let i=0;i<fileArray.length;i++){
 
-        const file =
-        fileArray[i];
+        const file=fileArray[i];
 
         status.textContent =
         `⏳ Téléversement ${i+1}/${fileArray.length} : ${file.name}`;
 
-
-        /*
-          Relative path pour les dossiers
-        */
-
         let relativePath =
-        file.webkitRelativePath ||
-        file.name;
-
+            file.webkitRelativePath || file.name;
 
         relativePath =
-        relativePath
-        .replace(/\\/g,"/")
-        .replace(/^\/+/,"");
-
-
-        /*
-          Nettoyage du nom
-        */
+            relativePath
+            .replace(/\\/g,"/")
+            .replace(/^\/+/,"");
 
         const safePath =
-        relativePath
-        .split("/")
-        .map(part =>
-            part.replace(/[^\w.\- ]/g,"_")
-        )
-        .join("/");
-
+            relativePath
+            .split("/")
+            .map(part =>
+                part.replace(/[^\w.\- ]/g,"_")
+            )
+            .join("/");
 
         const filePath =
-        user.id +
-        "/" +
-        Date.now() +
-        "_" +
-        safePath;
-
+            user.id + "/" +
+            Date.now() + "_" +
+            safePath;
 
         const {
             data,
             error
         } =
         await supabaseClient.storage
-        .from("zoto-files")
-        .upload(
-            filePath,
-            file
-        );
-
+            .from("zoto-files")
+            .upload(filePath,file);
 
         if(error){
 
-            console.error(
-                "Upload:",
-                error
-            );
-
+            console.error(error);
             failed++;
-
             continue;
         }
 
-
-        const {
-            error:dbError
-        } =
+        const {error:dbError} =
         await supabaseClient
-        .from("files")
-        .insert({
-
-            user_id:user.id,
-
-            file_name:
-            relativePath,
-
-            file_path:
-            data.path,
-
-            file_type:
-            file.type || "application/octet-stream",
-
-            file_size:
-            file.size
-
-        });
-
+            .from("files")
+            .insert({
+                user_id:user.id,
+                file_name:relativePath,
+                file_path:data.path,
+                file_type:file.type || "application/octet-stream",
+                file_size:file.size
+            });
 
         if(dbError){
 
-            console.error(
-                "Database:",
-                dbError
-            );
-
+            console.error(dbError);
             failed++;
-
             continue;
         }
 
         success++;
-
     }
 
-
     status.textContent =
-    `✅ ${success} fichier(s) envoyé(s)` +
-    (failed
-        ? ` • ❌ ${failed} échec(s)`
-        : ""
-    );
+        `✅ ${success} fichier(s) envoyé(s)` +
+        (failed ? ` • ❌ ${failed} échec(s)` : "");
 
-
-    document.getElementById(
-        "fileInput"
-    ).value="";
-
-    document.getElementById(
-        "folderInput"
-    ).value="";
-
+    document.getElementById("fileInput").value="";
+    document.getElementById("folderInput").value="";
 
     await loadFiles();
-
 }
 
 
-/* LOAD FILES */
+/* LOAD */
 
 async function loadFiles(){
 
-    const user =
-        await getUser();
+    const user=await getUser();
 
     if(!user) return;
-
 
     const {
         data,
         error
     } =
     await supabaseClient
-    .from("files")
-    .select("*")
-    .eq(
-        "user_id",
-        user.id
-    )
-    .is(
-        "deleted_at",
-        null
-    )
-    .order(
-        "created_at",
-        {ascending:false}
-    );
-
+        .from("files")
+        .select("*")
+        .eq("user_id",user.id)
+        .is("deleted_at",null)
+        .order("created_at",{ascending:false});
 
     if(error){
 
-        console.error(error);
-
-        document.getElementById(
-            "status"
-        ).textContent =
-        "❌ " + error.message;
+        document.getElementById("status").textContent =
+            "❌ " + error.message;
 
         return;
     }
 
-
-    allFiles =
-    data || [];
-
-    currentFiles =
-    allFiles;
-
+    allFiles=data || [];
+    currentFiles=allFiles;
 
     updateStorage();
-
     showHome();
-
 }
 
 
@@ -1206,86 +983,59 @@ async function loadFiles(){
 function updateStorage(){
 
     const used =
-    allFiles.reduce(
-        (total,file) =>
-        total +
-        Number(file.file_size || 0),
-        0
-    );
+        allFiles.reduce(
+            (total,file) =>
+            total + Number(file.file_size || 0),
+            0
+        );
 
-
-    const free =
-    Math.max(
-        TOTAL_STORAGE-used,
-        0
-    );
-
+    const free=Math.max(TOTAL_STORAGE-used,0);
 
     const percentage =
-    Math.min(
-        (used/TOTAL_STORAGE)*100,
-        100
-    );
+        Math.min((used/TOTAL_STORAGE)*100,100);
 
-
-    document.getElementById(
-        "storage"
-    ).innerHTML = `
+    document.getElementById("storage").innerHTML=`
 
         <div class="storage-box">
 
             <div class="storage-header">
-
-                <strong>
-                    💾 Stockage
-                </strong>
+                <strong>💾 Stockage</strong>
 
                 <strong>
                     ${formatSize(used)}
                     /
                     ${formatSize(TOTAL_STORAGE)}
                 </strong>
-
             </div>
 
             <div class="storage-bar">
-
                 <div
                     class="storage-progress"
                     style="width:${percentage}%">
                 </div>
-
             </div>
 
             <div class="storage-details">
 
                 <span>
                     Utilisé :
-                    <strong>
-                        ${formatSize(used)}
-                    </strong>
+                    <strong>${formatSize(used)}</strong>
                 </span>
 
                 <span>
                     Libre :
-                    <strong>
-                        ${formatSize(free)}
-                    </strong>
+                    <strong>${formatSize(free)}</strong>
                 </span>
 
                 <span>
                     Total :
-                    <strong>
-                        ${formatSize(TOTAL_STORAGE)}
-                    </strong>
+                    <strong>${formatSize(TOTAL_STORAGE)}</strong>
                 </span>
 
             </div>
 
         </div>
-
     `;
-
 }
 
 
@@ -1295,15 +1045,10 @@ function showHome(){
 
     currentCategory=null;
 
-    document.getElementById(
-        "pageTitle"
-    ).textContent =
-    "Bienvenue sur ZOTO CLOUD 👋";
+    document.getElementById("pageTitle").textContent =
+        "Bienvenue sur ZOTO CLOUD 👋";
 
-
-    document.getElementById(
-        "content"
-    ).innerHTML = `
+    document.getElementById("content").innerHTML=`
 
         <h2 class="section-title">
             📁 Mes fichiers
@@ -1311,93 +1056,40 @@ function showHome(){
 
         <div class="categories">
 
-            ${categoryCard(
-                "image",
-                "🖼️",
-                "Images"
-            )}
-
-            ${categoryCard(
-                "video",
-                "🎥",
-                "Vidéos"
-            )}
-
-            ${categoryCard(
-                "document",
-                "📄",
-                "Documents"
-            )}
-
-            ${categoryCard(
-                "pdf",
-                "📕",
-                "PDF"
-            )}
-
-            ${categoryCard(
-                "audio",
-                "🎵",
-                "Audio"
-            )}
-
-            ${categoryCard(
-                "other",
-                "📦",
-                "Autres fichiers"
-            )}
+            ${categoryCard("image","🖼️","Images")}
+            ${categoryCard("video","🎥","Vidéos")}
+            ${categoryCard("document","📄","Documents")}
+            ${categoryCard("pdf","📕","PDF")}
+            ${categoryCard("audio","🎵","Audio")}
+            ${categoryCard("other","📦","Autres fichiers")}
 
         </div>
-
     `;
-
 }
 
 
-function categoryCard(
-    category,
-    icon,
-    title
-){
+function categoryCard(category,icon,title){
 
     return `
-
-        <div
-            class="category"
+        <div class="category"
             onclick="openCategory('${category}')">
 
-            <div class="category-icon">
-                ${icon}
-            </div>
+            <div class="category-icon">${icon}</div>
 
-            <h3>
-                ${title}
-            </h3>
+            <h3>${title}</h3>
 
-            <p>
-                ${countCategory(category)}
-                fichiers
-            </p>
+            <p>${countCategory(category)} fichiers</p>
 
         </div>
-
     `;
-
 }
 
-
-/* COUNT */
 
 function countCategory(category){
 
     return allFiles.filter(
-        file =>
-        belongsTo(
-            file,
-            category
-        )
+        file=>belongsTo(file,category)
     ).length;
-
 }
 
 
@@ -1405,82 +1097,46 @@ function countCategory(category){
 
 function openCategory(category){
 
-    currentCategory =
-    category;
+    currentCategory=category;
 
     let title="";
 
-    if(category==="image")
-        title="🖼️ Images";
+    if(category==="image") title="🖼️ Images";
+    if(category==="video") title="🎥 Vidéos";
+    if(category==="document") title="📄 Documents";
+    if(category==="pdf") title="📕 PDF";
+    if(category==="audio") title="🎵 Audio";
+    if(category==="other") title="📦 Autres fichiers";
 
-    if(category==="video")
-        title="🎥 Vidéos";
-
-    if(category==="document")
-        title="📄 Documents";
-
-    if(category==="pdf")
-        title="📕 PDF";
-
-    if(category==="audio")
-        title="🎵 Audio";
-
-    if(category==="other")
-        title="📦 Autres fichiers";
-
-
-    document.getElementById(
-        "pageTitle"
-    ).textContent=title;
-
+    document.getElementById("pageTitle").textContent=title;
 
     currentFiles =
-    allFiles.filter(
-        file =>
-        belongsTo(
-            file,
-            category
-        )
-    );
+        allFiles.filter(
+            file=>belongsTo(file,category)
+        );
 
-
-    renderFiles(
-        currentFiles,
-        title
-    );
-
+    renderFiles(currentFiles,title);
 }
 
 
 /* CLASSIFICATION */
 
-function belongsTo(
-    file,
-    category
-){
+function belongsTo(file,category){
 
-    const type =
-    file.file_type || "";
-
-    const name =
-    file.file_name || "";
-
+    const type=file.file_type || "";
+    const name=file.file_name || "";
 
     if(category==="image")
         return type.startsWith("image/");
 
-
     if(category==="video")
         return type.startsWith("video/");
-
 
     if(category==="audio")
         return type.startsWith("audio/");
 
-
     if(category==="pdf")
         return type==="application/pdf";
-
 
     if(category==="document"){
 
@@ -1493,9 +1149,7 @@ function belongsTo(
             type.includes("presentation") ||
             /\.(doc|docx|xls|xlsx|ppt|pptx)$/i.test(name)
         );
-
     }
-
 
     if(category==="other"){
 
@@ -1506,48 +1160,28 @@ function belongsTo(
             belongsTo(file,"pdf") ||
             belongsTo(file,"document")
         );
-
     }
 
-
     return false;
-
 }
 
 
-/* RENDER FILES */
+/* RENDER */
 
-function renderFiles(
-    files,
-    title
-){
+function renderFiles(files,title){
 
-    document.getElementById(
-        "content"
-    ).innerHTML = `
+    document.getElementById("content").innerHTML=`
 
-        <button
-            class="back"
-            onclick="showHome()">
-
+        <button class="back" onclick="showHome()">
             ← Retour à Mes fichiers
-
         </button>
 
-        <h2 class="section-title">
-            ${title}
-        </h2>
+        <h2 class="section-title">${title}</h2>
 
-        <div
-            id="fileList"
-            class="file-list">
-        </div>
-
+        <div id="fileList" class="file-list"></div>
     `;
 
-
     displayFiles(files);
-
 }
 
 
@@ -1555,125 +1189,83 @@ function renderFiles(
 
 function displayFiles(files){
 
-    const list =
-    document.getElementById(
-        "fileList"
-    );
-
+    const list=document.getElementById("fileList");
 
     if(!files.length){
 
         list.innerHTML=`
-
             <div class="empty">
-
                 📂 Aucun fichier.
-
             </div>
-
         `;
 
         return;
-
     }
-
 
     list.innerHTML="";
 
+    files.forEach(file=>{
 
-    files.forEach(
-        file=>{
+        const div=document.createElement("div");
 
-            const div =
-            document.createElement(
-                "div"
-            );
+        div.className="file";
 
-            div.className="file";
+        div.innerHTML=`
 
+            <div class="file-info">
 
-            div.innerHTML=`
+                <div class="file-icon">
+                    ${getIcon(file)}
+                </div>
 
-                <div class="file-info">
+                <div>
 
-                    <div class="file-icon">
-                        ${getIcon(file)}
+                    <div class="file-name">
+                        ${escapeHtml(file.file_name)}
                     </div>
 
-                    <div>
+                    <div class="file-details">
 
-                        <div class="file-name">
-                            ${escapeHtml(
-                                file.file_name
-                            )}
-                        </div>
-
-                        <div class="file-details">
-
-                            ${formatSize(
-                                file.file_size
-                            )}
-
-                            •
-
-                            ${new Date(
-                                file.created_at
-                            ).toLocaleString(
-                                "fr-FR"
-                            )}
-
-                        </div>
+                        ${formatSize(file.file_size)}
+                        •
+                        ${new Date(file.created_at)
+                            .toLocaleString("fr-FR")}
 
                     </div>
 
                 </div>
 
+            </div>
 
-                <div class="actions">
+            <div class="actions">
 
-                    <button
-                        class="view"
-                        onclick="viewFile(
-                            '${encodeURIComponent(file.file_path)}',
-                            '${encodeURIComponent(file.file_type || "")}',
-                            '${encodeURIComponent(file.file_name)}'
-                        )">
+                <button class="view"
+                    onclick="viewFile(
+                    '${encodeURIComponent(file.file_path)}',
+                    '${encodeURIComponent(file.file_type || "")}',
+                    '${encodeURIComponent(file.file_name)}'
+                    )">
+                    👁️ Voir
+                </button>
 
-                        👁️ Voir
+                <button class="download"
+                    onclick="downloadFile(
+                    '${encodeURIComponent(file.file_path)}',
+                    '${encodeURIComponent(file.file_name)}'
+                    )">
+                    📥 Télécharger
+                </button>
 
-                    </button>
+                <button class="trash"
+                    onclick="moveToTrash('${file.id}')">
+                    🗑️ Supprimer
+                </button>
 
+            </div>
+        `;
 
-                    <button
-                        class="download"
-                        onclick="downloadFile(
-                            '${encodeURIComponent(file.file_path)}',
-                            '${encodeURIComponent(file.file_name)}'
-                        )">
-
-                        📥 Télécharger
-
-                    </button>
-
-
-                    <button
-                        class="trash"
-                        onclick="moveToTrash('${file.id}')">
-
-                        🗑️ Supprimer
-
-                    </button>
-
-                </div>
-
-            `;
-
-
-            list.appendChild(div);
-
-        }
-    );
-
+        list.appendChild(div);
+    });
 }
 
 
@@ -1681,27 +1273,15 @@ function displayFiles(files){
 
 function getIcon(file){
 
-    const type =
-    file.file_type || "";
+    const type=file.file_type || "";
 
-
-    if(type.startsWith("image/"))
-        return "🖼️";
-
-    if(type.startsWith("video/"))
-        return "🎥";
-
-    if(type.startsWith("audio/"))
-        return "🎵";
-
-    if(type==="application/pdf")
-        return "📕";
-
-    if(belongsTo(file,"document"))
-        return "📄";
+    if(type.startsWith("image/")) return "🖼️";
+    if(type.startsWith("video/")) return "🎥";
+    if(type.startsWith("audio/")) return "🎵";
+    if(type==="application/pdf") return "📕";
+    if(belongsTo(file,"document")) return "📄";
 
     return "📦";
-
 }
 
 
@@ -1709,227 +1289,143 @@ function getIcon(file){
 
 async function showTrash(){
 
-    const user =
-    await getUser();
+    const user=await getUser();
 
     if(!user) return;
-
 
     const {
         data,
         error
     } =
     await supabaseClient
-    .from("files")
-    .select("*")
-    .eq(
-        "user_id",
-        user.id
-    )
-    .not(
-        "deleted_at",
-        "is",
-        null
-    )
-    .order(
-        "deleted_at",
-        {ascending:false}
-    );
-
+        .from("files")
+        .select("*")
+        .eq("user_id",user.id)
+        .not("deleted_at","is",null)
+        .order("deleted_at",{ascending:false});
 
     if(error){
 
         alert(error.message);
-
         return;
-
     }
 
+    document.getElementById("pageTitle").textContent =
+        "🗑️ Corbeille";
 
-    document.getElementById(
-        "pageTitle"
-    ).textContent =
-    "🗑️ Corbeille";
+    document.getElementById("content").innerHTML=`
 
-
-    document.getElementById(
-        "content"
-    ).innerHTML = `
-
-        <button
-            class="back"
-            onclick="showHome()">
-
+        <button class="back" onclick="showHome()">
             ← Retour
-
         </button>
 
         <h2 class="section-title">
             🗑️ Fichiers supprimés
         </h2>
 
-        <div
-            id="fileList"
-            class="file-list">
-        </div>
-
+        <div id="fileList" class="file-list"></div>
     `;
 
-
-    displayTrash(
-        data || []
-    );
-
+    displayTrash(data || []);
 }
 
 
-/* DISPLAY TRASH */
-
 function displayTrash(files){
 
-    const list =
-    document.getElementById(
-        "fileList"
-    );
-
+    const list=document.getElementById("fileList");
 
     if(!files.length){
 
         list.innerHTML=`
-
             <div class="empty">
-
                 🗑️ La corbeille est vide.
-
             </div>
-
         `;
 
         return;
-
     }
 
+    list.innerHTML="";
 
-    files.forEach(
-        file=>{
+    files.forEach(file=>{
 
-            const div =
-            document.createElement(
-                "div"
-            );
+        const div=document.createElement("div");
 
-            div.className="file";
+        div.className="file";
 
+        div.innerHTML=`
 
-            div.innerHTML=`
+            <div class="file-info">
 
-                <div class="file-info">
+                <div class="file-icon">
+                    ${getIcon(file)}
+                </div>
 
-                    <div class="file-icon">
-                        ${getIcon(file)}
+                <div>
+
+                    <div class="file-name">
+                        ${escapeHtml(file.file_name)}
                     </div>
 
-                    <div>
-
-                        <div class="file-name">
-                            ${escapeHtml(
-                                file.file_name
-                            )}
-                        </div>
-
-                        <div class="file-details">
-
-                            Supprimé le
-                            ${new Date(
-                                file.deleted_at
-                            ).toLocaleString(
-                                "fr-FR"
-                            )}
-
-                        </div>
-
+                    <div class="file-details">
+                        Supprimé le
+                        ${new Date(file.deleted_at)
+                            .toLocaleString("fr-FR")}
                     </div>
 
                 </div>
 
+            </div>
 
-                <div class="actions">
+            <div class="actions">
 
-                    <button
-                        class="restore"
-                        onclick="restoreFile('${file.id}')">
+                <button class="restore"
+                    onclick="restoreFile('${file.id}')">
+                    ♻️ Restaurer
+                </button>
 
-                        ♻️ Restaurer
+                <button class="delete-permanent"
+                    onclick="deleteForever(
+                    '${file.id}',
+                    '${encodeURIComponent(file.file_path)}'
+                    )">
+                    ❌ Supprimer définitivement
+                </button>
 
-                    </button>
+            </div>
+        `;
 
-
-                    <button
-                        class="delete-permanent"
-                        onclick="deleteForever(
-                            '${file.id}',
-                            '${encodeURIComponent(file.file_path)}'
-                        )">
-
-                        ❌ Supprimer définitivement
-
-                    </button>
-
-                </div>
-
-            `;
-
-
-            list.appendChild(div);
-
-        }
-    );
-
+        list.appendChild(div);
+    });
 }
 
 
-/* MOVE TO TRASH */
+/* MOVE TRASH */
 
 async function moveToTrash(id){
 
     if(!confirm(
         "Voulez-vous déplacer ce fichier dans la corbeille ?"
-    ))
-    return;
+    )) return;
 
-
-    const {
-        error
-    } =
-    await supabaseClient
-    .from("files")
-    .update({
-        deleted_at:
-        new Date().toISOString()
-    })
-    .eq(
-        "id",
-        id
-    );
-
+    const {error} =
+        await supabaseClient
+        .from("files")
+        .update({
+            deleted_at:new Date().toISOString()
+        })
+        .eq("id",id);
 
     if(error){
 
         alert(error.message);
-
         return;
-
     }
 
-
-    document.getElementById(
-        "status"
-    ).textContent =
-    "🗑️ Fichier déplacé dans la corbeille.";
-
+    document.getElementById("status").textContent =
+        "🗑️ Fichier déplacé dans la corbeille.";
 
     await loadFiles();
-
 }
 
 
@@ -1939,325 +1435,164 @@ async function restoreFile(id){
 
     if(!confirm(
         "Voulez-vous restaurer ce fichier ?"
-    ))
-    return;
+    )) return;
 
-
-    const {
-        error
-    } =
-    await supabaseClient
-    .from("files")
-    .update({
-        deleted_at:null
-    })
-    .eq(
-        "id",
-        id
-    );
-
+    const {error} =
+        await supabaseClient
+        .from("files")
+        .update({deleted_at:null})
+        .eq("id",id);
 
     if(error){
 
         alert(error.message);
-
         return;
-
     }
 
-
-    document.getElementById(
-        "status"
-    ).textContent =
-    "♻️ Fichier restauré.";
-
+    document.getElementById("status").textContent =
+        "♻️ Fichier restauré.";
 
     await showTrash();
-
 }
 
 
 /* DELETE FOREVER */
 
-async function deleteForever(
-    id,
-    pathEncoded
-){
+async function deleteForever(id,pathEncoded){
 
     if(!confirm(
         "⚠️ Supprimer définitivement ce fichier ?"
-    ))
-    return;
+    )) return;
 
+    const path=decodeURIComponent(pathEncoded);
 
-    const path =
-    decodeURIComponent(
-        pathEncoded
-    );
-
-
-    const {
-        error:storageError
-    } =
-    await supabaseClient.storage
-    .from("zoto-files")
-    .remove([path]);
-
+    const {error:storageError} =
+        await supabaseClient.storage
+        .from("zoto-files")
+        .remove([path]);
 
     if(storageError){
 
-        alert(
-            storageError.message
-        );
-
+        alert(storageError.message);
         return;
-
     }
 
-
-    const {
-        error:dbError
-    } =
-    await supabaseClient
-    .from("files")
-    .delete()
-    .eq(
-        "id",
-        id
-    );
-
+    const {error:dbError} =
+        await supabaseClient
+        .from("files")
+        .delete()
+        .eq("id",id);
 
     if(dbError){
 
-        alert(
-            dbError.message
-        );
-
+        alert(dbError.message);
         return;
-
     }
 
-
-    document.getElementById(
-        "status"
-    ).textContent =
-    "❌ Fichier supprimé définitivement.";
-
+    document.getElementById("status").textContent =
+        "❌ Fichier supprimé définitivement.";
 
     await showTrash();
-
 }
 
 
 /* VIEW */
 
-async function viewFile(
-    pathEncoded,
-    typeEncoded,
-    nameEncoded
-){
+async function viewFile(pathEncoded,typeEncoded,nameEncoded){
 
-    const path =
-    decodeURIComponent(
-        pathEncoded
-    );
+    const path=decodeURIComponent(pathEncoded);
+    const type=decodeURIComponent(typeEncoded);
+    const name=decodeURIComponent(nameEncoded);
 
-    const type =
-    decodeURIComponent(
-        typeEncoded
-    );
-
-    const name =
-    decodeURIComponent(
-        nameEncoded
-    );
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient.storage
-    .from("zoto-files")
-    .createSignedUrl(
-        path,
-        3600
-    );
-
+    const {data,error} =
+        await supabaseClient.storage
+        .from("zoto-files")
+        .createSignedUrl(path,3600);
 
     if(error){
 
-        alert(
-            error.message
-        );
-
+        alert(error.message);
         return;
-
     }
 
+    const url=data.signedUrl;
 
-    const url =
-    data.signedUrl;
-
-
-    const content =
-    document.getElementById(
-        "previewContent"
-    );
-
+    const content=document.getElementById("previewContent");
 
     content.innerHTML="";
-
 
     if(type.startsWith("image/")){
 
         content.innerHTML=`
-
-            <h2>
-                ${escapeHtml(name)}
-            </h2>
-
+            <h2>${escapeHtml(name)}</h2>
             <br>
-
             <img src="${url}">
-
         `;
-
     }
 
     else if(type.startsWith("video/")){
 
         content.innerHTML=`
-
-            <h2>
-                ${escapeHtml(name)}
-            </h2>
-
+            <h2>${escapeHtml(name)}</h2>
             <br>
-
-            <video
-                src="${url}"
-                controls>
-            </video>
-
+            <video src="${url}" controls></video>
         `;
-
     }
 
     else if(type.startsWith("audio/")){
 
         content.innerHTML=`
-
-            <h2>
-                ${escapeHtml(name)}
-            </h2>
-
+            <h2>${escapeHtml(name)}</h2>
             <br>
-
-            <audio
-                src="${url}"
-                controls>
-            </audio>
-
+            <audio src="${url}" controls></audio>
         `;
-
     }
 
     else if(type==="application/pdf"){
 
         content.innerHTML=`
-
-            <h2>
-                ${escapeHtml(name)}
-            </h2>
-
+            <h2>${escapeHtml(name)}</h2>
             <br>
-
-            <iframe
-                src="${url}">
-            </iframe>
-
+            <iframe src="${url}"></iframe>
         `;
-
     }
 
     else{
 
         content.innerHTML=`
-
-            <h2>
-                📦 ${escapeHtml(name)}
-            </h2>
-
+            <h2>📦 ${escapeHtml(name)}</h2>
             <br>
-
-            <p>
-                Aperçu direct non disponible.
-            </p>
-
+            <p>Aperçu direct non disponible.</p>
         `;
-
     }
 
-
-    document.getElementById(
-        "preview"
-    ).style.display="flex";
-
+    document.getElementById("preview").style.display="flex";
 }
 
 
 /* DOWNLOAD */
 
-async function downloadFile(
-    pathEncoded,
-    nameEncoded
-){
+async function downloadFile(pathEncoded,nameEncoded){
 
-    const path =
-    decodeURIComponent(
-        pathEncoded
-    );
+    const path=decodeURIComponent(pathEncoded);
+    const name=decodeURIComponent(nameEncoded);
 
-    const name =
-    decodeURIComponent(
-        nameEncoded
-    );
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient.storage
-    .from("zoto-files")
-    .download(path);
-
+    const {data,error} =
+        await supabaseClient.storage
+        .from("zoto-files")
+        .download(path);
 
     if(error){
 
-        alert(
-            error.message
-        );
-
+        alert(error.message);
         return;
-
     }
 
+    const url=URL.createObjectURL(data);
 
-    const url =
-    URL.createObjectURL(
-        data
-    );
-
-
-    const a =
-    document.createElement(
-        "a"
-    );
+    const a=document.createElement("a");
 
     a.href=url;
-
     a.download=name;
 
     document.body.appendChild(a);
@@ -2267,7 +1602,6 @@ async function downloadFile(
     a.remove();
 
     URL.revokeObjectURL(url);
-
 }
 
 
@@ -2276,47 +1610,32 @@ async function downloadFile(
 function searchFiles(){
 
     const value =
-    document.getElementById(
-        "search"
-    ).value
-    .toLowerCase()
-    .trim();
-
+        document.getElementById("search")
+        .value
+        .toLowerCase()
+        .trim();
 
     if(!value){
 
         if(currentCategory)
-            openCategory(
-                currentCategory
-            );
+            openCategory(currentCategory);
         else
             showHome();
 
         return;
-
     }
 
-
     const results =
-    allFiles.filter(
-        file =>
-        file.file_name
-        .toLowerCase()
-        .includes(value)
-    );
+        allFiles.filter(file =>
+            file.file_name
+            .toLowerCase()
+            .includes(value)
+        );
 
+    document.getElementById("pageTitle").textContent =
+        "🔍 Résultats de recherche";
 
-    document.getElementById(
-        "pageTitle"
-    ).textContent =
-    "🔍 Résultats de recherche";
-
-
-    renderFiles(
-        results,
-        "🔍 Résultats"
-    );
-
+    renderFiles(results,"🔍 Résultats");
 }
 
 
@@ -2324,52 +1643,31 @@ function searchFiles(){
 
 function showSettings(){
 
-    document.getElementById(
-        "pageTitle"
-    ).textContent =
-    "⚙️ Paramètres";
+    document.getElementById("pageTitle").textContent =
+        "⚙️ Paramètres";
 
+    document.getElementById("content").innerHTML=`
 
-    document.getElementById(
-        "content"
-    ).innerHTML = `
-
-        <button
-            class="back"
-            onclick="showHome()">
-
+        <button class="back" onclick="showHome()">
             ← Retour
-
         </button>
 
         <div class="settings-panel">
 
             <div class="setting-group">
 
-                <h3>
-                    🌍 Langue
-                </h3>
+                <h3>🌍 Langue</h3>
 
-                <label>
-                    Choisir la langue
-                </label>
+                <label>Choisir la langue</label>
 
                 <select
                     id="languageSelect"
                     class="setting-select"
                     onchange="changeLanguage(this.value)">
 
-                    <option value="fr">
-                        Français
-                    </option>
-
-                    <option value="mg">
-                        Malagasy
-                    </option>
-
-                    <option value="en">
-                        English
-                    </option>
+                    <option value="fr">Français</option>
+                    <option value="mg">Malagasy</option>
+                    <option value="en">English</option>
 
                 </select>
 
@@ -2378,15 +1676,11 @@ function showSettings(){
 
             <div class="setting-group">
 
-                <h3>
-                    🔐 Mot de passe
-                </h3>
+                <h3>🔐 Mot de passe</h3>
 
-                <p style="color:#777;margin-bottom:12px">
-
-                    Ampiasao ity formulaire ity
-                    raha hanova ny mot de passe.
-
+                <p style="margin-bottom:12px">
+                    Ampiasao ity formulaire ity raha hanova
+                    ny mot de passe.
                 </p>
 
                 <input
@@ -2399,19 +1693,54 @@ function showSettings(){
                 <button
                     class="setting-button"
                     onclick="changePassword()">
-
                     🔐 Modifier le mot de passe
-
                 </button>
 
             </div>
 
 
+            <!-- MÉMOIRE -->
+
             <div class="setting-group">
 
-                <h3>
-                    🖼️ Fond d'écran
-                </h3>
+                <h3>🧠 Mémoire ZOTO CLOUD</h3>
+
+                <p style="margin-bottom:12px">
+                    ZOTO CLOUD dia afaka mitahiry
+                    préférence sasany ao amin'ity navigateur ity.
+                </p>
+
+                <label>
+                    ✍️ Soraty izay tianao hotehirizina
+                </label>
+
+                <textarea
+                    id="memoryInput"
+                    class="setting-input"
+                    rows="5"
+                    placeholder="Ohatra: Préférence de langue, affichage, etc.">
+                </textarea>
+
+                <button
+                    class="setting-button"
+                    onclick="saveMemory()">
+                    💾 Enregistrer la mémoire
+                </button>
+
+                <button
+                    class="setting-button danger-button"
+                    onclick="clearMemory()">
+                    🗑️ Effacer la mémoire
+                </button>
+
+            </div>
+
+
+            <!-- WALLPAPER -->
+
+            <div class="setting-group">
+
+                <h3>🖼️ Fond d'écran</h3>
 
                 <div
                     id="wallpaperPreview"
@@ -2428,33 +1757,77 @@ function showSettings(){
                 <button
                     class="setting-button danger-button"
                     onclick="removeWallpaper()">
-
                     Réinitialiser le fond
-
                 </button>
 
             </div>
 
         </div>
-
     `;
 
-
     const language =
-    localStorage.getItem(
-        "zoto_language_" +
-        currentUser.id
-    ) || "fr";
+        localStorage.getItem(
+            "zoto_language_" + currentUser.id
+        ) || "fr";
 
+    document.getElementById("languageSelect").value =
+        language;
 
-    document.getElementById(
-        "languageSelect"
-    ).value =
-    language;
-
+    loadMemory();
 
     showWallpaperPreview();
+}
 
+
+/* MEMORY */
+
+function memoryKey(){
+
+    return "zoto_memory_" + currentUser.id;
+}
+
+
+function saveMemory(){
+
+    const input=document.getElementById("memoryInput");
+
+    if(!input) return;
+
+    localStorage.setItem(
+        memoryKey(),
+        input.value
+    );
+
+    alert("✅ Mémoire enregistrée.");
+
+}
+
+
+function loadMemory(){
+
+    const input=document.getElementById("memoryInput");
+
+    if(!input) return;
+
+    input.value =
+        localStorage.getItem(memoryKey()) || "";
+}
+
+
+function clearMemory(){
+
+    if(!confirm(
+        "Voulez-vous effacer la mémoire ?"
+    )) return;
+
+    localStorage.removeItem(memoryKey());
+
+    const input=document.getElementById("memoryInput");
+
+    if(input)
+        input.value="";
+
+    alert("🗑️ Mémoire effacée.");
 }
 
 
@@ -2462,53 +1835,34 @@ function showSettings(){
 
 async function changePassword(){
 
-    const input =
-    document.getElementById(
-        "newPassword"
-    );
+    const input=document.getElementById("newPassword");
 
+    const password=input.value.trim();
 
-    const password =
-    input.value.trim();
-
-
-    if(password.length < 6){
+    if(password.length<6){
 
         alert(
             "Le mot de passe doit contenir au moins 6 caractères."
         );
 
         return;
-
     }
 
-
-    const {
-        error
-    } =
-    await supabaseClient.auth
-    .updateUser({
-        password
-    });
-
+    const {error} =
+        await supabaseClient.auth
+        .updateUser({password});
 
     if(error){
 
-        alert(
-            error.message
-        );
-
+        alert(error.message);
         return;
-
     }
-
 
     input.value="";
 
     alert(
         "✅ Mot de passe modifié avec succès."
     );
-
 }
 
 
@@ -2517,69 +1871,45 @@ async function changePassword(){
 function changeLanguage(language){
 
     localStorage.setItem(
-        "zoto_language_" +
-        currentUser.id,
+        "zoto_language_" + currentUser.id,
         language
     );
 
-
-    applyLanguage(
-        language
-    );
-
+    applyLanguage(language);
 }
 
 
 function applyLanguage(language){
 
     document.documentElement.lang =
-    language==="mg"
-        ? "mg"
-        : language;
-
+        language==="mg" ? "mg" : language;
 
     if(language==="mg"){
 
-        document.getElementById(
-            "pageTitle"
-        ).textContent =
-        "Tongasoa eto amin'ny ZOTO CLOUD 👋";
+        document.getElementById("pageTitle").textContent =
+            "Tongasoa eto amin'ny ZOTO CLOUD 👋";
 
-        document.querySelector(
-            ".welcome"
-        ).textContent =
-        "Ny toerana manokananao hitahirizana rakitra.";
-
+        document.querySelector(".welcome").textContent =
+            "Ny toerana manokananao hitahirizana rakitra.";
     }
 
     else if(language==="en"){
 
-        document.getElementById(
-            "pageTitle"
-        ).textContent =
-        "Welcome to ZOTO CLOUD 👋";
+        document.getElementById("pageTitle").textContent =
+            "Welcome to ZOTO CLOUD 👋";
 
-        document.querySelector(
-            ".welcome"
-        ).textContent =
-        "Your personal online storage space.";
-
+        document.querySelector(".welcome").textContent =
+            "Your personal online storage space.";
     }
 
     else{
 
-        document.getElementById(
-            "pageTitle"
-        ).textContent =
-        "Bienvenue sur ZOTO CLOUD 👋";
+        document.getElementById("pageTitle").textContent =
+            "Bienvenue sur ZOTO CLOUD 👋";
 
-        document.querySelector(
-            ".welcome"
-        ).textContent =
-        "Votre espace personnel de stockage en ligne.";
-
+        document.querySelector(".welcome").textContent =
+            "Votre espace personnel de stockage en ligne.";
     }
-
 }
 
 
@@ -2587,118 +1917,213 @@ function applyLanguage(language){
 
 function changeWallpaper(file){
 
-    if(!file)
-        return;
+    if(!file) return;
 
+    const reader=new FileReader();
 
-    const reader =
-    new FileReader();
+    reader.onload=function(event){
 
-
-    reader.onload =
-    function(event){
-
-        const image =
-        event.target.result;
-
+        const image=event.target.result;
 
         localStorage.setItem(
-            "zoto_wallpaper_" +
-            currentUser.id,
+            "zoto_wallpaper_" + currentUser.id,
             image
         );
 
-
-        applyWallpaper(
-            image
-        );
+        applyWallpaper(image);
 
         showWallpaperPreview();
-
     };
 
-
-    reader.readAsDataURL(
-        file
-    );
-
+    reader.readAsDataURL(file);
 }
 
 
+/*
+=================================================
+  COULEUR AUTOMATIQUE SELON LE FOND D'ÉCRAN
+=================================================
+*/
+
 function applyWallpaper(image){
 
-    if(image){
+    if(!image){
 
-        document.body.style.backgroundImage =
+        document.body.style.backgroundImage="";
+        setTextTheme(false);
+
+        return;
+    }
+
+    document.body.style.backgroundImage =
         `url("${image}")`;
 
-        document.body.style.backgroundSize =
-        "cover";
+    document.body.style.backgroundSize="cover";
+    document.body.style.backgroundAttachment="fixed";
+    document.body.style.backgroundPosition="center";
 
-        document.body.style.backgroundAttachment =
-        "fixed";
+    detectWallpaperBrightness(image);
+}
 
-        document.body.style.backgroundPosition =
-        "center";
 
+/*
+  Analyse automatique de la luminosité
+  de l'image.
+*/
+
+function detectWallpaperBrightness(image){
+
+    const img=new Image();
+
+    img.onload=function(){
+
+        const canvas=document.createElement("canvas");
+
+        const ctx=canvas.getContext("2d");
+
+        const width=100;
+        const height=100;
+
+        canvas.width=width;
+        canvas.height=height;
+
+        ctx.drawImage(img,0,0,width,height);
+
+        const data =
+            ctx.getImageData(
+                0,
+                0,
+                width,
+                height
+            ).data;
+
+        let total=0;
+        let count=0;
+
+        for(let i=0;i<data.length;i+=4){
+
+            const r=data[i];
+            const g=data[i+1];
+            const b=data[i+2];
+
+            const brightness =
+                (r*299 + g*587 + b*114) / 1000;
+
+            total += brightness;
+            count++;
+        }
+
+        const average=total/count;
+
+        /*
+          Image claire
+          → texte foncé
+
+          Image sombre
+          → texte blanc
+        */
+
+        if(average>145){
+
+            setTextTheme(false);
+
+        }else{
+
+            setTextTheme(true);
+
+        }
+    };
+
+    img.src=image;
+}
+
+
+/*
+  Applique la couleur à tout le site.
+*/
+
+function setTextTheme(darkBackground){
+
+    if(darkBackground){
+
+        document.documentElement.style.setProperty(
+            "--text-color",
+            "#ffffff"
+        );
+
+        document.documentElement.style.setProperty(
+            "--muted-color",
+            "#e5e7eb"
+        );
+
+        document.documentElement.style.setProperty(
+            "--card-bg",
+            "rgba(0,0,0,.72)"
+        );
+
+        document.documentElement.style.setProperty(
+            "--border-color",
+            "rgba(255,255,255,.20)"
+        );
+
+    }else{
+
+        document.documentElement.style.setProperty(
+            "--text-color",
+            "#222222"
+        );
+
+        document.documentElement.style.setProperty(
+            "--muted-color",
+            "#666666"
+        );
+
+        document.documentElement.style.setProperty(
+            "--card-bg",
+            "rgba(255,255,255,.94)"
+        );
+
+        document.documentElement.style.setProperty(
+            "--border-color",
+            "rgba(0,0,0,.12)"
+        );
     }
-    else{
-
-        document.body.style.backgroundImage =
-        "";
-
-    }
-
 }
 
 
 function showWallpaperPreview(){
 
     const image =
-    localStorage.getItem(
-        "zoto_wallpaper_" +
-        currentUser.id
-    );
+        localStorage.getItem(
+            "zoto_wallpaper_" + currentUser.id
+        );
 
-
-    applyWallpaper(
-        image
-    );
-
+    applyWallpaper(image);
 
     const preview =
-    document.getElementById(
-        "wallpaperPreview"
-    );
-
+        document.getElementById(
+            "wallpaperPreview"
+        );
 
     if(preview){
 
         preview.style.backgroundImage =
-        image
-        ? `url("${image}")`
-        : "";
-
+            image
+            ? `url("${image}")`
+            : "";
     }
-
 }
 
 
 function removeWallpaper(){
 
     localStorage.removeItem(
-        "zoto_wallpaper_" +
-        currentUser.id
+        "zoto_wallpaper_" + currentUser.id
     );
 
-
-    applyWallpaper(
-        null
-    );
-
+    applyWallpaper(null);
 
     showWallpaperPreview();
-
 }
 
 
@@ -2710,34 +2135,25 @@ function closePreview(){
         "preview"
     ).style.display="none";
 
-
     document.getElementById(
         "previewContent"
     ).innerHTML="";
-
 }
 
 
-/* FORMAT SIZE */
+/* FORMAT */
 
 function formatSize(bytes){
 
     if(!bytes)
         return "0 B";
 
-
     const units=[
-        "B",
-        "KB",
-        "MB",
-        "GB"
+        "B","KB","MB","GB"
     ];
 
-
     let size=bytes;
-
     let i=0;
-
 
     while(
         size>=1024 &&
@@ -2745,16 +2161,12 @@ function formatSize(bytes){
     ){
 
         size/=1024;
-
         i++;
-
     }
 
-
-    return size.toFixed(2)
-    + " "
-    + units[i];
-
+    return size.toFixed(2) +
+        " " +
+        units[i];
 }
 
 
@@ -2762,17 +2174,11 @@ function formatSize(bytes){
 
 function escapeHtml(text){
 
-    const div =
-    document.createElement(
-        "div"
-    );
+    const div=document.createElement("div");
 
-    div.textContent =
-    text || "";
-
+    div.textContent=text || "";
 
     return div.innerHTML;
-
 }
 
 
@@ -2781,13 +2187,10 @@ function escapeHtml(text){
 async function logout(){
 
     await supabaseClient
-    .auth
-    .signOut();
+        .auth
+        .signOut();
 
-
-    window.location.href =
-    "/auth.html";
-
+    window.location.href="/auth.html";
 }
 
 
@@ -2795,9 +2198,7 @@ async function logout(){
 
 async function startApp(){
 
-    const user =
-    await getUser();
-
+    const user=await getUser();
 
     if(user){
 
@@ -2806,52 +2207,36 @@ async function startApp(){
         showWallpaperPreview();
 
         await loadFiles();
-
     }
-
 }
-
 
 startApp();
 
 
 /* PWA */
 
-if(
-    "serviceWorker"
-    in navigator
-){
+if("serviceWorker" in navigator){
 
-    window.addEventListener(
-        "load",
-        ()=>{
-            navigator
-            .serviceWorker
-            .register(
-                "/service-worker.js"
-            )
-            .then(
-                ()=>{
-                    console.log(
-                        "ZOTO CLOUD PWA activée"
-                    );
-                }
-            )
-            .catch(
-                error=>{
-                    console.error(
-                        "PWA erreur:",
-                        error
-                    );
-                }
+    window.addEventListener("load",()=>{
+
+        navigator.serviceWorker
+        .register("/service-worker.js")
+        .then(()=>{
+            console.log(
+                "ZOTO CLOUD PWA activée"
             );
-        }
-    );
-
+        })
+        .catch(error=>{
+            console.error(
+                "PWA erreur:",
+                error
+            );
+        });
+    });
 }
 
 </script>
 
 </body>
-
 </html>
+```
