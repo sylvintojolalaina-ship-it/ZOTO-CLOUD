@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -59,6 +60,7 @@ h1,h2,h3,p,strong,label{
     color:var(--text-color);
 }
 
+
 /* =========================
    AFFICHAGE FICHIERS
 ========================= */
@@ -86,6 +88,7 @@ h1,h2,h3,p,strong,label{
     font-size:14px;
 }
 
+
 /* LISTE */
 
 .file-list.list-view{
@@ -93,6 +96,7 @@ h1,h2,h3,p,strong,label{
     grid-template-columns:1fr;
     gap:12px;
 }
+
 
 /* GRILLE */
 
@@ -122,11 +126,16 @@ h1,h2,h3,p,strong,label{
     font-size:45px;
 }
 
-/* BOUTON ... */
+
+/* =========================
+   BOUTON ...
+========================= */
 
 .file-menu-button{
     border:none;
+
     background:rgba(100,116,139,.12);
+
     color:var(--text-color);
 
     width:42px;
@@ -139,22 +148,34 @@ h1,h2,h3,p,strong,label{
     font-size:24px;
 
     flex-shrink:0;
+
+    transition:.2s;
 }
 
 .file-menu-button:hover{
     background:rgba(37,99,235,.15);
 }
 
-/* MENU ACTION */
+.file-menu-button:active{
+    transform:scale(.95);
+}
+
+
+/* =========================
+   MENU CONTEXTUEL
+========================= */
 
 .file-context-menu{
+
     display:none;
 
     position:fixed;
 
     z-index:100000;
 
-    min-width:200px;
+    min-width:210px;
+
+    max-width:calc(100vw - 20px);
 
     background:var(--card-bg);
 
@@ -169,9 +190,13 @@ h1,h2,h3,p,strong,label{
     box-shadow:
         0 10px 35px
         rgba(0,0,0,.22);
+
+    backdrop-filter:blur(12px);
+
 }
 
 .file-context-menu button{
+
     width:100%;
 
     border:none;
@@ -189,27 +214,30 @@ h1,h2,h3,p,strong,label{
     cursor:pointer;
 
     font-size:14px;
+
+    transition:.2s;
+
 }
 
 .file-context-menu button:hover{
-    background:rgba(37,99,235,.12);
+
+    background:
+        rgba(37,99,235,.12);
+
+}
+
+.file-context-menu button:active{
+
+    transform:scale(.98);
+
 }
 
 .file-context-menu .danger{
+
     color:#dc2626;
-}
-
-@media(max-width:700px){
-
-    .view-options{
-        align-items:stretch;
-    }
-
-    .view-select{
-        width:100%;
-    }
 
 }
+
 
 /* =========================
    HEADER
@@ -217,21 +245,29 @@ h1,h2,h3,p,strong,label{
 
 header{
     height:70px;
+
     background:var(--card-bg);
+
     color:var(--text-color);
 
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
 
     padding:0 25px;
 
-    border-bottom:1px solid var(--border-color);
+    border-bottom:
+        1px solid
+        var(--border-color);
 
     gap:15px;
 
     position:sticky;
+
     top:0;
+
     z-index:100;
 
     backdrop-filter:blur(10px);
@@ -239,7 +275,9 @@ header{
 
 .logo{
     font-size:23px;
+
     font-weight:bold;
+
     white-space:nowrap;
 }
 
@@ -248,20 +286,25 @@ header{
 
     padding:12px 18px;
 
-    border:1px solid var(--border-color);
+    border:
+        1px solid
+        var(--border-color);
 
     border-radius:25px;
 
     outline:none;
 
-    background:rgba(255,255,255,.9);
+    background:
+        rgba(255,255,255,.9);
 
     color:#222;
 }
 
 .user-area{
     display:flex;
+
     align-items:center;
+
     gap:8px;
 }
 
@@ -307,6 +350,7 @@ header{
     cursor:pointer;
 }
 
+
 /* =========================
    NOTIFICATION
 ========================= */
@@ -317,11 +361,13 @@ header{
     position:fixed;
 
     top:20px;
+
     right:20px;
 
     width:350px;
 
-    max-width:calc(100% - 40px);
+    max-width:
+        calc(100% - 40px);
 
     background:white;
 
@@ -332,11 +378,14 @@ header{
     padding:17px;
 
     box-shadow:
-        0 8px 30px rgba(0,0,0,.20);
+        0 8px 30px
+        rgba(0,0,0,.20);
 
     z-index:99999;
 
-    border-left:5px solid #2563eb;
+    border-left:
+        5px solid
+        #2563eb;
 
     animation:
         notificationIn
@@ -392,7 +441,9 @@ header{
         opacity:1;
         transform:translateY(0);
     }
+
 }
+
 
 /* =========================
    LAYOUT
@@ -415,7 +466,8 @@ aside{
     padding:20px 15px;
 
     border-right:
-        1px solid var(--border-color);
+        1px solid
+        var(--border-color);
 
     flex-shrink:0;
 
@@ -445,7 +497,8 @@ aside button{
 }
 
 aside button:hover{
-    background:rgba(37,99,235,.12);
+    background:
+        rgba(37,99,235,.12);
 }
 
 .upload{
@@ -460,7 +513,8 @@ aside button:hover{
     margin-top:15px;
 
     border-top:
-        1px solid var(--border-color)
+        1px solid
+        var(--border-color)
         !important;
 
     padding-top:18px !important;
@@ -475,7 +529,9 @@ main{
 }
 
 .welcome{
-    color:var(--muted-color) !important;
+    color:
+        var(--muted-color)
+        !important;
 
     margin:
         8px 0
@@ -494,13 +550,13 @@ main{
     margin-bottom:20px;
 
     box-shadow:
-        0 2px 8px rgba(0,0,0,.08);
+        0 2px 8px
+        rgba(0,0,0,.08);
 }
+
 
 /* =========================
    STORAGE
-   UTILISÉ UNIQUEMENT
-   DANS PARAMÈTRES
 ========================= */
 
 .storage-box{
@@ -515,7 +571,8 @@ main{
     margin-bottom:25px;
 
     box-shadow:
-        0 3px 12px rgba(0,0,0,.08);
+        0 3px 12px
+        rgba(0,0,0,.08);
 }
 
 .storage-header{
@@ -569,6 +626,7 @@ main{
     margin-bottom:15px;
 }
 
+
 /* =========================
    CATEGORIES
 ========================= */
@@ -596,7 +654,8 @@ main{
     cursor:pointer;
 
     box-shadow:
-        0 3px 12px rgba(0,0,0,.08);
+        0 3px 12px
+        rgba(0,0,0,.08);
 
     transition:.2s;
 }
@@ -621,6 +680,7 @@ main{
         var(--muted-color)
         !important;
 }
+
 
 /* =========================
    FILES
@@ -650,7 +710,28 @@ main{
     gap:15px;
 
     box-shadow:
-        0 2px 8px rgba(0,0,0,.08);
+        0 2px 8px
+        rgba(0,0,0,.08);
+
+    cursor:pointer;
+
+    user-select:none;
+
+    -webkit-user-select:none;
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease;
+}
+
+.file:hover{
+    box-shadow:
+        0 4px 14px
+        rgba(0,0,0,.12);
+}
+
+.file:active{
+    transform:scale(.995);
 }
 
 .file-info{
@@ -665,6 +746,8 @@ main{
 
 .file-icon{
     font-size:35px;
+
+    flex-shrink:0;
 }
 
 .file-name{
@@ -682,6 +765,12 @@ main{
 
     margin-top:5px;
 }
+
+
+/* =========================
+   ANCIENS ACTIONS
+   CONSERVES POUR CORBEILLE
+========================= */
 
 .actions{
     display:flex;
@@ -723,6 +812,11 @@ main{
     background:#dc2626;
 }
 
+
+/* =========================
+   BACK
+========================= */
+
 .back{
     border:none;
 
@@ -750,6 +844,7 @@ main{
 
     text-align:center;
 }
+
 
 /* =========================
    PREVIEW
@@ -798,6 +893,7 @@ main{
     position:absolute;
 
     right:15px;
+
     top:10px;
 
     border:none;
@@ -809,6 +905,7 @@ main{
     font-size:18px;
 
     width:38px;
+
     height:38px;
 
     border-radius:50%;
@@ -848,6 +945,7 @@ main{
     border:none;
 }
 
+
 /* =========================
    SETTINGS
 ========================= */
@@ -864,7 +962,8 @@ main{
     border-radius:15px;
 
     box-shadow:
-        0 3px 12px rgba(0,0,0,.08);
+        0 3px 12px
+        rgba(0,0,0,.08);
 }
 
 .setting-group{
@@ -873,7 +972,8 @@ main{
     padding-bottom:20px;
 
     border-bottom:
-        1px solid var(--border-color);
+        1px solid
+        var(--border-color);
 }
 
 .setting-group:last-child{
@@ -905,7 +1005,8 @@ main{
     padding:12px;
 
     border:
-        1px solid var(--border-color);
+        1px solid
+        var(--border-color);
 
     border-radius:8px;
 
@@ -949,8 +1050,10 @@ main{
     margin:10px 0;
 
     border:
-        1px solid var(--border-color);
+        1px solid
+        var(--border-color);
 }
+
 
 /* =========================
    MOBILE
@@ -966,7 +1069,9 @@ main{
     .search{
         width:250px;
     }
+
 }
+
 
 @media(max-width:700px){
 
@@ -1040,16 +1145,12 @@ main{
     }
 
     .file{
-        flex-direction:column;
+        flex-direction:row;
 
-        align-items:flex-start;
+        align-items:center;
     }
 
-    .actions{
-        width:100%;
-    }
-
-    .actions button{
+    .file-info{
         flex:1;
     }
 
@@ -1069,7 +1170,13 @@ main{
         width:
             calc(100% - 20px);
     }
+
+    .file-context-menu{
+        min-width:200px;
+    }
+
 }
+
 
 @media(max-width:430px){
 
@@ -1086,13 +1193,31 @@ main{
 
         font-size:12px;
     }
+
+}
+
+
+/* =========================
+   TOUCH
+========================= */
+
+@media(hover:none){
+
+    .file:hover{
+        box-shadow:
+            0 2px 8px
+            rgba(0,0,0,.08);
+    }
+
 }
 
 </style>
 
 </head>
 
+
 <body>
+
 
 <!-- =========================
      HEADER
@@ -1108,9 +1233,11 @@ main{
 
     </button>
 
+
     <div class="logo">
         ☁️ ZOTO CLOUD
     </div>
+
 
     <input
         id="search"
@@ -1119,6 +1246,7 @@ main{
         placeholder="🔍 Rechercher un fichier..."
         oninput="searchFiles()"
     >
+
 
     <div class="user-area">
 
@@ -1129,6 +1257,7 @@ main{
             👤 Chargement...
 
         </span>
+
 
         <button
             class="logout"
@@ -1141,6 +1270,39 @@ main{
     </div>
 
 </header>
+
+
+<!-- =========================
+     MENU ACTION FICHIER
+========================= -->
+
+<div
+    id="fileContextMenu"
+    class="file-context-menu">
+
+    <button id="fileMenuView">
+
+        👁️ Voir
+
+    </button>
+
+
+    <button id="fileMenuDownload">
+
+        📥 Télécharger
+
+    </button>
+
+
+    <button
+        id="fileMenuDelete"
+        class="danger">
+
+        🗑️ Supprimer
+
+    </button>
+
+</div>
 
 
 <!-- =========================
@@ -1157,6 +1319,7 @@ main{
             📢 Notification ZOTO CLOUD
         </div>
 
+
         <button
             class="notification-close"
             onclick="closeNotification()">
@@ -1166,6 +1329,7 @@ main{
         </button>
 
     </div>
+
 
     <div id="notificationText">
         Notification...
@@ -1180,15 +1344,22 @@ main{
 
 <div class="container">
 
+
 <aside id="sidebar">
+
 
     <button
         class="upload"
-        onclick="document.getElementById('fileInput').click()">
+        onclick="
+            document
+            .getElementById('fileInput')
+            .click()
+        ">
 
         📤 Téléverser fichiers
 
     </button>
+
 
     <input
         type="file"
@@ -1200,11 +1371,16 @@ main{
 
 
     <button
-        onclick="document.getElementById('folderInput').click()">
+        onclick="
+            document
+            .getElementById('folderInput')
+            .click()
+        ">
 
         📁 Téléverser un dossier
 
     </button>
+
 
     <input
         type="file"
@@ -1218,36 +1394,60 @@ main{
 
 
     <button onclick="showHome()">
+
         📁 Mes fichiers
+
     </button>
+
 
     <button onclick="openCategory('image')">
+
         🖼️ Images
+
     </button>
+
 
     <button onclick="openCategory('video')">
+
         🎥 Vidéos
+
     </button>
+
 
     <button onclick="openCategory('document')">
+
         📄 Documents
+
     </button>
+
 
     <button onclick="openCategory('pdf')">
+
         📕 PDF
+
     </button>
+
 
     <button onclick="openCategory('audio')">
+
         🎵 Audio
+
     </button>
+
 
     <button onclick="openCategory('other')">
+
         📦 Autres fichiers
+
     </button>
 
+
     <button onclick="showTrash()">
+
         🗑️ Corbeille
+
     </button>
+
 
     <button
         class="settings-btn"
@@ -1267,12 +1467,18 @@ main{
 <main>
 
     <h1 id="pageTitle">
+
         Bienvenue sur ZOTO CLOUD 👋
+
     </h1>
 
+
     <p class="welcome">
+
         Votre espace personnel de stockage en ligne.
+
     </p>
+
 
     <div
         id="status"
@@ -1282,12 +1488,6 @@ main{
 
     </div>
 
-    <!--
-        IMPORTANT :
-        Aucun stockage ici.
-        Le stockage est uniquement
-        dans Paramètres.
-    -->
 
     <div id="content"></div>
 
@@ -1314,6 +1514,7 @@ main{
 
         </button>
 
+
         <div id="previewContent"></div>
 
     </div>
@@ -1323,6 +1524,7 @@ main{
 
 <script>
 
+
 /* =========================
    SUPABASE
 ========================= */
@@ -1330,8 +1532,10 @@ main{
 const SUPABASE_URL =
 "https://sbsixeaxhbvxezoylong.supabase.co";
 
+
 const SUPABASE_PUBLISHABLE_KEY =
 "sb_publishable__ZUPst8S6Vnl0U6jFhuUCw_g8bvahh6";
+
 
 const supabaseClient =
 window.supabase.createClient(
@@ -1408,11 +1612,12 @@ async function getUser(){
 
 
     return currentUser;
+
 }
 
 
 /* =========================
-   MENU
+   MENU MOBILE
 ========================= */
 
 function toggleMenu(){
@@ -1421,11 +1626,12 @@ function toggleMenu(){
         .getElementById("sidebar")
         .classList
         .toggle("mobile-open");
+
 }
 
 
 /* =========================
-   UPLOAD MULTIPLE
+   UPLOAD
 ========================= */
 
 async function uploadFiles(
@@ -1439,6 +1645,7 @@ async function uploadFiles(
     ){
 
         return;
+
     }
 
 
@@ -1532,6 +1739,7 @@ async function uploadFiles(
             failed++;
 
             continue;
+
         }
 
 
@@ -1571,6 +1779,7 @@ async function uploadFiles(
             failed++;
 
             continue;
+
         }
 
 
@@ -1648,6 +1857,7 @@ async function loadFiles(){
             error.message;
 
         return;
+
     }
 
 
@@ -1660,11 +1870,12 @@ async function loadFiles(){
 
 
     showHome();
+
 }
 
 
 /* =========================
-   STORAGE CALCULS
+   STORAGE
 ========================= */
 
 function getUsedStorage(){
@@ -1680,6 +1891,7 @@ function getUsedStorage(){
             ),
         0
     );
+
 }
 
 
@@ -1690,6 +1902,7 @@ function getFreeStorage(){
         getUsedStorage(),
         0
     );
+
 }
 
 
@@ -1702,13 +1915,9 @@ function getStoragePercentage(){
         ) * 100,
         100
     );
+
 }
 
-
-/* =========================
-   STORAGE
-   ONLY SETTINGS
-========================= */
 
 function storageSettingsHTML(){
 
@@ -1729,8 +1938,11 @@ function storageSettingsHTML(){
         <div class="setting-group">
 
             <h3 class="settings-storage-title">
+
                 💾 Stockage ZOTO CLOUD
+
             </h3>
+
 
             <div class="storage-box">
 
@@ -1741,9 +1953,11 @@ function storageSettingsHTML(){
                     </strong>
 
                     <strong>
+
                         ${formatSize(used)}
                         /
                         ${formatSize(TOTAL_STORAGE)}
+
                     </strong>
 
                 </div>
@@ -1764,26 +1978,32 @@ function storageSettingsHTML(){
                 <div class="storage-details">
 
                     <span>
+
                         Utilisé :
                         <strong>
                             ${formatSize(used)}
                         </strong>
+
                     </span>
 
 
                     <span>
+
                         Libre :
                         <strong>
                             ${formatSize(free)}
                         </strong>
+
                     </span>
 
 
                     <span>
+
                         Total :
                         <strong>
                             ${formatSize(TOTAL_STORAGE)}
                         </strong>
+
                     </span>
 
                 </div>
@@ -1793,6 +2013,7 @@ function storageSettingsHTML(){
         </div>
 
     `;
+
 }
 
 
@@ -1817,8 +2038,11 @@ function showHome(){
     ).innerHTML = `
 
         <h2 class="section-title">
+
             📁 Mes fichiers
+
         </h2>
+
 
         <div class="categories">
 
@@ -1861,6 +2085,7 @@ function showHome(){
         </div>
 
     `;
+
 }
 
 
@@ -1877,21 +2102,30 @@ function categoryCard(
             onclick="openCategory('${category}')">
 
             <div class="category-icon">
+
                 ${icon}
+
             </div>
 
+
             <h3>
+
                 ${title}
+
             </h3>
 
+
             <p>
+
                 ${countCategory(category)}
                 fichiers
+
             </p>
 
         </div>
 
     `;
+
 }
 
 
@@ -1904,6 +2138,7 @@ function countCategory(category){
                 category
             )
     ).length;
+
 }
 
 
@@ -1970,6 +2205,7 @@ function openCategory(category){
         currentFiles,
         title
     );
+
 }
 
 
@@ -1991,24 +2227,28 @@ function belongsTo(
 
 
     if(category === "image")
+
         return type.startsWith(
             "image/"
         );
 
 
     if(category === "video")
+
         return type.startsWith(
             "video/"
         );
 
 
     if(category === "audio")
+
         return type.startsWith(
             "audio/"
         );
 
 
     if(category === "pdf")
+
         return type ===
             "application/pdf";
 
@@ -2039,6 +2279,7 @@ function belongsTo(
                 .test(name)
 
         );
+
     }
 
 
@@ -2072,15 +2313,17 @@ function belongsTo(
             )
 
         );
+
     }
 
 
     return false;
+
 }
 
 
 /* =========================
-   RENDER
+   RENDER FILES
 ========================= */
 
 function renderFiles(
@@ -2100,9 +2343,37 @@ function renderFiles(
 
         </button>
 
-        <h2 class="section-title">
-            ${title}
-        </h2>
+
+        <div class="view-options">
+
+            <h2 class="section-title">
+
+                ${title}
+
+            </h2>
+
+
+            <select
+                id="viewModeSelect"
+                class="view-select"
+                onchange="changeViewMode(this.value)">
+
+                <option value="list">
+
+                    ☰ Liste
+
+                </option>
+
+                <option value="grid">
+
+                    ▦ Grille
+
+                </option>
+
+            </select>
+
+        </div>
+
 
         <div
             id="fileList"
@@ -2114,7 +2385,292 @@ function renderFiles(
 
 
     displayFiles(files);
+
 }
+
+
+/* =========================
+   MODE AFFICHAGE
+========================= */
+
+function getViewModeKey(){
+
+    return currentUser
+
+        ? "zoto_view_mode_" +
+          currentUser.id
+
+        : "zoto_view_mode";
+
+}
+
+
+function getViewMode(){
+
+    return localStorage.getItem(
+        getViewModeKey()
+    ) || "list";
+
+}
+
+
+function changeViewMode(mode){
+
+    if(
+        mode !== "list" &&
+        mode !== "grid"
+    ){
+
+        mode = "list";
+
+    }
+
+
+    localStorage.setItem(
+        getViewModeKey(),
+        mode
+    );
+
+
+    const list =
+        document.getElementById(
+            "fileList"
+        );
+
+
+    if(!list) return;
+
+
+    list.classList.remove(
+        "list-view",
+        "grid-view"
+    );
+
+
+    list.classList.add(
+        mode + "-view"
+    );
+
+}
+
+
+/* =========================
+   MENU FICHIER
+========================= */
+
+function openFileMenu(
+    file,
+    x = null,
+    y = null
+){
+
+    const menu =
+        document.getElementById(
+            "fileContextMenu"
+        );
+
+
+    if(!menu) return;
+
+
+    /* =========================
+       VOIR
+    ========================= */
+
+    document.getElementById(
+        "fileMenuView"
+    ).onclick = function(){
+
+        closeFileMenu();
+
+
+        viewFile(
+            encodeURIComponent(
+                file.file_path
+            ),
+            encodeURIComponent(
+                file.file_type || ""
+            ),
+            encodeURIComponent(
+                file.file_name
+            )
+        );
+
+    };
+
+
+    /* =========================
+       TELECHARGER
+    ========================= */
+
+    document.getElementById(
+        "fileMenuDownload"
+    ).onclick = function(){
+
+        closeFileMenu();
+
+
+        downloadFile(
+            encodeURIComponent(
+                file.file_path
+            ),
+            encodeURIComponent(
+                file.file_name
+            )
+        );
+
+    };
+
+
+    /* =========================
+       SUPPRIMER
+    ========================= */
+
+    document.getElementById(
+        "fileMenuDelete"
+    ).onclick = function(){
+
+        closeFileMenu();
+
+
+        moveToTrash(
+            file.id
+        );
+
+    };
+
+
+    menu.style.display =
+        "block";
+
+
+    /*
+       Position
+    */
+
+    let posX =
+        x === null
+            ? 20
+            : x;
+
+
+    let posY =
+        y === null
+            ? 20
+            : y;
+
+
+    const menuWidth =
+        210;
+
+
+    const menuHeight =
+        175;
+
+
+    if(
+        posX +
+        menuWidth >
+        window.innerWidth
+    ){
+
+        posX =
+            window.innerWidth -
+            menuWidth -
+            10;
+
+    }
+
+
+    if(
+        posY +
+        menuHeight >
+        window.innerHeight
+    ){
+
+        posY =
+            window.innerHeight -
+            menuHeight -
+            10;
+
+    }
+
+
+    menu.style.left =
+        Math.max(
+            10,
+            posX
+        ) + "px";
+
+
+    menu.style.top =
+        Math.max(
+            10,
+            posY
+        ) + "px";
+
+}
+
+
+/* =========================
+   FERMER MENU
+========================= */
+
+function closeFileMenu(){
+
+    const menu =
+        document.getElementById(
+            "fileContextMenu"
+        );
+
+
+    if(menu){
+
+        menu.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================
+   CLICK AILLEURS
+========================= */
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const menu =
+            document.getElementById(
+                "fileContextMenu"
+            );
+
+
+        if(!menu) return;
+
+
+        if(
+
+            !menu.contains(
+                event.target
+            )
+
+            &&
+
+            !event.target.closest(
+                ".file-menu-button"
+            )
+
+        ){
+
+            closeFileMenu();
+
+        }
+
+    }
+);
 
 
 /* =========================
@@ -2137,16 +2693,42 @@ function displayFiles(files){
         list.innerHTML = `
 
             <div class="empty">
+
                 📂 Aucun fichier.
+
             </div>
 
         `;
 
         return;
+
     }
 
 
     list.innerHTML = "";
+
+
+    const mode =
+        getViewMode();
+
+
+    list.classList.add(
+        mode + "-view"
+    );
+
+
+    const selector =
+        document.getElementById(
+            "viewModeSelect"
+        );
+
+
+    if(selector){
+
+        selector.value =
+            mode;
+
+    }
 
 
     files.forEach(
@@ -2167,16 +2749,22 @@ function displayFiles(files){
                 <div class="file-info">
 
                     <div class="file-icon">
+
                         ${getIcon(file)}
+
                     </div>
+
 
                     <div>
 
                         <div class="file-name">
+
                             ${escapeHtml(
                                 file.file_name
                             )}
+
                         </div>
+
 
                         <div class="file-details">
 
@@ -2188,8 +2776,7 @@ function displayFiles(files){
 
                             ${new Date(
                                 file.created_at
-                            )
-                            .toLocaleString(
+                            ).toLocaleString(
                                 "fr-FR"
                             )}
 
@@ -2200,62 +2787,221 @@ function displayFiles(files){
                 </div>
 
 
-                <div class="actions">
+                <button
+                    class="file-menu-button"
+                    title="Actions"
+                    aria-label="Actions">
 
-                    <button
-                        class="view"
-                        onclick="viewFile(
-                            '${encodeURIComponent(
-                                file.file_path
-                            )}',
-                            '${encodeURIComponent(
-                                file.file_type || ""
-                            )}',
-                            '${encodeURIComponent(
-                                file.file_name
-                            )}'
-                        )">
+                    ⋮
 
-                        👁️ Voir
-
-                    </button>
-
-
-                    <button
-                        class="download"
-                        onclick="downloadFile(
-                            '${encodeURIComponent(
-                                file.file_path
-                            )}',
-                            '${encodeURIComponent(
-                                file.file_name
-                            )}'
-                        )">
-
-                        📥 Télécharger
-
-                    </button>
-
-
-                    <button
-                        class="trash"
-                        onclick="moveToTrash(
-                            '${file.id}'
-                        )">
-
-                        🗑️ Supprimer
-
-                    </button>
-
-                </div>
+                </button>
 
             `;
 
 
-            list.appendChild(div);
+            const menuButton =
+                div.querySelector(
+                    ".file-menu-button"
+                );
+
+
+            /* =========================
+               BOUTON ⋮
+            ========================= */
+
+            menuButton.addEventListener(
+                "click",
+                function(event){
+
+                    event.stopPropagation();
+
+
+                    const rect =
+                        menuButton
+                        .getBoundingClientRect();
+
+
+                    openFileMenu(
+                        file,
+                        rect.left,
+                        rect.bottom + 5
+                    );
+
+                }
+            );
+
+
+            /* =========================
+               CLICK DROIT
+            ========================= */
+
+            div.addEventListener(
+                "contextmenu",
+                function(event){
+
+                    event.preventDefault();
+
+
+                    openFileMenu(
+                        file,
+                        event.clientX,
+                        event.clientY
+                    );
+
+                }
+            );
+
+
+            /* =========================
+               DOUBLE CLICK
+            ========================= */
+
+            div.addEventListener(
+                "dblclick",
+                function(event){
+
+                    event.preventDefault();
+
+
+                    openFileMenu(
+                        file,
+                        event.clientX || 20,
+                        event.clientY || 20
+                    );
+
+                }
+            );
+
+
+            /* =========================
+               MAINTENIR ANDROID
+            ========================= */
+
+            let longPressTimer =
+                null;
+
+
+            let touchStartX =
+                0;
+
+
+            let touchStartY =
+                0;
+
+
+            div.addEventListener(
+                "touchstart",
+                function(event){
+
+                    const touch =
+                        event.touches[0];
+
+
+                    touchStartX =
+                        touch.clientX;
+
+
+                    touchStartY =
+                        touch.clientY;
+
+
+                    longPressTimer =
+                        setTimeout(
+                            function(){
+
+                                openFileMenu(
+                                    file,
+                                    touchStartX,
+                                    touchStartY
+                                );
+
+                            },
+                            600
+                        );
+
+                },
+                {
+                    passive:true
+                }
+            );
+
+
+            div.addEventListener(
+                "touchend",
+                function(){
+
+                    clearTimeout(
+                        longPressTimer
+                    );
+
+                }
+            );
+
+
+            div.addEventListener(
+                "touchcancel",
+                function(){
+
+                    clearTimeout(
+                        longPressTimer
+                    );
+
+                }
+            );
+
+
+            div.addEventListener(
+                "touchmove",
+                function(event){
+
+                    const touch =
+                        event.touches[0];
+
+
+                    const distance =
+                        Math.sqrt(
+
+                            Math.pow(
+                                touch.clientX -
+                                touchStartX,
+                                2
+                            )
+
+                            +
+
+                            Math.pow(
+                                touch.clientY -
+                                touchStartY,
+                                2
+                            )
+
+                        );
+
+
+                    if(
+                        distance > 10
+                    ){
+
+                        clearTimeout(
+                            longPressTimer
+                        );
+
+                    }
+
+                },
+                {
+                    passive:true
+                }
+            );
+
+
+            list.appendChild(
+                div
+            );
 
         }
     );
+
 }
 
 
@@ -2269,31 +3015,53 @@ function getIcon(file){
         file.file_type || "";
 
 
-    if(type.startsWith("image/"))
+    if(
+        type.startsWith(
+            "image/"
+        )
+    )
+
         return "🖼️";
 
 
-    if(type.startsWith("video/"))
+    if(
+        type.startsWith(
+            "video/"
+        )
+    )
+
         return "🎥";
 
 
-    if(type.startsWith("audio/"))
+    if(
+        type.startsWith(
+            "audio/"
+        )
+    )
+
         return "🎵";
 
 
-    if(type === "application/pdf")
+    if(
+        type ===
+        "application/pdf"
+    )
+
         return "📕";
 
 
-    if(belongsTo(
-        file,
-        "document"
-    ))
+    if(
+        belongsTo(
+            file,
+            "document"
+        )
+    )
 
         return "📄";
 
 
     return "📦";
+
 }
 
 
@@ -2341,6 +3109,7 @@ async function showTrash(){
         );
 
         return;
+
     }
 
 
@@ -2362,13 +3131,18 @@ async function showTrash(){
 
         </button>
 
+
         <h2 class="section-title">
+
             🗑️ Fichiers supprimés
+
         </h2>
+
 
         <div
             id="fileList"
             class="file-list">
+
         </div>
 
     `;
@@ -2377,8 +3151,13 @@ async function showTrash(){
     displayTrash(
         data || []
     );
+
 }
 
+
+/* =========================
+   DISPLAY TRASH
+========================= */
 
 function displayTrash(files){
 
@@ -2396,12 +3175,15 @@ function displayTrash(files){
         list.innerHTML = `
 
             <div class="empty">
+
                 🗑️ La corbeille est vide.
+
             </div>
 
         `;
 
         return;
+
     }
 
 
@@ -2426,16 +3208,22 @@ function displayTrash(files){
                 <div class="file-info">
 
                     <div class="file-icon">
+
                         ${getIcon(file)}
+
                     </div>
+
 
                     <div>
 
                         <div class="file-name">
+
                             ${escapeHtml(
                                 file.file_name
                             )}
+
                         </div>
+
 
                         <div class="file-details">
 
@@ -2443,8 +3231,7 @@ function displayTrash(files){
 
                             ${new Date(
                                 file.deleted_at
-                            )
-                            .toLocaleString(
+                            ).toLocaleString(
                                 "fr-FR"
                             )}
 
@@ -2459,9 +3246,11 @@ function displayTrash(files){
 
                     <button
                         class="restore"
-                        onclick="restoreFile(
-                            '${file.id}'
-                        )">
+                        onclick="
+                            restoreFile(
+                                '${file.id}'
+                            )
+                        ">
 
                         ♻️ Restaurer
 
@@ -2470,12 +3259,14 @@ function displayTrash(files){
 
                     <button
                         class="delete-permanent"
-                        onclick="deleteForever(
-                            '${file.id}',
-                            '${encodeURIComponent(
-                                file.file_path
-                            )}'
-                        )">
+                        onclick="
+                            deleteForever(
+                                '${file.id}',
+                                '${encodeURIComponent(
+                                    file.file_path
+                                )}'
+                            )
+                        ">
 
                         ❌ Supprimer définitivement
 
@@ -2486,10 +3277,13 @@ function displayTrash(files){
             `;
 
 
-            list.appendChild(div);
+            list.appendChild(
+                div
+            );
 
         }
     );
+
 }
 
 
@@ -2528,6 +3322,7 @@ async function moveToTrash(id){
         );
 
         return;
+
     }
 
 
@@ -2538,6 +3333,7 @@ async function moveToTrash(id){
 
 
     await loadFiles();
+
 }
 
 
@@ -2575,6 +3371,7 @@ async function restoreFile(id){
         );
 
         return;
+
     }
 
 
@@ -2585,6 +3382,7 @@ async function restoreFile(id){
 
 
     await showTrash();
+
 }
 
 
@@ -2628,6 +3426,7 @@ async function deleteForever(
         );
 
         return;
+
     }
 
 
@@ -2650,6 +3449,7 @@ async function deleteForever(
         );
 
         return;
+
     }
 
 
@@ -2660,6 +3460,7 @@ async function deleteForever(
 
 
     await showTrash();
+
 }
 
 
@@ -2711,6 +3512,7 @@ async function viewFile(
         );
 
         return;
+
     }
 
 
@@ -2727,32 +3529,49 @@ async function viewFile(
     content.innerHTML = "";
 
 
-    if(type.startsWith("image/")){
+    if(
+        type.startsWith(
+            "image/"
+        )
+    ){
 
         content.innerHTML = `
 
             <h2>
+
                 ${escapeHtml(name)}
+
             </h2>
 
+
             <br>
+
 
             <img
                 src="${url}"
                 alt="${escapeHtml(name)}">
 
         `;
+
     }
 
-    else if(type.startsWith("video/")){
+    else if(
+        type.startsWith(
+            "video/"
+        )
+    ){
 
         content.innerHTML = `
 
             <h2>
+
                 ${escapeHtml(name)}
+
             </h2>
 
+
             <br>
+
 
             <video
                 src="${url}"
@@ -2760,17 +3579,26 @@ async function viewFile(
             </video>
 
         `;
+
     }
 
-    else if(type.startsWith("audio/")){
+    else if(
+        type.startsWith(
+            "audio/"
+        )
+    ){
 
         content.innerHTML = `
 
             <h2>
+
                 ${escapeHtml(name)}
+
             </h2>
 
+
             <br>
+
 
             <audio
                 src="${url}"
@@ -2778,25 +3606,32 @@ async function viewFile(
             </audio>
 
         `;
+
     }
 
     else if(
-        type === "application/pdf"
+        type ===
+        "application/pdf"
     ){
 
         content.innerHTML = `
 
             <h2>
+
                 ${escapeHtml(name)}
+
             </h2>
 
+
             <br>
+
 
             <iframe
                 src="${url}">
             </iframe>
 
         `;
+
     }
 
     else{
@@ -2804,17 +3639,24 @@ async function viewFile(
         content.innerHTML = `
 
             <h2>
+
                 📦
                 ${escapeHtml(name)}
+
             </h2>
+
 
             <br>
 
+
             <p>
+
                 Aperçu direct non disponible.
+
             </p>
 
         `;
+
     }
 
 
@@ -2822,6 +3664,7 @@ async function viewFile(
         "preview"
     ).style.display =
         "flex";
+
 }
 
 
@@ -2865,6 +3708,7 @@ async function downloadFile(
         );
 
         return;
+
     }
 
 
@@ -2902,6 +3746,7 @@ async function downloadFile(
     URL.revokeObjectURL(
         url
     );
+
 }
 
 
@@ -2939,6 +3784,7 @@ function searchFiles(){
             showHome();
 
         return;
+
     }
 
 
@@ -2965,6 +3811,7 @@ function searchFiles(){
         results,
         "🔍 Résultats"
     );
+
 }
 
 
@@ -2995,6 +3842,7 @@ function showSettings(){
 
         <div class="settings-panel">
 
+
             ${storageSettingsHTML()}
 
 
@@ -3003,12 +3851,18 @@ function showSettings(){
             <div class="setting-group">
 
                 <h3>
+
                     🌍 Langue
+
                 </h3>
 
+
                 <label>
+
                     Choisir la langue
+
                 </label>
+
 
                 <select
                     id="languageSelect"
@@ -3016,15 +3870,23 @@ function showSettings(){
                     onchange="changeLanguage(this.value)">
 
                     <option value="fr">
+
                         Français
+
                     </option>
+
 
                     <option value="mg">
+
                         Malagasy
+
                     </option>
 
+
                     <option value="en">
+
                         English
+
                     </option>
 
                 </select>
@@ -3037,8 +3899,11 @@ function showSettings(){
             <div class="setting-group">
 
                 <h3>
+
                     🔐 Mot de passe
+
                 </h3>
+
 
                 <p
                     style="margin-bottom:12px">
@@ -3073,7 +3938,9 @@ function showSettings(){
             <div class="setting-group">
 
                 <h3>
+
                     🖼️ Fond d'écran
+
                 </h3>
 
 
@@ -3088,7 +3955,11 @@ function showSettings(){
                     class="setting-input"
                     type="file"
                     accept="image/*"
-                    onchange="changeWallpaper(this.files[0])">
+                    onchange="
+                        changeWallpaper(
+                            this.files[0]
+                        )
+                    ">
 
 
                 <button
@@ -3121,6 +3992,7 @@ function showSettings(){
 
 
     showWallpaperPreview();
+
 }
 
 
@@ -3150,6 +4022,7 @@ async function changePassword(){
         );
 
         return;
+
     }
 
 
@@ -3171,6 +4044,7 @@ async function changePassword(){
         );
 
         return;
+
     }
 
 
@@ -3180,6 +4054,7 @@ async function changePassword(){
     alert(
         "✅ Mot de passe modifié avec succès."
     );
+
 }
 
 
@@ -3201,6 +4076,7 @@ function changeLanguage(
     applyLanguage(
         language
     );
+
 }
 
 
@@ -3238,6 +4114,7 @@ function applyLanguage(
 
             welcome.textContent =
                 "Ny toerana manokananao hitahirizana rakitra.";
+
     }
 
     else if(language === "en"){
@@ -3252,6 +4129,7 @@ function applyLanguage(
 
             welcome.textContent =
                 "Your personal online storage space.";
+
     }
 
     else{
@@ -3266,7 +4144,9 @@ function applyLanguage(
 
             welcome.textContent =
                 "Votre espace personnel de stockage en ligne.";
+
     }
+
 }
 
 
@@ -3312,6 +4192,7 @@ function changeWallpaper(
     reader.readAsDataURL(
         file
     );
+
 }
 
 
@@ -3328,11 +4209,14 @@ function applyWallpaper(
         document.body.style
             .backgroundImage = "";
 
+
         setTextTheme(
             false
         );
 
+
         return;
+
     }
 
 
@@ -3359,6 +4243,7 @@ function applyWallpaper(
     detectWallpaperBrightness(
         image
     );
+
 }
 
 
@@ -3479,11 +4364,13 @@ function detectWallpaperBrightness(
                 setTextTheme(
                     true
                 );
+
         };
 
 
     img.src =
         image;
+
 }
 
 
@@ -3562,7 +4449,9 @@ function setTextTheme(
                 "--border-color",
                 "rgba(0,0,0,.12)"
             );
+
     }
+
 }
 
 
@@ -3606,6 +4495,7 @@ function showWallpaperPreview(){
                 : "";
 
     }
+
 }
 
 
@@ -3627,6 +4517,7 @@ function removeWallpaper(){
 
 
     showWallpaperPreview();
+
 }
 
 
@@ -3674,6 +4565,7 @@ async function loadNotifications(){
         );
 
         return;
+
     }
 
 
@@ -3733,7 +4625,9 @@ async function loadNotifications(){
             "READ NOTIFICATION ERROR:",
             updateError
         );
+
     }
+
 }
 
 
@@ -3749,6 +4643,7 @@ function closeNotification(){
 
         popup.style.display =
             "none";
+
 }
 
 
@@ -3768,6 +4663,7 @@ function closePreview(){
         "previewContent"
     ).innerHTML =
         "";
+
 }
 
 
@@ -3807,6 +4703,7 @@ function formatSize(bytes){
             1024;
 
         i++;
+
     }
 
 
@@ -3815,6 +4712,7 @@ function formatSize(bytes){
         " " +
         units[i]
     );
+
 }
 
 
@@ -3837,6 +4735,7 @@ function escapeHtml(
 
 
     return div.innerHTML;
+
 }
 
 
@@ -3853,6 +4752,7 @@ async function logout(){
 
     window.location.href =
         "/auth.html";
+
 }
 
 
@@ -3891,6 +4791,7 @@ async function startApp(){
         loadNotifications,
         10000
     );
+
 }
 
 
@@ -3932,9 +4833,47 @@ if(
 
                     }
                 );
+
         }
     );
+
 }
+
+
+/* =========================
+   FERMER MENU AVEC ESC
+========================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key ===
+            "Escape"
+        ){
+
+            closeFileMenu();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   FERMER MENU AU SCROLL
+========================= */
+
+window.addEventListener(
+    "scroll",
+    function(){
+
+        closeFileMenu();
+
+    },
+    true
+);
 
 </script>
 
