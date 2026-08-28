@@ -1054,6 +1054,34 @@ main{
         var(--border-color);
 }
 
+/* =========================
+   ACCÈS RAPIDE
+========================= */
+
+.quick-access-title{
+    font-size:18px;
+    font-weight:bold;
+    padding:5px 13px 15px;
+    color:var(--text-color);
+}
+
+.quick-access-separator{
+    height:1px;
+    background:var(--border-color);
+    margin:8px 5px 12px;
+}
+
+aside button{
+    transition:
+        background .2s ease,
+        transform .15s ease;
+}
+
+aside button:hover{
+    background:rgba(37,99,235,.12);
+    transform:translateX(3px);
+}
+
 
 /* =========================
    MOBILE
@@ -1348,18 +1376,17 @@ main{
 <aside id="sidebar">
 
 
+   <aside id="sidebar">
+
+    <div class="quick-access-title">
+        ⚡ Accès rapide
+    </div>
+
     <button
         class="upload"
-        onclick="
-            document
-            .getElementById('fileInput')
-            .click()
-        ">
-
+        onclick="document.getElementById('fileInput').click()">
         📤 Téléverser fichiers
-
     </button>
-
 
     <input
         type="file"
@@ -1369,18 +1396,10 @@ main{
         onchange="uploadFiles(this.files)"
     >
 
-
     <button
-        onclick="
-            document
-            .getElementById('folderInput')
-            .click()
-        ">
-
+        onclick="document.getElementById('folderInput').click()">
         📁 Téléverser un dossier
-
     </button>
-
 
     <input
         type="file"
@@ -1392,70 +1411,47 @@ main{
         onchange="uploadFiles(this.files,true)"
     >
 
+    <div class="quick-access-separator"></div>
 
     <button onclick="showHome()">
-
-        📁 Mes fichiers
-
+        🏠 Bureau
     </button>
 
-
-    <button onclick="openCategory('image')">
-
+    <button onclick="openQuickCategory('image')">
         🖼️ Images
-
     </button>
 
-
-    <button onclick="openCategory('video')">
-
+    <button onclick="openQuickCategory('video')">
         🎥 Vidéos
-
     </button>
 
-
-    <button onclick="openCategory('document')">
-
+    <button onclick="openQuickCategory('document')">
         📄 Documents
-
     </button>
 
-
-    <button onclick="openCategory('pdf')">
-
+    <button onclick="openQuickCategory('pdf')">
         📕 PDF
-
     </button>
 
-
-    <button onclick="openCategory('audio')">
-
+    <button onclick="openQuickCategory('audio')">
         🎵 Audio
-
     </button>
 
-
-    <button onclick="openCategory('other')">
-
+    <button onclick="openQuickCategory('other')">
         📦 Autres fichiers
-
     </button>
-
 
     <button onclick="showTrash()">
-
         🗑️ Corbeille
-
     </button>
-
 
     <button
         class="settings-btn"
         onclick="showSettings()">
-
         ⚙️ Paramètres
-
     </button>
+
+</aside>
 
 </aside>
 
@@ -2204,6 +2200,100 @@ function openCategory(category){
     renderFiles(
         currentFiles,
         title
+    );
+
+}
+
+/* =========================
+   ACCÈS RAPIDE
+   ANDROID = NOUVEL ONGLET
+   ORDINATEUR = PAGE NORMALE
+========================= */
+
+function openQuickCategory(category){
+
+    /*
+       Raha ordinateur:
+       misokatra ao amin'ilay dashboard ihany.
+    */
+
+    if(window.innerWidth > 700){
+
+        openCategory(category);
+
+        return;
+
+    }
+
+
+    /*
+       Raha Android / mobile:
+       mamorona URL vaovao miaraka
+       amin'ilay catégorie.
+    */
+
+    const url =
+        window.location.pathname +
+        "?category=" +
+        encodeURIComponent(category);
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+}
+
+
+/* =========================
+   OUVRIR CATÉGORIE DEPUIS URL
+========================= */
+
+function openCategoryFromUrl(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const category =
+        params.get("category");
+
+
+    if(!category)
+        return;
+
+
+    const allowed = [
+        "image",
+        "video",
+        "document",
+        "pdf",
+        "audio",
+        "other"
+    ];
+
+
+    if(
+        !allowed.includes(category)
+    )
+        return;
+
+
+    /*
+       Miandry kely mba ho vita
+       ny chargement des fichiers.
+    */
+
+    setTimeout(
+        function(){
+
+            openCategory(category);
+
+        },
+        300
     );
 
 }
@@ -4774,6 +4864,7 @@ async function startApp(){
 
 
     await loadFiles();
+    openCategoryFromUrl();
 
 
     applyLanguage(
