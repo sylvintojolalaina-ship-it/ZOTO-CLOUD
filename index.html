@@ -1135,19 +1135,19 @@ aside button:hover{
         flex-direction:column;
     }
 
-    aside{
-        display:none;
+ aside{
+    display:block;
 
-        width:100%;
+    width:100%;
 
-        border-right:none;
+    border-right:none;
 
-        border-bottom:
-            1px solid
-            var(--border-color);
+    border-bottom:
+        1px solid
+        var(--border-color);
 
-        padding:12px;
-    }
+    padding:12px;
+}
 
     aside.mobile-open{
         display:block;
@@ -1220,6 +1220,31 @@ aside button:hover{
         padding:8px 10px;
 
         font-size:12px;
+    }
+
+}
+
+/* =========================
+   MOBILE
+   UPLOAD FOANA NO HITA
+========================= */
+
+@media(max-width:700px){
+
+    aside{
+        display:block;
+    }
+
+    .quick-menu{
+        display:none;
+    }
+
+    aside.mobile-open .quick-menu{
+        display:block;
+    }
+
+    .folder-upload{
+        display:block;
     }
 
 }
@@ -1376,11 +1401,11 @@ aside button:hover{
 <aside id="sidebar">
 
 
-   <aside id="sidebar">
-
     <div class="quick-access-title">
         ⚡ Accès rapide
     </div>
+
+    <aside id="sidebar">
 
     <button
         class="upload"
@@ -1397,6 +1422,7 @@ aside button:hover{
     >
 
     <button
+        class="folder-upload"
         onclick="document.getElementById('folderInput').click()">
         📁 Téléverser un dossier
     </button>
@@ -1411,47 +1437,51 @@ aside button:hover{
         onchange="uploadFiles(this.files,true)"
     >
 
-    <div class="quick-access-separator"></div>
+    <div class="quick-menu">
 
-    <button onclick="showHome()">
-        🏠 Bureau
-    </button>
+        <div class="quick-access-title">
+            ⚡ Accès rapide
+        </div>
 
-    <button onclick="openQuickCategory('image')">
-        🖼️ Images
-    </button>
+        <button onclick="showHome()">
+            🏠 Bureau
+        </button>
 
-    <button onclick="openQuickCategory('video')">
-        🎥 Vidéos
-    </button>
+        <button onclick="openQuickCategory('image')">
+            🖼️ Images
+        </button>
 
-    <button onclick="openQuickCategory('document')">
-        📄 Documents
-    </button>
+        <button onclick="openQuickCategory('video')">
+            🎥 Vidéos
+        </button>
 
-    <button onclick="openQuickCategory('pdf')">
-        📕 PDF
-    </button>
+        <button onclick="openQuickCategory('document')">
+            📄 Documents
+        </button>
 
-    <button onclick="openQuickCategory('audio')">
-        🎵 Audio
-    </button>
+        <button onclick="openQuickCategory('pdf')">
+            📕 PDF
+        </button>
 
-    <button onclick="openQuickCategory('other')">
-        📦 Autres fichiers
-    </button>
+        <button onclick="openQuickCategory('audio')">
+            🎵 Audio
+        </button>
 
-    <button onclick="showTrash()">
-        🗑️ Corbeille
-    </button>
+        <button onclick="openQuickCategory('other')">
+            📦 Autres fichiers
+        </button>
 
-    <button
-        class="settings-btn"
-        onclick="showSettings()">
-        ⚙️ Paramètres
-    </button>
+        <button onclick="showTrash()">
+            🗑️ Corbeille
+        </button>
 
-</aside>
+        <button
+            class="settings-btn"
+            onclick="showSettings()">
+            ⚙️ Paramètres
+        </button>
+
+    </div>
 
 </aside>
 
