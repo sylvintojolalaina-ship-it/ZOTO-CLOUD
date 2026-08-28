@@ -1174,6 +1174,26 @@ main{
         min-width:200px;
     }
 
+    /* PHONE : Téléverser ihany no aseho */
+#sidebar > button:not(.upload):not(.folder-upload){
+    display:none;
+}
+
+/* Afenina amin'ny téléphone */
+#pageTitle,
+.welcome{
+    display:none;
+}
+
+/* Sidebar miseho */
+aside{
+    display:block;
+    width:100%;
+    border-right:none;
+    border-bottom:1px solid var(--border-color);
+    padding:12px;
+}
+
 }
 
 
@@ -1369,16 +1389,9 @@ main{
     >
 
 
-    <button
-        onclick="
-            document
-            .getElementById('folderInput')
-            .click()
-        ">
-
-        📁 Téléverser un dossier
-
-    </button>
+    <button class="folder-upload" onclick="document.getElementById('folderInput').click()">
+    📁 Téléverser un dossier
+</button>
 
 
     <input
