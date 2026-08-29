@@ -1719,10 +1719,25 @@ async function getUser(){
 
 function toggleMenu(){
 
-    document
-        .getElementById("sidebar")
-        .classList
-        .toggle("mobile-open");
+    const sidebar =
+        document.getElementById("sidebar");
+
+    sidebar.classList.toggle("mobile-open");
+
+}
+
+function closeMobileMenu(){
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    if(sidebar){
+
+        sidebar.classList.remove(
+            "mobile-open"
+        );
+
+    }
 
 }
 
@@ -2120,6 +2135,8 @@ function storageSettingsHTML(){
 
 function showHome(){
 
+    closeMobileMenu();
+
     currentCategory =
         null;
 
@@ -2244,6 +2261,8 @@ function countCategory(category){
 ========================= */
 
 function openCategory(category){
+
+    closeMobileMenu();
 
     currentCategory =
         category;
@@ -4226,6 +4245,8 @@ function getIcon(file){
 
 async function showTrash(){
 
+    closeMobileMenu();
+
     const user =
         await getUser();
 
@@ -4975,6 +4996,8 @@ function searchFiles(){
 ========================= */
 
 function showSettings(){
+
+    closeMobileMenu();
 
     document.getElementById(
         "pageTitle"
