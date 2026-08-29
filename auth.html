@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>ZOTO CLOUD - Connexion</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -87,6 +94,21 @@
             margin-bottom: 15px;
         }
 
+        .location.loading {
+            color: #6b7280;
+            background: #f3f4f6;
+        }
+
+        .location.success {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .location.warning {
+            color: #92400e;
+            background: #fef3c7;
+        }
+
         .button {
             width: 100%;
             border: none;
@@ -112,6 +134,11 @@
             opacity: .9;
         }
 
+        .button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
         .switch {
             text-align: center;
             margin-top: 20px;
@@ -134,13 +161,13 @@
             font-size: 14px;
         }
 
-        .success {
+        .success-message {
             display: block;
             background: #dcfce7;
             color: #166534;
         }
 
-        .error {
+        .error-message {
             display: block;
             background: #fee2e2;
             color: #b91c1c;
@@ -150,14 +177,13 @@
             display: none;
         }
 
-        .loading {
-            opacity: .6;
-            pointer-events: none;
-        }
     </style>
+
 </head>
 
+
 <body>
+
 
 <div class="container">
 
@@ -169,7 +195,11 @@
         Votre espace personnel de stockage
     </div>
 
-    <div id="message" class="message"></div>
+
+    <div
+        id="message"
+        class="message"
+    ></div>
 
 
     <!-- =========================
@@ -178,7 +208,10 @@
 
     <div id="loginSection">
 
-        <h2>Connexion</h2>
+        <h2>
+            Connexion
+        </h2>
+
 
         <form id="loginForm">
 
@@ -228,6 +261,7 @@
             Pas encore de compte ?
 
             <button
+                type="button"
                 onclick="showRegister()"
             >
                 Créer un compte
@@ -247,7 +281,9 @@
         class="hidden"
     >
 
-        <h2>Créer un compte</h2>
+        <h2>
+            Créer un compte
+        </h2>
 
 
         <form id="registerForm">
@@ -318,7 +354,7 @@
 
             <div
                 id="locationStatus"
-                class="location"
+                class="location loading"
             >
                 🌍 Détection automatique du pays et de la ville...
             </div>
@@ -340,6 +376,7 @@
             Déjà un compte ?
 
             <button
+                type="button"
                 onclick="showLogin()"
             >
                 Se connecter
@@ -354,33 +391,29 @@
 
 <script>
 
+/* ==========================================
+   VARIABLES
+========================================== */
+
 let supabaseClient = null;
 
-
-/* =====================================
-   VARIABLES LOCATION
-===================================== */
-
 let detectedCountry = "";
+
 let detectedCity = "";
 
+let locationDetected = false;
 
-/* =====================================
+
+/* ==========================================
    MESSAGE
-===================================== */
+========================================== */
 
-function showMessage(
-    text,
-    type
-) {
+function showMessage(text, type) {
 
     const message =
-        document.getElementById(
-            "message"
-        );
+        document.getElementById("message");
 
-    message.textContent =
-        text;
+    message.textContent = text;
 
     message.className =
         "message " + type;
@@ -388,77 +421,66 @@ function showMessage(
 }
 
 
-/* =====================================
-   AFFICHER CONNEXION
-===================================== */
+/* ==========================================
+   LOGIN / REGISTER
+========================================== */
 
 function showLogin() {
 
     document
-        .getElementById(
-            "loginSection"
-        )
+        .getElementById("loginSection")
         .classList
         .remove("hidden");
 
-
     document
-        .getElementById(
-            "registerSection"
-        )
+        .getElementById("registerSection")
         .classList
         .add("hidden");
 
-
     document
-        .getElementById(
-            "message"
-        )
+        .getElementById("message")
         .className =
         "message";
 
 }
 
 
-/* =====================================
-   AFFICHER INSCRIPTION
-===================================== */
-
 function showRegister() {
 
     document
-        .getElementById(
-            "loginSection"
-        )
+        .getElementById("loginSection")
         .classList
         .add("hidden");
 
-
     document
-        .getElementById(
-            "registerSection"
-        )
+        .getElementById("registerSection")
         .classList
         .remove("hidden");
-
 
     detectLocation();
 
 }
 
 
-/* =====================================
-   CONFIG SUPABASE
-===================================== */
+/* ==========================================
+   SUPABASE
+========================================== */
 
 async function initSupabase() {
 
     try {
 
         const response =
-            await fetch(
-                "/api/config"
+            await fetch("/api/config");
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Impossible de récupérer la configuration Supabase."
             );
+
+        }
 
 
         const config =
@@ -484,15 +506,22 @@ async function initSupabase() {
             );
 
 
+        console.log(
+            "Supabase connecté."
+        );
+
+
     } catch (error) {
 
         console.error(
+            "SUPABASE ERROR:",
             error
         );
 
+
         showMessage(
             error.message,
-            "error"
+            "error-message"
         );
 
     }
@@ -500,9 +529,9 @@ async function initSupabase() {
 }
 
 
-/* =====================================
-   DETECTION PAYS + VILLE
-===================================== */
+/* ==========================================
+   DETECTION LOCATION
+========================================== */
 
 async function detectLocation() {
 
@@ -512,22 +541,51 @@ async function detectLocation() {
         );
 
 
+    detectedCountry = "";
+
+    detectedCity = "";
+
+    locationDetected = false;
+
+
+    status.className =
+        "location loading";
+
+
     status.textContent =
         "🌍 Détection automatique du pays et de la ville...";
 
 
     try {
 
+        const controller =
+            new AbortController();
+
+
+        const timeout =
+            setTimeout(
+                () => controller.abort(),
+                7000
+            );
+
+
         const response =
             await fetch(
-                "https://ipapi.co/json/"
+                "https://ipapi.co/json/",
+                {
+                    signal:
+                        controller.signal
+                }
             );
+
+
+        clearTimeout(timeout);
 
 
         if (!response.ok) {
 
             throw new Error(
-                "Impossible de détecter la localisation."
+                "Service de localisation indisponible."
             );
 
         }
@@ -538,65 +596,109 @@ async function detectLocation() {
 
 
         detectedCountry =
-            data.country_name ||
-            "";
+            typeof data.country_name === "string"
+                ? data.country_name.trim()
+                : "";
 
 
         detectedCity =
-            data.city ||
-            "";
+            typeof data.city === "string"
+                ? data.city.trim()
+                : "";
 
+
+        /*
+         * Raha nahazo pays sy ville
+         */
 
         if (
-            detectedCountry ||
+            detectedCountry &&
             detectedCity
         ) {
 
-            status.textContent =
-                `🌍 Pays : ${
-                    detectedCountry ||
-                    "Inconnu"
-                } | 🏙️ Ville : ${
-                    detectedCity ||
-                    "Inconnue"
-                }`;
+            locationDetected = true;
 
-        } else {
+
+            status.className =
+                "location success";
+
 
             status.textContent =
-                "🌍 Localisation non disponible.";
+                `🌍 Pays : ${detectedCountry} | 🏙️ Ville : ${detectedCity}`;
+
+
+            console.log(
+                "LOCATION:",
+                detectedCountry,
+                detectedCity
+            );
+
+
+            return;
 
         }
+
+
+        /*
+         * Raha pays ihany no azo
+         */
+
+        if (detectedCountry) {
+
+            locationDetected = true;
+
+
+            status.className =
+                "location success";
+
+
+            status.textContent =
+                `🌍 Pays détecté : ${detectedCountry} | 🏙️ Ville non disponible`;
+
+
+            return;
+
+        }
+
+
+        throw new Error(
+            "Localisation vide."
+        );
 
 
     } catch (error) {
 
         console.warn(
-            "Location error:",
+            "LOCATION ERROR:",
             error
         );
 
 
         detectedCountry = "";
+
         detectedCity = "";
+
+        locationDetected = false;
+
+
+        status.className =
+            "location warning";
 
 
         status.textContent =
-            "🌍 Localisation non disponible. Vous pourrez continuer l'inscription.";
+            "⚠️ Localisation automatique indisponible. Vous pouvez continuer l'inscription.";
 
     }
 
 }
 
 
-/* =====================================
+/* ==========================================
    INSCRIPTION
-===================================== */
+========================================== */
 
 document
-    .getElementById(
-        "registerForm"
-    )
+    .getElementById("registerForm")
     .addEventListener(
         "submit",
         async function(event) {
@@ -608,44 +710,37 @@ document
 
                 showMessage(
                     "Supabase n'est pas prêt.",
-                    "error"
+                    "error-message"
                 );
 
                 return;
+
             }
 
 
             const fullName =
                 document
-                    .getElementById(
-                        "fullName"
-                    )
+                    .getElementById("fullName")
                     .value
                     .trim();
 
 
             const email =
                 document
-                    .getElementById(
-                        "registerEmail"
-                    )
+                    .getElementById("registerEmail")
                     .value
                     .trim();
 
 
             const password =
                 document
-                    .getElementById(
-                        "registerPassword"
-                    )
+                    .getElementById("registerPassword")
                     .value;
 
 
             const confirmPassword =
                 document
-                    .getElementById(
-                        "confirmPassword"
-                    )
+                    .getElementById("confirmPassword")
                     .value;
 
 
@@ -656,10 +751,25 @@ document
 
                 showMessage(
                     "Les mots de passe ne correspondent pas.",
-                    "error"
+                    "error-message"
                 );
 
                 return;
+
+            }
+
+
+            if (
+                password.length < 6
+            ) {
+
+                showMessage(
+                    "Le mot de passe doit contenir au moins 6 caractères.",
+                    "error-message"
+                );
+
+                return;
+
             }
 
 
@@ -669,8 +779,7 @@ document
                 );
 
 
-            button.disabled =
-                true;
+            button.disabled = true;
 
             button.textContent =
                 "Création du compte...";
@@ -679,8 +788,37 @@ document
             try {
 
                 /*
-                 * On met aussi country/city
-                 * dans les metadata Supabase.
+                 * Raha mbola tsy vita ny
+                 * détection dia manandrana
+                 * indray mandeha.
+                 */
+
+                if (
+                    !locationDetected
+                ) {
+
+                    await detectLocation();
+
+                }
+
+
+                console.log(
+                    "Inscription avec localisation:",
+                    {
+                        country:
+                            detectedCountry,
+
+                        city:
+                            detectedCity
+                    }
+                );
+
+
+                /*
+                 * Création Supabase Auth
+                 *
+                 * country/city dia alefa
+                 * ao amin'ny metadata.
                  */
 
                 const {
@@ -725,73 +863,23 @@ document
 
 
                 /*
-                 * Si Supabase retourne
-                 * directement un utilisateur,
-                 * on tente de compléter
-                 * le profil.
+                 * Tsy manao INSERT ao profiles
+                 * eto.
+                 *
+                 * Ny trigger Supabase no
+                 * mamorona profiles.
                  */
 
-                if (
-                    data &&
+
+                console.log(
+                    "USER CREATED:",
                     data.user
-                ) {
-
-                    const userId =
-                        data.user.id;
-
-
-                    const {
-                        error:
-                        profileError
-                    } =
-                        await supabaseClient
-                            .from(
-                                "profiles"
-                            )
-                            .update({
-
-                                full_name:
-                                    fullName,
-
-                                country:
-                                    detectedCountry ||
-                                    null,
-
-                                city:
-                                    detectedCity ||
-                                    null
-
-                            })
-                            .eq(
-                                "id",
-                                userId
-                            );
-
-
-                    /*
-                     * Une erreur RLS ici ne signifie
-                     * pas forcément que l'inscription
-                     * a échoué. Le trigger Supabase
-                     * peut déjà avoir créé le profil.
-                     */
-
-                    if (
-                        profileError
-                    ) {
-
-                        console.warn(
-                            "Profile update:",
-                            profileError.message
-                        );
-
-                    }
-
-                }
+                );
 
 
                 showMessage(
-                    "Compte créé avec succès ! Vérifiez votre e-mail pour confirmer votre compte.",
-                    "success"
+                    "✅ Compte créé avec succès ! Vérifiez votre e-mail pour confirmer votre compte.",
+                    "success-message"
                 );
 
 
@@ -803,11 +891,11 @@ document
 
 
                 /*
-                 * Re-détection pour la prochaine
-                 * inscription.
+                 * Re-détection ho an'ny
+                 * prochaine inscription.
                  */
 
-                detectLocation();
+                await detectLocation();
 
 
             } catch (error) {
@@ -821,13 +909,13 @@ document
                 showMessage(
                     error.message ||
                     "Erreur pendant l'inscription.",
-                    "error"
+                    "error-message"
                 );
+
 
             } finally {
 
-                button.disabled =
-                    false;
+                button.disabled = false;
 
                 button.textContent =
                     "Créer mon compte";
@@ -838,14 +926,12 @@ document
     );
 
 
-/* =====================================
+/* ==========================================
    CONNEXION
-===================================== */
+========================================== */
 
 document
-    .getElementById(
-        "loginForm"
-    )
+    .getElementById("loginForm")
     .addEventListener(
         "submit",
         async function(event) {
@@ -857,27 +943,24 @@ document
 
                 showMessage(
                     "Supabase n'est pas prêt.",
-                    "error"
+                    "error-message"
                 );
 
                 return;
+
             }
 
 
             const email =
                 document
-                    .getElementById(
-                        "loginEmail"
-                    )
+                    .getElementById("loginEmail")
                     .value
                     .trim();
 
 
             const password =
                 document
-                    .getElementById(
-                        "loginPassword"
-                    )
+                    .getElementById("loginPassword")
                     .value;
 
 
@@ -887,8 +970,7 @@ document
                 );
 
 
-            button.disabled =
-                true;
+            button.disabled = true;
 
             button.textContent =
                 "Connexion...";
@@ -933,19 +1015,16 @@ document
 
 
                 /*
-                 * On vérifie si le compte
-                 * est bloqué.
+                 * Vérification du profil
                  */
 
                 const {
                     data: profile,
                     error:
-                    profileError
+                        profileError
                 } =
                     await supabaseClient
-                        .from(
-                            "profiles"
-                        )
+                        .from("profiles")
                         .select(
                             "status,role"
                         )
@@ -961,12 +1040,16 @@ document
                 ) {
 
                     console.warn(
-                        "Profile:",
+                        "PROFILE ERROR:",
                         profileError.message
                     );
 
                 }
 
+
+                /*
+                 * Compte bloqué
+                 */
 
                 if (
                     profile &&
@@ -987,17 +1070,13 @@ document
 
 
                 showMessage(
-                    "Connexion réussie !",
-                    "success"
+                    "✅ Connexion réussie !",
+                    "success-message"
                 );
 
 
-                /*
-                 * Page principale
-                 */
-
                 setTimeout(
-                    function() {
+                    () => {
 
                         window.location.href =
                             "index.html";
@@ -1018,13 +1097,13 @@ document
                 showMessage(
                     error.message ||
                     "Erreur de connexion.",
-                    "error"
+                    "error-message"
                 );
+
 
             } finally {
 
-                button.disabled =
-                    false;
+                button.disabled = false;
 
                 button.textContent =
                     "Se connecter";
@@ -1035,13 +1114,14 @@ document
     );
 
 
-/* =====================================
-   LANCEMENT
-===================================== */
+/* ==========================================
+   START
+========================================== */
 
 initSupabase();
 
 </script>
 
 </body>
+
 </html>
