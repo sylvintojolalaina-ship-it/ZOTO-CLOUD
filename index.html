@@ -1646,12 +1646,12 @@ window.supabase.createClient(
 ========================= */
 
 let allFiles = [];
-
 let currentFiles = [];
-
 let currentCategory = null;
-
 let currentUser = null;
+
+/* Dossier actuellement ouvert */
+let currentFolder = null;
 
 
 /*
@@ -2480,6 +2480,1064 @@ function renderFiles(
 
     `;
 
+/* =========================
+   DOSSIERS
+========================= */
+
+function isInsideFolder(file){
+
+    const path = file.file_name || "";
+
+    return path.includes("/");
+}
+
+
+/* =========================
+   NOM DOSSIER RACINE
+========================= */
+
+function getRootFolder(file){
+
+    const path = file.file_name || "";
+
+    const parts = path.split("/");
+
+    if(parts.length <= 1){
+        return null;
+    }
+
+    return parts[0];
+}
+
+
+/* =========================
+   CONTENU RACINE
+========================= */
+
+function displayRootContent(files){
+
+    const list =
+        document.getElementById("fileList");
+
+    if(!list) return;
+
+    list.innerHTML = "";
+
+    const folders = new Set();
+
+    const rootFiles = [];
+
+    files.forEach(file => {
+
+        const folder =
+            getRootFolder(file);
+
+        if(folder){
+
+            folders.add(folder);
+
+        }else{
+
+            rootFiles.push(file);
+
+        }
+
+    });
+
+
+    /* =========================
+       DOSSIERS
+    ========================= */
+
+    folders.forEach(folderName => {
+
+        const folderDiv =
+            document.createElement("div");
+
+        folderDiv.className = "file folder-item";
+
+        folderDiv.innerHTML = `
+
+            <div class="file-info">
+
+                <div class="file-icon">
+                    📁
+                </div>
+
+                <div>
+
+                    <div class="file-name">
+                        ${escapeHtml(folderName)}
+                    </div>
+
+                    <div class="file-details">
+                        ${countFolderFiles(
+                            files,
+                            folderName
+                        )} fichier(s)
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button
+                class="file-menu-button folder-open-button"
+                title="Ouvrir le dossier"
+                aria-label="Ouvrir le dossier">
+
+                📂
+            </button>
+        `;
+
+
+        folderDiv.addEventListener(
+            "click",
+            function(){
+
+                openFolder(
+                    folderName
+                );
+
+            }
+        );
+
+
+        list.appendChild(folderDiv);
+
+    });
+
+
+    /* =========================
+       FICHIERS À LA RACINE
+    ========================= */
+
+    rootFiles.forEach(file => {
+
+        addFileElement(
+            list,
+            file
+        );
+
+    });
+
+
+    if(
+        folders.size === 0 &&
+        rootFiles.length === 0
+    ){
+
+        list.innerHTML = `
+
+            <div class="empty">
+                📂 Aucun fichier ni dossier.
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================
+   COMPTER FICHIERS DOSSIER
+========================= */
+
+function countFolderFiles(
+    files,
+    folderName
+){
+
+    return files.filter(file => {
+
+        const path =
+            file.file_name || "";
+
+        return (
+            path === folderName ||
+            path.startsWith(
+                folderName + "/"
+            )
+        );
+
+    }).length;
+
+}
+
+
+/* =========================
+   OUVRIR DOSSIER
+========================= */
+
+function openFolder(folderName){
+
+    currentFolder =
+        folderName;
+
+    currentCategory =
+        null;
+
+
+    const folderFiles =
+        allFiles.filter(file => {
+
+            const path =
+                file.file_name || "";
+
+            return (
+                path === folderName ||
+                path.startsWith(
+                    folderName + "/"
+                )
+            );
+
+        });
+
+
+    document.getElementById(
+        "pageTitle"
+    ).textContent =
+        "📁 " + folderName;
+
+
+    renderFolder(
+        folderName,
+        folderFiles
+    );
+
+}
+
+
+/* =========================
+   AFFICHER DOSSIER
+========================= */
+
+function renderFolder(
+    folderName,
+    files
+){
+
+    document.getElementById(
+        "content"
+    ).innerHTML = `
+
+        <button
+            class="back"
+            onclick="showHome()">
+
+            ← Retour à Mes fichiers
+
+        </button>
+
+        <div class="view-options">
+
+            <h2 class="section-title">
+
+                📁 ${escapeHtml(folderName)}
+
+            </h2>
+
+            <select
+                id="viewModeSelect"
+                class="view-select"
+                onchange="changeViewMode(this.value)"
+            >
+
+                <option value="list">
+                    ☰ Liste
+                </option>
+
+                <option value="grid">
+                    ▦ Grille
+                </option>
+
+            </select>
+
+        </div>
+
+        <div
+            id="fileList"
+            class="file-list">
+        </div>
+    `;
+
+
+    displayFolderContent(
+        folderName,
+        files
+    );
+
+}
+
+
+/* =========================
+   CONTENU DU DOSSIER
+========================= */
+
+function displayFolderContent(
+    rootFolder,
+    files
+){
+
+    const list =
+        document.getElementById(
+            "fileList"
+        );
+
+    if(!list) return;
+
+    list.innerHTML = "";
+
+
+    const subFolders =
+        new Set();
+
+    const directFiles = [];
+
+
+    files.forEach(file => {
+
+        const path =
+            file.file_name || "";
+
+        const parts =
+            path.split("/");
+
+
+        /*
+          Exemple :
+
+          Photos/photo.jpg
+          Photos/2026/photo.jpg
+        */
+
+        if(parts.length === 2){
+
+            directFiles.push(file);
+
+        }
+
+        else if(parts.length > 2){
+
+            /*
+              Photos/2026/photo.jpg
+              => sous-dossier 2026
+            */
+
+            subFolders.add(
+                parts[1]
+            );
+
+        }
+
+    });
+
+
+    /* =========================
+       SOUS-DOSSIERS
+    ========================= */
+
+    subFolders.forEach(
+        subFolderName => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "file folder-item";
+
+
+            const fullFolderPath =
+                rootFolder +
+                "/" +
+                subFolderName;
+
+
+            const folderCount =
+                files.filter(file => {
+
+                    const path =
+                        file.file_name || "";
+
+                    return path.startsWith(
+                        fullFolderPath + "/"
+                    );
+
+                }).length;
+
+
+            div.innerHTML = `
+
+                <div class="file-info">
+
+                    <div class="file-icon">
+                        📁
+                    </div>
+
+                    <div>
+
+                        <div class="file-name">
+
+                            ${escapeHtml(
+                                subFolderName
+                            )}
+
+                        </div>
+
+                        <div class="file-details">
+
+                            ${folderCount}
+                            fichier(s)
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="file-menu-button">
+
+                    📂
+
+                </button>
+            `;
+
+
+            div.addEventListener(
+                "click",
+                function(){
+
+                    openNestedFolder(
+                        fullFolderPath
+                    );
+
+                }
+            );
+
+
+            list.appendChild(div);
+
+        }
+    );
+
+
+    /* =========================
+       FICHIERS
+    ========================= */
+
+    directFiles.forEach(
+        file => {
+
+            addFileElement(
+                list,
+                file
+            );
+
+        }
+    );
+
+
+    if(
+        subFolders.size === 0 &&
+        directFiles.length === 0
+    ){
+
+        list.innerHTML = `
+
+            <div class="empty">
+
+                📂 Dossier vide.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================
+   SOUS-DOSSIER
+========================= */
+
+function openNestedFolder(
+    folderPath
+){
+
+    const files =
+        allFiles.filter(file => {
+
+            const path =
+                file.file_name || "";
+
+            return (
+                path === folderPath ||
+                path.startsWith(
+                    folderPath + "/"
+                )
+            );
+
+        });
+
+
+    currentFolder =
+        folderPath;
+
+
+    document.getElementById(
+        "pageTitle"
+    ).textContent =
+        "📁 " +
+        folderPath;
+
+
+    document.getElementById(
+        "content"
+    ).innerHTML = `
+
+        <button
+            class="back"
+            onclick="goBackFolder(
+                '${encodeURIComponent(
+                    folderPath
+                )}'
+            )">
+
+            ← Retour
+
+        </button>
+
+        <div class="view-options">
+
+            <h2 class="section-title">
+
+                📁 ${escapeHtml(
+                    folderPath
+                )}
+
+            </h2>
+
+            <select
+                id="viewModeSelect"
+                class="view-select"
+                onchange="changeViewMode(this.value)"
+            >
+
+                <option value="list">
+                    ☰ Liste
+                </option>
+
+                <option value="grid">
+                    ▦ Grille
+                </option>
+
+            </select>
+
+        </div>
+
+        <div
+            id="fileList"
+            class="file-list">
+        </div>
+    `;
+
+
+    displayFolderPathContent(
+        folderPath,
+        files
+    );
+
+}
+
+
+/* =========================
+   AFFICHAGE SOUS-DOSSIER
+========================= */
+
+function displayFolderPathContent(
+    folderPath,
+    files
+){
+
+    const list =
+        document.getElementById(
+            "fileList"
+        );
+
+    if(!list) return;
+
+    list.innerHTML = "";
+
+
+    const prefix =
+        folderPath + "/";
+
+
+    const subFolders =
+        new Set();
+
+
+    const directFiles = [];
+
+
+    files.forEach(file => {
+
+        const path =
+            file.file_name || "";
+
+
+        if(!path.startsWith(prefix))
+            return;
+
+
+        const remaining =
+            path.substring(
+                prefix.length
+            );
+
+
+        const parts =
+            remaining.split("/");
+
+
+        if(parts.length === 1){
+
+            directFiles.push(file);
+
+        }else{
+
+            subFolders.add(
+                parts[0]
+            );
+
+        }
+
+    });
+
+
+    subFolders.forEach(
+        subFolder => {
+
+            const fullPath =
+                folderPath +
+                "/" +
+                subFolder;
+
+
+            const count =
+                allFiles.filter(file => {
+
+                    const path =
+                        file.file_name || "";
+
+                    return path.startsWith(
+                        fullPath + "/"
+                    );
+
+                }).length;
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "file folder-item";
+
+
+            div.innerHTML = `
+
+                <div class="file-info">
+
+                    <div class="file-icon">
+                        📁
+                    </div>
+
+                    <div>
+
+                        <div class="file-name">
+
+                            ${escapeHtml(
+                                subFolder
+                            )}
+
+                        </div>
+
+                        <div class="file-details">
+
+                            ${count}
+                            fichier(s)
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="file-menu-button">
+
+                    📂
+
+                </button>
+            `;
+
+
+            div.addEventListener(
+                "click",
+                function(){
+
+                    openNestedFolder(
+                        fullPath
+                    );
+
+                }
+            );
+
+
+            list.appendChild(div);
+
+        }
+    );
+
+
+    directFiles.forEach(
+        file => {
+
+            addFileElement(
+                list,
+                file
+            );
+
+        }
+    );
+
+
+    if(
+        subFolders.size === 0 &&
+        directFiles.length === 0
+    ){
+
+        list.innerHTML = `
+
+            <div class="empty">
+
+                📂 Dossier vide.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================
+   RETOUR DOSSIER
+========================= */
+
+function goBackFolder(
+    encodedPath
+){
+
+    const path =
+        decodeURIComponent(
+            encodedPath
+        );
+
+
+    const parts =
+        path.split("/");
+
+
+    if(parts.length <= 1){
+
+        showHome();
+
+        return;
+
+    }
+
+
+    parts.pop();
+
+
+    const parent =
+        parts.join("/");
+
+
+    openNestedFolder(
+        parent
+    );
+
+}
+
+function addFileElement(
+    list,
+    file
+){
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.className =
+        "file";
+
+
+    /*
+      Ao anaty dossier dia aseho
+      ny anaran'ilay fichier ihany.
+    */
+
+    const displayName =
+        (file.file_name || "")
+            .split("/")
+            .pop();
+
+
+    div.innerHTML = `
+
+        <div class="file-info">
+
+            <div class="file-icon">
+
+                ${getIcon(file)}
+
+            </div>
+
+            <div>
+
+                <div class="file-name">
+
+                    ${escapeHtml(
+                        displayName
+                    )}
+
+                </div>
+
+                <div class="file-details">
+
+                    ${formatSize(
+                        file.file_size
+                    )}
+
+                    •
+
+                    ${new Date(
+                        file.created_at
+                    ).toLocaleString(
+                        "fr-FR"
+                    )}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="file-menu-button"
+            title="Actions"
+            aria-label="Actions">
+
+            ⋮
+
+        </button>
+
+    `;
+
+
+    const menuButton =
+        div.querySelector(
+            ".file-menu-button"
+        );
+
+
+    menuButton.addEventListener(
+        "click",
+        function(event){
+
+            event.stopPropagation();
+
+
+            const rect =
+                menuButton
+                .getBoundingClientRect();
+
+
+            openFileMenu(
+                file,
+                rect.left,
+                rect.bottom + 5
+            );
+
+        }
+    );
+
+
+    /* CLICK DROIT */
+
+    div.addEventListener(
+        "contextmenu",
+        function(event){
+
+            event.preventDefault();
+
+            openFileMenu(
+                file,
+                event.clientX,
+                event.clientY
+            );
+
+        }
+    );
+
+
+    /* DOUBLE CLICK */
+
+    div.addEventListener(
+        "dblclick",
+        function(event){
+
+            event.preventDefault();
+
+            openFileMenu(
+                file,
+                event.clientX || 20,
+                event.clientY || 20
+            );
+
+        }
+    );
+
+
+    /* LONG PRESS ANDROID */
+
+    let longPressTimer = null;
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+
+    div.addEventListener(
+        "touchstart",
+        function(event){
+
+            const touch =
+                event.touches[0];
+
+            touchStartX =
+                touch.clientX;
+
+            touchStartY =
+                touch.clientY;
+
+
+            longPressTimer =
+                setTimeout(
+                    function(){
+
+                        openFileMenu(
+                            file,
+                            touchStartX,
+                            touchStartY
+                        );
+
+                    },
+                    600
+                );
+
+        },
+        {
+            passive:true
+        }
+    );
+
+
+    div.addEventListener(
+        "touchend",
+        function(){
+
+            clearTimeout(
+                longPressTimer
+            );
+
+        }
+    );
+
+
+    div.addEventListener(
+        "touchcancel",
+        function(){
+
+            clearTimeout(
+                longPressTimer
+            );
+
+        }
+    );
+
+
+    div.addEventListener(
+        "touchmove",
+        function(event){
+
+            const touch =
+                event.touches[0];
+
+
+            const distance =
+                Math.sqrt(
+
+                    Math.pow(
+                        touch.clientX -
+                        touchStartX,
+                        2
+                    )
+
+                    +
+
+                    Math.pow(
+                        touch.clientY -
+                        touchStartY,
+                        2
+                    )
+
+                );
+
+
+            if(distance > 10){
+
+                clearTimeout(
+                    longPressTimer
+                );
+
+            }
+
+        },
+        {
+            passive:true
+        }
+    );
+
+
+    list.appendChild(
+        div
+    );
+
+}
 
     displayFiles(files);
 
