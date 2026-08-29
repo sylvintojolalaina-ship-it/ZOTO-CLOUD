@@ -1174,24 +1174,109 @@ main{
         min-width:200px;
     }
 
-    /* PHONE : Téléverser ihany no aseho */
-#sidebar > button:not(.upload):not(.folder-upload){
-    display:none;
-}
+    /* =========================
+   MOBILE - SIDEBAR
+========================= */
 
-/* Afenina amin'ny téléphone */
-#pageTitle,
-.welcome{
-    display:none;
-}
+@media(max-width:700px){
 
-/* Sidebar miseho */
-aside{
-    display:block;
-    width:100%;
-    border-right:none;
-    border-bottom:1px solid var(--border-color);
-    padding:12px;
+    header{
+        height:auto;
+        min-height:65px;
+        padding:10px 15px;
+        flex-wrap:wrap;
+    }
+
+    .menu-button{
+        display:block;
+    }
+
+    .logo{
+        font-size:19px;
+    }
+
+    .user{
+        display:none;
+    }
+
+    .search{
+        width:100%;
+        order:4;
+    }
+
+    .container{
+        flex-direction:column;
+    }
+
+    /* SIDEBAR CACHÉ PAR DÉFAUT SUR TÉLÉPHONE */
+    aside{
+        display:none;
+        width:100%;
+        border-right:none;
+        border-bottom:1px solid var(--border-color);
+        padding:12px;
+    }
+
+    /* SIDEBAR OUVERT AVEC ☰ */
+    aside.mobile-open{
+        display:block;
+    }
+
+    /* Tous les boutons restent visibles */
+    aside button{
+        display:block;
+        width:100%;
+    }
+
+    main{
+        padding:15px;
+    }
+
+    .categories{
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+    }
+
+    .category{
+        padding:17px;
+    }
+
+    .category-icon{
+        font-size:32px;
+    }
+
+    .file{
+        flex-direction:row;
+        align-items:center;
+    }
+
+    .file-info{
+        flex:1;
+    }
+
+    .storage-details{
+        flex-direction:column;
+    }
+
+    .settings-panel{
+        padding:18px;
+    }
+
+    .notification-popup{
+        top:10px;
+        right:10px;
+        width:calc(100% - 20px);
+    }
+
+    .file-context-menu{
+        min-width:200px;
+    }
+
+    /* Téléphone : titre simplifié */
+    #pageTitle,
+    .welcome{
+        display:none;
+    }
 }
 
 }
