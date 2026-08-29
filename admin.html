@@ -14,13 +14,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
     <style>
 
         * {
             box-sizing: border-box;
         }
-
 
         body {
             margin: 0;
@@ -29,11 +27,10 @@
             color: #1f2937;
         }
 
-
         header {
             background: #111827;
             color: white;
-            padding: 18px 25px;
+            padding: 16px 25px;
 
             display: flex;
             justify-content: space-between;
@@ -44,38 +41,36 @@
             z-index: 100;
         }
 
-
         .logo {
-            font-size: 23px;
+            font-size: 22px;
             font-weight: bold;
         }
-
 
         .admin-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
+        .admin-email {
+            font-size: 14px;
+            opacity: .9;
+        }
 
         .logout {
             background: #dc2626;
             border: none;
             color: white;
-
             padding: 9px 14px;
             border-radius: 8px;
-
             cursor: pointer;
         }
 
-
         main {
-            max-width: 1200px;
+            max-width: 1250px;
             margin: 30px auto;
             padding: 0 20px;
         }
-
 
         #loading {
             text-align: center;
@@ -83,11 +78,35 @@
             font-size: 20px;
         }
 
-
         #adminContent {
             display: none;
         }
 
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+            padding: 22px;
+            border-radius: 15px;
+
+            box-shadow:
+                0 3px 15px rgba(0,0,0,.06);
+        }
+
+        .stat-title {
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+        }
 
         .box {
             background: white;
@@ -96,89 +115,84 @@
             margin-bottom: 25px;
 
             box-shadow:
-                0 3px 15px rgba(0,0,0,0.06);
+                0 3px 15px rgba(0,0,0,.06);
         }
-
 
         .box h2 {
             margin-top: 0;
         }
 
-
-        .statistics {
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 18px;
-
-            margin-bottom: 25px;
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
         }
-
-
-        .stat {
-            background: white;
-            padding: 22px;
-
-            border-radius: 15px;
-
-            box-shadow:
-                0 3px 15px rgba(0,0,0,0.06);
-        }
-
-
-        .stat-title {
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-
-
-        .stat-number {
-            font-size: 30px;
-            font-weight: bold;
-        }
-
 
         .search {
-            width: 100%;
+            flex: 1;
+            min-width: 220px;
 
             padding: 13px 15px;
 
-            border: 1px solid #d1d5db;
-            border-radius: 9px;
+            border:
+                1px solid #d1d5db;
 
-            margin-bottom: 18px;
+            border-radius: 9px;
 
             font-size: 15px;
         }
 
+        .filter {
+            padding: 12px;
+
+            border:
+                1px solid #d1d5db;
+
+            border-radius: 9px;
+
+            background: white;
+
+            cursor: pointer;
+        }
+
+        .refresh {
+            border: none;
+            background: #2563eb;
+            color: white;
+
+            padding: 12px 15px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+        }
 
         .table-container {
             overflow-x: auto;
         }
 
-
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 900px;
         }
-
 
         th,
         td {
             padding: 13px;
             text-align: left;
-
             border-bottom:
                 1px solid #e5e7eb;
         }
-
 
         th {
             background: #f9fafb;
         }
 
+        tr:hover td {
+            background: #fafafa;
+        }
 
         .status {
             display: inline-block;
@@ -190,18 +204,15 @@
             font-size: 13px;
         }
 
-
         .status-active {
             background: #dcfce7;
             color: #166534;
         }
 
-
         .status-blocked {
             background: #fee2e2;
             color: #991b1b;
         }
-
 
         .admin-badge {
             background: #ede9fe;
@@ -214,29 +225,67 @@
             font-size: 13px;
         }
 
+        .user-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+        }
 
         .btn {
             border: none;
-
             padding: 8px 11px;
-
             border-radius: 7px;
-
             cursor: pointer;
-
             color: white;
         }
-
 
         .btn-block {
             background: #dc2626;
         }
 
-
         .btn-unblock {
             background: #16a34a;
         }
 
+        .btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #6b7280;
+        }
+
+        .country-box {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+
+            gap: 15px;
+        }
+
+        .location-card {
+            background: #f9fafb;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 10px;
+
+            padding: 15px;
+        }
+
+        .location-card h3 {
+            margin-top: 0;
+        }
 
         .notification-box textarea {
             width: 100%;
@@ -260,7 +309,6 @@
                 10px 0 15px;
         }
 
-
         .send-button {
             background: #2563eb;
 
@@ -277,49 +325,28 @@
             font-size: 15px;
         }
 
-
-        .send-button:hover {
-            background: #1d4ed8;
+        .send-button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
         }
 
-
-        .country-box {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(220px, 1fr));
-
-            gap: 15px;
+        .success {
+            color: #15803d;
+            font-size: 14px;
         }
 
-
-        .location-card {
-            background: #f9fafb;
-
-            border:
-                1px solid #e5e7eb;
-
-            border-radius: 10px;
-
-            padding: 15px;
+        .danger {
+            color: #b91c1c;
+            font-size: 14px;
         }
 
-
-        .location-card h3 {
-            margin-top: 0;
-        }
-
-
-        .empty {
-            text-align: center;
-
-            padding: 25px;
-
+        .date {
+            white-space: nowrap;
+            font-size: 13px;
             color: #6b7280;
         }
 
-
-        @media (max-width: 800px) {
+        @media (max-width: 900px) {
 
             .statistics {
                 grid-template-columns:
@@ -327,17 +354,36 @@
             }
 
             header {
-                flex-direction: column;
                 gap: 12px;
+            }
+
+            .admin-email {
+                display: none;
             }
 
         }
 
-
-        @media (max-width: 500px) {
+        @media (max-width: 550px) {
 
             .statistics {
                 grid-template-columns: 1fr;
+            }
+
+            main {
+                padding: 0 10px;
+                margin-top: 15px;
+            }
+
+            .box {
+                padding: 15px;
+            }
+
+            header {
+                padding: 14px;
+            }
+
+            .logo {
+                font-size: 18px;
             }
 
         }
@@ -345,7 +391,6 @@
     </style>
 
 </head>
-
 
 <body>
 
@@ -356,13 +401,14 @@
         👑 ZOTO CLOUD - ADMIN
     </div>
 
-
     <div class="admin-info">
 
-        <span id="adminEmail">
+        <span
+            id="adminEmail"
+            class="admin-email"
+        >
             ...
         </span>
-
 
         <button
             class="logout"
@@ -384,12 +430,9 @@
 <main id="adminContent">
 
 
-    <!-- ==========================
-         STATISTIQUES
-    =========================== -->
+    <!-- STATISTIQUES -->
 
     <section class="statistics">
-
 
         <div class="stat">
 
@@ -454,13 +497,10 @@
 
         </div>
 
-
     </section>
 
 
-    <!-- ==========================
-         UTILISATEURS
-    =========================== -->
+    <!-- UTILISATEURS -->
 
     <section class="box">
 
@@ -469,13 +509,50 @@
         </h2>
 
 
-        <input
-            type="text"
-            id="searchInput"
-            class="search"
-            placeholder="Rechercher un utilisateur..."
-            oninput="filterUsers()"
-        >
+        <div class="toolbar">
+
+            <input
+                type="text"
+                id="searchInput"
+                class="search"
+                placeholder="🔎 Rechercher nom, email, pays, ville..."
+                oninput="filterUsers()"
+            >
+
+
+            <select
+                id="statusFilter"
+                class="filter"
+                onchange="filterUsers()"
+            >
+
+                <option value="all">
+                    Tous
+                </option>
+
+                <option value="active">
+                    🟢 Actifs
+                </option>
+
+                <option value="blocked">
+                    🔴 Bloqués
+                </option>
+
+                <option value="admin">
+                    👑 Admins
+                </option>
+
+            </select>
+
+
+            <button
+                class="refresh"
+                onclick="loadUsers()"
+            >
+                🔄 Actualiser
+            </button>
+
+        </div>
 
 
         <div class="table-container">
@@ -486,33 +563,21 @@
 
                     <tr>
 
-                        <th>
-                            Nom
-                        </th>
+                        <th>Nom</th>
 
-                        <th>
-                            Email
-                        </th>
+                        <th>Email</th>
 
-                        <th>
-                            Pays
-                        </th>
+                        <th>Pays</th>
 
-                        <th>
-                            Ville
-                        </th>
+                        <th>Ville</th>
 
-                        <th>
-                            Statut
-                        </th>
+                        <th>Inscription</th>
 
-                        <th>
-                            Rôle
-                        </th>
+                        <th>Statut</th>
 
-                        <th>
-                            Action
-                        </th>
+                        <th>Rôle</th>
+
+                        <th>Action</th>
 
                     </tr>
 
@@ -524,10 +589,10 @@
                     <tr>
 
                         <td
-                            colspan="7"
+                            colspan="8"
                             class="empty"
                         >
-                            Chargement des utilisateurs...
+                            Chargement...
                         </td>
 
                     </tr>
@@ -541,9 +606,7 @@
     </section>
 
 
-    <!-- ==========================
-         PAYS ET VILLES
-    =========================== -->
+    <!-- LOCALISATION -->
 
     <section class="box">
 
@@ -566,16 +629,13 @@
     </section>
 
 
-    <!-- ==========================
-         NOTIFICATION
-    =========================== -->
+    <!-- NOTIFICATION -->
 
     <section class="box notification-box">
 
         <h2>
             📢 Notification
         </h2>
-
 
         <p>
             Envoyer un message à tous les utilisateurs.
@@ -589,6 +649,7 @@
 
 
         <button
+            id="sendNotificationButton"
             class="send-button"
             onclick="sendNotification()"
         >
@@ -603,10 +664,11 @@
 
 <script>
 
-
 let supabaseClient = null;
 
 let allUsers = [];
+
+let currentAdminId = null;
 
 
 /* ==========================================
@@ -643,14 +705,6 @@ async function init() {
         }
 
 
-        /*
-         * IMPORTANT :
-         * config.key doit être la
-         * SUPABASE_PUBLISHABLE_KEY.
-         *
-         * JAMAIS une sb_secret_...
-         */
-
         supabaseClient =
             window.supabase.createClient(
                 config.url,
@@ -661,7 +715,6 @@ async function init() {
         await checkAdmin();
 
     }
-
 
     catch (error) {
 
@@ -701,33 +754,7 @@ async function checkAdmin() {
             .getUser();
 
 
-    if (error) {
-
-        /*
-         * Raha tsy misy session,
-         * averina any amin'ny login.
-         */
-
-        if (
-            error.message
-                .toLowerCase()
-                .includes("session")
-        ) {
-
-            window.location.href =
-                "auth.html";
-
-            return;
-
-        }
-
-
-        throw error;
-
-    }
-
-
-    if (!user) {
+    if (error || !user) {
 
         window.location.href =
             "auth.html";
@@ -737,9 +764,9 @@ async function checkAdmin() {
     }
 
 
-    /*
-     * Mitady ny profile
-     */
+    currentAdminId =
+        user.id;
+
 
     const {
         data: profile,
@@ -767,41 +794,22 @@ async function checkAdmin() {
     }
 
 
-    if (!profile) {
-
-        window.location.href =
-            "index.html";
-
-        return;
-
-    }
-
-
-    /*
-     * FANAMARINANA ADMIN
-     */
-
     if (
+        !profile ||
         profile.role !== "admin"
     ) {
 
         alert(
-            "⛔ Accès refusé : vous n'êtes pas administrateur."
+            "⛔ Accès refusé."
         );
-
 
         window.location.href =
             "index.html";
-
 
         return;
 
     }
 
-
-    /*
-     * FANAMARINANA STATUS
-     */
 
     if (
         profile.status !== "active"
@@ -811,25 +819,20 @@ async function checkAdmin() {
             "⛔ Votre compte administrateur n'est pas actif."
         );
 
-
         window.location.href =
             "index.html";
-
 
         return;
 
     }
 
 
-    /*
-     * Admin OK
-     */
-
     document.getElementById(
         "adminEmail"
     ).textContent =
         profile.email ||
-        user.email;
+        user.email ||
+        "";
 
 
     document.getElementById(
@@ -855,6 +858,30 @@ async function checkAdmin() {
 
 async function loadUsers() {
 
+    const table =
+        document.getElementById(
+            "usersTable"
+        );
+
+
+    table.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="8"
+                class="empty"
+            >
+
+                🔄 Chargement des utilisateurs...
+
+            </td>
+
+        </tr>
+
+    `;
+
+
     const {
         data,
         error
@@ -878,26 +905,30 @@ async function loadUsers() {
         );
 
 
-        document.getElementById(
-            "usersTable"
-        ).innerHTML = `
+        table.innerHTML = `
 
             <tr>
 
                 <td
-                    colspan="7"
-                    class="empty"
+                    colspan="8"
+                    class="empty danger"
                 >
 
-                    Erreur :
-                    ${escapeHtml(error.message)}
+                    ❌ Impossible de charger les utilisateurs.
+
+                    <br>
+
+                    <small>
+                        ${escapeHtml(
+                            error.message
+                        )}
+                    </small>
 
                 </td>
 
             </tr>
 
         `;
-
 
         return;
 
@@ -910,9 +941,7 @@ async function loadUsers() {
 
     updateStatistics();
 
-    displayUsers(
-        allUsers
-    );
+    filterUsers();
 
     displayLocationStats(
         allUsers
@@ -983,7 +1012,115 @@ function updateStatistics() {
 
 
 /* ==========================================
-   AFFICHER UTILISATEURS
+   FILTRAGE
+========================================== */
+
+function filterUsers() {
+
+    const search =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    const statusFilter =
+        document
+            .getElementById(
+                "statusFilter"
+            )
+            .value;
+
+
+    const filtered =
+        allUsers.filter(
+            user => {
+
+                const text = `
+
+                    ${user.full_name || ""}
+
+                    ${user.email || ""}
+
+                    ${user.country || ""}
+
+                    ${user.city || ""}
+
+                    ${user.status || ""}
+
+                    ${user.role || ""}
+
+                `.toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    text.includes(
+                        search
+                    );
+
+
+                let matchesStatus =
+                    true;
+
+
+                if (
+                    statusFilter ===
+                    "active"
+                ) {
+
+                    matchesStatus =
+                        user.status ===
+                        "active";
+
+                }
+
+
+                if (
+                    statusFilter ===
+                    "blocked"
+                ) {
+
+                    matchesStatus =
+                        user.status ===
+                        "blocked";
+
+                }
+
+
+                if (
+                    statusFilter ===
+                    "admin"
+                ) {
+
+                    matchesStatus =
+                        user.role ===
+                        "admin";
+
+                }
+
+
+                return (
+                    matchesSearch &&
+                    matchesStatus
+                );
+
+            }
+        );
+
+
+    displayUsers(
+        filtered
+    );
+
+}
+
+
+/* ==========================================
+   AFFICHAGE UTILISATEURS
 ========================================== */
 
 function displayUsers(users) {
@@ -1004,7 +1141,7 @@ function displayUsers(users) {
             <tr>
 
                 <td
-                    colspan="7"
+                    colspan="8"
                     class="empty"
                 >
 
@@ -1015,7 +1152,6 @@ function displayUsers(users) {
             </tr>
 
         `;
-
 
         return;
 
@@ -1031,6 +1167,10 @@ function displayUsers(users) {
                 );
 
 
+            const isAdmin =
+                user.role === "admin";
+
+
             const isBlocked =
                 user.status === "blocked";
 
@@ -1038,9 +1178,7 @@ function displayUsers(users) {
             let action = "";
 
 
-            if (
-                user.role === "admin"
-            ) {
+            if (isAdmin) {
 
                 action = `
 
@@ -1052,14 +1190,13 @@ function displayUsers(users) {
 
             }
 
-
             else if (isBlocked) {
 
                 action = `
 
                     <button
                         class="btn btn-unblock"
-                        onclick="unblockUser('${user.id}')"
+                        onclick="unblockUser('${escapeAttribute(user.id)}')"
                     >
 
                         🔓 Débloquer
@@ -1070,14 +1207,13 @@ function displayUsers(users) {
 
             }
 
-
             else {
 
                 action = `
 
                     <button
                         class="btn btn-block"
-                        onclick="blockUser('${user.id}')"
+                        onclick="blockUser('${escapeAttribute(user.id)}')"
                     >
 
                         🚫 Bloquer
@@ -1092,34 +1228,51 @@ function displayUsers(users) {
             row.innerHTML = `
 
                 <td>
+
                     ${escapeHtml(
                         user.full_name ||
                         "Utilisateur"
                     )}
+
                 </td>
 
 
                 <td>
+
                     ${escapeHtml(
                         user.email ||
                         "-"
                     )}
+
                 </td>
 
 
                 <td>
+
                     ${escapeHtml(
                         user.country ||
                         "-"
                     )}
+
                 </td>
 
 
                 <td>
+
                     ${escapeHtml(
                         user.city ||
                         "-"
                     )}
+
+                </td>
+
+
+                <td class="date">
+
+                    ${formatDate(
+                        user.created_at
+                    )}
+
                 </td>
 
 
@@ -1135,8 +1288,8 @@ function displayUsers(users) {
 
                         ${
                             isBlocked
-                                ? "Bloqué"
-                                : "Actif"
+                                ? "🔴 Bloqué"
+                                : "🟢 Actif"
                         }
 
                     </span>
@@ -1147,7 +1300,7 @@ function displayUsers(users) {
                 <td>
 
                     ${
-                        user.role === "admin"
+                        isAdmin
 
                             ? `
                                 <span class="admin-badge">
@@ -1155,7 +1308,11 @@ function displayUsers(users) {
                                 </span>
                               `
 
-                            : "Utilisateur"
+                            : `
+                                <span class="user-badge">
+                                    👤 Utilisateur
+                                </span>
+                              `
                     }
 
                 </td>
@@ -1179,68 +1336,7 @@ function displayUsers(users) {
 
 
 /* ==========================================
-   RECHERCHE
-========================================== */
-
-function filterUsers() {
-
-    const search =
-        document
-            .getElementById(
-                "searchInput"
-            )
-            .value
-            .toLowerCase()
-            .trim();
-
-
-    if (!search) {
-
-        displayUsers(
-            allUsers
-        );
-
-        return;
-
-    }
-
-
-    const filtered =
-        allUsers.filter(
-            user => {
-
-                const text = `
-
-                    ${user.full_name || ""}
-
-                    ${user.email || ""}
-
-                    ${user.country || ""}
-
-                    ${user.city || ""}
-
-                    ${user.status || ""}
-
-                `.toLowerCase();
-
-
-                return text.includes(
-                    search
-                );
-
-            }
-        );
-
-
-    displayUsers(
-        filtered
-    );
-
-}
-
-
-/* ==========================================
-   PAYS ET VILLES
+   PAYS / VILLES
 ========================================== */
 
 function displayLocationStats(users) {
@@ -1306,11 +1402,12 @@ function displayLocationStats(users) {
         container.innerHTML = `
 
             <div class="location-card">
+
                 Aucun emplacement disponible.
+
             </div>
 
         `;
-
 
         return;
 
@@ -1319,6 +1416,16 @@ function displayLocationStats(users) {
 
     countries.forEach(
         country => {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "location-card";
+
 
             let citiesHTML = "";
 
@@ -1331,12 +1438,16 @@ function displayLocationStats(users) {
                     citiesHTML += `
 
                         <p>
+
                             📍
                             ${escapeHtml(city)}
+
                             :
+
                             <strong>
                                 ${count}
                             </strong>
+
                         </p>
 
                     `;
@@ -1345,21 +1456,13 @@ function displayLocationStats(users) {
             );
 
 
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "location-card";
-
-
             card.innerHTML = `
 
                 <h3>
+
                     🌍
                     ${escapeHtml(country)}
+
                 </h3>
 
                 ${citiesHTML}
@@ -1378,10 +1481,24 @@ function displayLocationStats(users) {
 
 
 /* ==========================================
-   BLOQUER UTILISATEUR
+   BLOQUER
 ========================================== */
 
 async function blockUser(userId) {
+
+    if (
+        userId ===
+        currentAdminId
+    ) {
+
+        alert(
+            "⛔ Tsy afaka miblock ny kaontinao manokana ianao."
+        );
+
+        return;
+
+    }
+
 
     const confirmation =
         confirm(
@@ -1431,7 +1548,7 @@ async function blockUser(userId) {
 
 
 /* ==========================================
-   DEBLOQUER UTILISATEUR
+   DEBLOQUER
 ========================================== */
 
 async function unblockUser(userId) {
@@ -1484,7 +1601,7 @@ async function unblockUser(userId) {
 
 
 /* ==========================================
-   ENVOYER NOTIFICATION
+   NOTIFICATION
 ========================================== */
 
 async function sendNotification() {
@@ -1492,6 +1609,12 @@ async function sendNotification() {
     const textarea =
         document.getElementById(
             "notificationMessage"
+        );
+
+
+    const button =
+        document.getElementById(
+            "sendNotificationButton"
         );
 
 
@@ -1505,7 +1628,6 @@ async function sendNotification() {
             "Veuillez écrire un message."
         );
 
-
         return;
 
     }
@@ -1513,7 +1635,7 @@ async function sendNotification() {
 
     const confirmation =
         confirm(
-            "Voulez-vous envoyer cette notification à tous les utilisateurs ?"
+            "Envoyer cette notification à tous les utilisateurs ?"
         );
 
 
@@ -1522,12 +1644,13 @@ async function sendNotification() {
     }
 
 
-    try {
+    button.disabled = true;
 
-        /*
-         * Récupérer les utilisateurs
-         * sauf les admins.
-         */
+    button.textContent =
+        "📤 Envoi en cours...";
+
+
+    try {
 
         const {
             data: users,
@@ -1558,15 +1681,10 @@ async function sendNotification() {
                 "Aucun utilisateur à notifier."
             );
 
-
             return;
 
         }
 
-
-        /*
-         * Préparer les notifications
-         */
 
         const notifications =
             users.map(
@@ -1584,10 +1702,6 @@ async function sendNotification() {
                 })
             );
 
-
-        /*
-         * Envoyer à Supabase
-         */
 
         const {
             error:
@@ -1609,10 +1723,6 @@ async function sendNotification() {
         }
 
 
-        /*
-         * Succès
-         */
-
         alert(
             "✅ Notification envoyée à " +
             users.length +
@@ -1623,7 +1733,6 @@ async function sendNotification() {
         textarea.value = "";
 
     }
-
 
     catch (error) {
 
@@ -1637,6 +1746,15 @@ async function sendNotification() {
             "❌ Erreur : " +
             error.message
         );
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            "📤 Envoyer la notification";
 
     }
 
@@ -1667,6 +1785,41 @@ async function logout() {
 
     window.location.href =
         "auth.html";
+
+}
+
+
+/* ==========================================
+   DATE
+========================================== */
+
+function formatDate(date) {
+
+    if (!date) {
+        return "-";
+    }
+
+
+    try {
+
+        return new Date(
+            date
+        ).toLocaleDateString(
+            "fr-FR",
+            {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            }
+        );
+
+    }
+
+    catch {
+
+        return "-";
+
+    }
 
 }
 
@@ -1707,6 +1860,21 @@ function escapeHtml(value) {
 }
 
 
+function escapeAttribute(value) {
+
+    return String(value)
+        .replaceAll(
+            "'",
+            "\\'"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        );
+
+}
+
+
 /* ==========================================
    START
 ========================================== */
@@ -1714,7 +1882,6 @@ function escapeHtml(value) {
 init();
 
 </script>
-
 
 </body>
 
