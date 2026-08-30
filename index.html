@@ -2532,15 +2532,17 @@ function getRootFolder(file){
 /* =========================
    CONTENU RACINE
 ========================= */
-
 function displayRootContent(files){
 
-    const list =
+    const fileList =
         document.getElementById("fileList");
 
-    if(!list) return;
+    if(!fileList) return;
 
-    list.innerHTML = "";
+    /*
+        Mitady ireo dossiers racine
+        sy fichiers racine
+    */
 
     const folders = new Set();
 
@@ -2548,12 +2550,15 @@ function displayRootContent(files){
 
     files.forEach(file => {
 
-        const folder =
-            getRootFolder(file);
+        const path =
+            file.file_name || "";
 
-        if(folder){
+        const parts =
+            path.split("/");
 
-            folders.add(folder);
+        if(parts.length > 1){
+
+            folders.add(parts[0]);
 
         }else{
 
@@ -2564,142 +2569,116 @@ function displayRootContent(files){
     });
 
 
+    let html = "";
+
+
     /* =========================
        DOSSIERS
     ========================= */
 
-    folders.forEach(folderName => {
+    Array.from(folders)
+        .sort((a,b) =>
+            a.localeCompare(b)
+        )
+        .forEach(folder => {
 
-        const folderDiv =
-            document.createElement("div");
+            html += `
 
-        folderDiv.className = "file folder-item";
+                <div
+                    class="file folder-item"
+                    onclick="openFolder(${JSON.stringify(folder)})"
+                    style="cursor:pointer;">
 
-        folderDiv.innerHTML = `
+                    <div class="file-info">
 
-            <div class="file-info">
+                        <div class="file-icon">
+                            📁
+                        </div>
 
-                <div class="file-icon">
-                    📁
-                </div>
+                        <div>
 
-                <div>
+                            <div class="file-name">
 
-                    <div class="file-name">
-                        ${escapeHtml(folderName)}
+                                ${escapeHTML(folder)}
+
+                            </div>
+
+                            <div class="file-details">
+
+                                Dossier
+
+                            </div>
+
+                        </div>
+
                     </div>
 
-                    <div class="file-details">
-                        ${countFolderFiles(
-                            files,
-                            folderName
-                        )} fichier(s)
+
+                    <div
+                        style="
+                            font-size:22px;
+                            color:var(--muted-color);
+                        ">
+
+                        ›
+
                     </div>
 
                 </div>
 
-            </div>
+            `;
 
-            <button
-                class="file-menu-button folder-open-button"
-                title="Ouvrir le dossier"
-                aria-label="Ouvrir le dossier">
-
-                📂
-            </button>
-        `;
-
-
-        folderDiv.addEventListener(
-            "click",
-            function(){
-
-                openFolder(
-                    folderName
-                );
-
-            }
-        );
-
-
-        list.appendChild(folderDiv);
-
-    });
+        });
 
 
     /* =========================
-       FICHIERS À LA RACINE
+       FICHIERS RACINE
     ========================= */
 
     rootFiles.forEach(file => {
 
-        addFileElement(
-            list,
-            file
-        );
+        html += createFileHTML(file);
 
     });
 
 
-    if(
-        folders.size === 0 &&
-        rootFiles.length === 0
-    ){
+    if(!html){
 
-        list.innerHTML = `
+        html = `
 
             <div class="empty">
-                📂 Aucun fichier ni dossier.
+
+                📂 Aucun fichier ou dossier
+
             </div>
 
         `;
 
     }
 
-}
 
-
-/* =========================
-   COMPTER FICHIERS DOSSIER
-========================= */
-
-function countFolderFiles(
-    files,
-    folderName
-){
-
-    return files.filter(file => {
-
-        const path =
-            file.file_name || "";
-
-        return (
-            path === folderName ||
-            path.startsWith(
-                folderName + "/"
-            )
-        );
-
-    }).length;
+    fileList.innerHTML =
+        html;
 
 }
 
 
 /* =========================
-   OUVRIR DOSSIER
+   DOSSIER
 ========================= */
 
 function openFolder(folderName){
 
+    closeFileContextMenu();
+
+    closeMobileMenu();
+
     currentFolder =
         folderName;
 
-    currentCategory =
-        null;
-
 
     const folderFiles =
-        allFiles.filter(file => {
+        currentFiles.filter(file => {
 
             const path =
                 file.file_name || "";
@@ -2714,12 +2693,6 @@ function openFolder(folderName){
         });
 
 
-    document.getElementById(
-        "pageTitle"
-    ).textContent =
-        "📁 " + folderName;
-
-
     renderFolder(
         folderName,
         folderFiles
@@ -2729,7 +2702,7 @@ function openFolder(folderName){
 
 
 /* =========================
-   AFFICHER DOSSIER
+   AFFICHER CONTENU DOSSIER
 ========================= */
 
 function renderFolder(
@@ -2738,30 +2711,41 @@ function renderFolder(
 ){
 
     document.getElementById(
-        "content"
-    ).innerHTML = `
+        "pageTitle"
+    ).textContent =
+        "📁 " + folderName;
+
+
+    const content =
+        document.getElementById(
+            "content"
+        );
+
+
+    content.innerHTML = `
 
         <button
             class="back"
-            onclick="showHome()">
+            onclick="backToCategory()">
 
-            ← Retour à Mes fichiers
+            ← Retour
 
         </button>
+
 
         <div class="view-options">
 
             <h2 class="section-title">
 
-                📁 ${escapeHtml(folderName)}
+                📁 ${escapeHTML(folderName)}
 
             </h2>
+
 
             <select
                 id="viewModeSelect"
                 class="view-select"
-                onchange="changeViewMode(this.value)"
-            >
+                onchange="changeViewMode(this.value)">
 
                 <option value="list">
                     ☰ Liste
@@ -2775,41 +2759,29 @@ function renderFolder(
 
         </div>
 
+
         <div
             id="fileList"
             class="file-list">
+
         </div>
+
     `;
 
 
-    displayFolderContent(
-        folderName,
-        files
-    );
-
-}
-
-
-/* =========================
-   CONTENU DU DOSSIER
-========================= */
-
-function displayFolderContent(
-    rootFolder,
-    files
-){
-
-    const list =
+    const fileList =
         document.getElementById(
             "fileList"
         );
 
-    if(!list) return;
 
-    list.innerHTML = "";
+    /*
+        Ao anatiny dia aseho:
+        - sous-dossiers
+        - fichiers
+    */
 
-
-    const subFolders =
+    const folders =
         new Set();
 
     const directFiles = [];
@@ -2820,435 +2792,125 @@ function displayFolderContent(
         const path =
             file.file_name || "";
 
-        const parts =
-            path.split("/");
-
 
         /*
-          Exemple :
-
-          Photos/photo.jpg
-          Photos/2026/photo.jpg
+            Esorina ny anaran'ilay
+            dossier parent
         */
 
-        if(parts.length === 2){
+        const relative =
+            path
+                .replace(
+                    folderName + "/",
+                    ""
+                );
+
+
+        const parts =
+            relative.split("/");
+
+
+        if(parts.length > 1){
+
+            folders.add(parts[0]);
+
+        }else{
 
             directFiles.push(file);
 
         }
 
-        else if(parts.length > 2){
-
-            /*
-              Photos/2026/photo.jpg
-              => sous-dossier 2026
-            */
-
-            subFolders.add(
-                parts[1]
-            );
-
-        }
-
     });
+
+
+    let html = "";
 
 
     /* =========================
        SOUS-DOSSIERS
     ========================= */
 
-    subFolders.forEach(
-        subFolderName => {
+    Array.from(folders)
+        .sort((a,b) =>
+            a.localeCompare(b)
+        )
+        .forEach(subFolder => {
 
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-            div.className =
-                "file folder-item";
-
-
-            const fullFolderPath =
-                rootFolder +
+            const fullFolder =
+                folderName +
                 "/" +
-                subFolderName;
+                subFolder;
 
 
-            const folderCount =
-                files.filter(file => {
+            html += `
 
-                    const path =
-                        file.file_name || "";
+                <div
+                    class="file"
+                    onclick="openFolder('${escapeJS(fullFolder)}')"
+                    style="cursor:pointer;">
 
-                    return path.startsWith(
-                        fullFolderPath + "/"
-                    );
+                    <div class="file-info">
 
-                }).length;
+                        <div class="file-icon">
+                            📁
+                        </div>
 
+                        <div>
 
-            div.innerHTML = `
+                            <div class="file-name">
 
-                <div class="file-info">
+                                ${escapeHTML(subFolder)}
 
-                    <div class="file-icon">
-                        📁
+                            </div>
+
+                            <div class="file-details">
+
+                                Dossier
+
+                            </div>
+
+                        </div>
+
                     </div>
 
-                    <div>
 
-                        <div class="file-name">
+                    <div
+                        style="
+                            font-size:22px;
+                            color:var(--muted-color);
+                        ">
 
-                            ${escapeHtml(
-                                subFolderName
-                            )}
-
-                        </div>
-
-                        <div class="file-details">
-
-                            ${folderCount}
-                            fichier(s)
-
-                        </div>
+                        ›
 
                     </div>
 
                 </div>
 
-                <button
-                    class="file-menu-button">
-
-                    📂
-
-                </button>
             `;
 
-
-            div.addEventListener(
-                "click",
-                function(){
-
-                    openNestedFolder(
-                        fullFolderPath
-                    );
-
-                }
-            );
-
-
-            list.appendChild(div);
-
-        }
-    );
+        });
 
 
     /* =========================
        FICHIERS
     ========================= */
 
-    directFiles.forEach(
-        file => {
+    directFiles.forEach(file => {
 
-            addFileElement(
-                list,
-                file
-            );
-
-        }
-    );
-
-
-    if(
-        subFolders.size === 0 &&
-        directFiles.length === 0
-    ){
-
-        list.innerHTML = `
-
-            <div class="empty">
-
-                📂 Dossier vide.
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
-/* =========================
-   SOUS-DOSSIER
-========================= */
-
-function openNestedFolder(
-    folderPath
-){
-
-    const files =
-        allFiles.filter(file => {
-
-            const path =
-                file.file_name || "";
-
-            return (
-                path === folderPath ||
-                path.startsWith(
-                    folderPath + "/"
-                )
-            );
-
-        });
-
-
-    currentFolder =
-        folderPath;
-
-
-    document.getElementById(
-        "pageTitle"
-    ).textContent =
-        "📁 " +
-        folderPath;
-
-
-    document.getElementById(
-        "content"
-    ).innerHTML = `
-
-        <button
-            class="back"
-            onclick="goBackFolder(
-                '${encodeURIComponent(
-                    folderPath
-                )}'
-            )">
-
-            ← Retour
-
-        </button>
-
-        <div class="view-options">
-
-            <h2 class="section-title">
-
-                📁 ${escapeHtml(
-                    folderPath
-                )}
-
-            </h2>
-
-            <select
-                id="viewModeSelect"
-                class="view-select"
-                onchange="changeViewMode(this.value)"
-            >
-
-                <option value="list">
-                    ☰ Liste
-                </option>
-
-                <option value="grid">
-                    ▦ Grille
-                </option>
-
-            </select>
-
-        </div>
-
-        <div
-            id="fileList"
-            class="file-list">
-        </div>
-    `;
-
-
-    displayFolderPathContent(
-        folderPath,
-        files
-    );
-
-}
-
-
-/* =========================
-   AFFICHAGE SOUS-DOSSIER
-========================= */
-
-function displayFolderPathContent(
-    folderPath,
-    files
-){
-
-    const list =
-        document.getElementById(
-            "fileList"
+        html += createFileHTML(
+            file
         );
-
-    if(!list) return;
-
-    list.innerHTML = "";
-
-
-    const prefix =
-        folderPath + "/";
-
-
-    const subFolders =
-        new Set();
-
-
-    const directFiles = [];
-
-
-    files.forEach(file => {
-
-        const path =
-            file.file_name || "";
-
-
-        if(!path.startsWith(prefix))
-            return;
-
-
-        const remaining =
-            path.substring(
-                prefix.length
-            );
-
-
-        const parts =
-            remaining.split("/");
-
-
-        if(parts.length === 1){
-
-            directFiles.push(file);
-
-        }else{
-
-            subFolders.add(
-                parts[0]
-            );
-
-        }
 
     });
 
 
-    subFolders.forEach(
-        subFolder => {
+    if(!html){
 
-            const fullPath =
-                folderPath +
-                "/" +
-                subFolder;
-
-
-            const count =
-                allFiles.filter(file => {
-
-                    const path =
-                        file.file_name || "";
-
-                    return path.startsWith(
-                        fullPath + "/"
-                    );
-
-                }).length;
-
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.className =
-                "file folder-item";
-
-
-            div.innerHTML = `
-
-                <div class="file-info">
-
-                    <div class="file-icon">
-                        📁
-                    </div>
-
-                    <div>
-
-                        <div class="file-name">
-
-                            ${escapeHtml(
-                                subFolder
-                            )}
-
-                        </div>
-
-                        <div class="file-details">
-
-                            ${count}
-                            fichier(s)
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <button
-                    class="file-menu-button">
-
-                    📂
-
-                </button>
-            `;
-
-
-            div.addEventListener(
-                "click",
-                function(){
-
-                    openNestedFolder(
-                        fullPath
-                    );
-
-                }
-            );
-
-
-            list.appendChild(div);
-
-        }
-    );
-
-
-    directFiles.forEach(
-        file => {
-
-            addFileElement(
-                list,
-                file
-            );
-
-        }
-    );
-
-
-    if(
-        subFolders.size === 0 &&
-        directFiles.length === 0
-    ){
-
-        list.innerHTML = `
+        html = `
 
             <div class="empty">
 
-                📂 Dossier vide.
+                📂 Dossier vide
 
             </div>
 
@@ -3256,30 +2918,61 @@ function displayFolderPathContent(
 
     }
 
+
+    fileList.innerHTML =
+        html;
+
 }
 
 
 /* =========================
-   RETOUR DOSSIER
+   RETOUR
 ========================= */
 
-function goBackFolder(
-    encodedPath
-){
+function backToCategory(){
 
-    const path =
-        decodeURIComponent(
-            encodedPath
-        );
+    closeFileContextMenu();
+
+    if(!currentFolder){
+
+        if(currentCategory){
+
+            openCategory(
+                currentCategory
+            );
+
+        }else{
+
+            showHome();
+
+        }
+
+        return;
+
+    }
 
 
     const parts =
-        path.split("/");
+        currentFolder.split("/");
 
 
-    if(parts.length <= 1){
+    if(parts.length === 1){
 
-        showHome();
+        currentFolder =
+            null;
+
+
+        if(currentCategory){
+
+            openCategory(
+                currentCategory
+            );
+
+        }else{
+
+            showHome();
+
+        }
 
         return;
 
@@ -3289,341 +2982,232 @@ function goBackFolder(
     parts.pop();
 
 
-    const parent =
+    currentFolder =
         parts.join("/");
 
 
-    openNestedFolder(
-        parent
-    );
-
-}
-
-function addFileElement(
-    list,
-    file
-){
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.className =
-        "file";
-
-
-    /*
-      Ao anaty dossier dia aseho
-      ny anaran'ilay fichier ihany.
-    */
-
-    const displayName =
-        (file.file_name || "")
-            .split("/")
-            .pop();
-
-
-    div.innerHTML = `
-
-        <div class="file-info">
-
-            <div class="file-icon">
-
-                ${getIcon(file)}
-
-            </div>
-
-            <div>
-
-                <div class="file-name">
-
-                    ${escapeHtml(
-                        displayName
-                    )}
-
-                </div>
-
-                <div class="file-details">
-
-                    ${formatSize(
-                        file.file_size
-                    )}
-
-                    •
-
-                    ${new Date(
-                        file.created_at
-                    ).toLocaleString(
-                        "fr-FR"
-                    )}
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <button
-            class="file-menu-button"
-            title="Actions"
-            aria-label="Actions">
-
-            ⋮
-
-        </button>
-
-    `;
-
-
-    const menuButton =
-        div.querySelector(
-            ".file-menu-button"
-        );
-
-
-    menuButton.addEventListener(
-        "click",
-        function(event){
-
-            event.stopPropagation();
-
-
-            const rect =
-                menuButton
-                .getBoundingClientRect();
-
-
-            openFileMenu(
-                file,
-                rect.left,
-                rect.bottom + 5
-            );
-
-        }
-    );
-
-
-    /* CLICK DROIT */
-
-    div.addEventListener(
-        "contextmenu",
-        function(event){
-
-            event.preventDefault();
-
-            openFileMenu(
-                file,
-                event.clientX,
-                event.clientY
-            );
-
-        }
-    );
-
-
-    /* DOUBLE CLICK */
-
-    div.addEventListener(
-        "dblclick",
-        function(event){
-
-            event.preventDefault();
-
-            openFileMenu(
-                file,
-                event.clientX || 20,
-                event.clientY || 20
-            );
-
-        }
-    );
-
-
-    /* LONG PRESS ANDROID */
-
-    let longPressTimer = null;
-
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-
-    div.addEventListener(
-        "touchstart",
-        function(event){
-
-            const touch =
-                event.touches[0];
-
-            touchStartX =
-                touch.clientX;
-
-            touchStartY =
-                touch.clientY;
-
-
-            longPressTimer =
-                setTimeout(
-                    function(){
-
-                        openFileMenu(
-                            file,
-                            touchStartX,
-                            touchStartY
-                        );
-
-                    },
-                    600
-                );
-
-        },
-        {
-            passive:true
-        }
-    );
-
-
-    div.addEventListener(
-        "touchend",
-        function(){
-
-            clearTimeout(
-                longPressTimer
-            );
-
-        }
-    );
-
-
-    div.addEventListener(
-        "touchcancel",
-        function(){
-
-            clearTimeout(
-                longPressTimer
-            );
-
-        }
-    );
-
-
-    div.addEventListener(
-        "touchmove",
-        function(event){
-
-            const touch =
-                event.touches[0];
-
-
-            const distance =
-                Math.sqrt(
-
-                    Math.pow(
-                        touch.clientX -
-                        touchStartX,
-                        2
+    const parentFiles =
+        currentFiles.filter(
+            file => {
+
+                const path =
+                    file.file_name || "";
+
+                return (
+                    path === currentFolder ||
+                    path.startsWith(
+                        currentFolder + "/"
                     )
-
-                    +
-
-                    Math.pow(
-                        touch.clientY -
-                        touchStartY,
-                        2
-                    )
-
-                );
-
-
-            if(distance > 10){
-
-                clearTimeout(
-                    longPressTimer
                 );
 
             }
+        );
 
-        },
-        {
-            passive:true
-        }
+
+    renderFolder(
+        currentFolder,
+        parentFiles
     );
-
-
-    list.appendChild(
-        div
-    );
-
-}
-
-    displayFiles(files);
 
 }
 
 
 /* =========================
-   MODE AFFICHAGE
+   CREATION HTML FICHIER
 ========================= */
 
-function getViewModeKey(){
+function createFileHTML(file){
 
-    return currentUser
-
-        ? "zoto_view_mode_" +
-          currentUser.id
-
-        : "zoto_view_mode";
-
-}
-
-
-function getViewMode(){
-
-    return localStorage.getItem(
-        getViewModeKey()
-    ) || "list";
-
-}
-
-
-function changeViewMode(mode){
-
-    if(
-        mode !== "list" &&
-        mode !== "grid"
-    ){
-
-        mode = "list";
-
-    }
-
-
-    localStorage.setItem(
-        getViewModeKey(),
-        mode
-    );
-
-
-    const list =
-        document.getElementById(
-            "fileList"
+    const icon =
+        getFileIcon(
+            file.file_name,
+            file.file_type
         );
 
 
-    if(!list) return;
+    const size =
+        formatSize(
+            Number(
+                file.file_size || 0
+            )
+        );
 
 
-    list.classList.remove(
-        "list-view",
-        "grid-view"
-    );
+    const date =
+        file.created_at
+            ? new Date(
+                file.created_at
+              ).toLocaleDateString(
+                "fr-FR"
+              )
+            : "";
 
 
-    list.classList.add(
-        mode + "-view"
-    );
+    return `
+
+        <div
+            class="file"
+            data-file-id="${file.id}"
+            onclick="handleFileClick(event, '${escapeJS(file.id)}')"
+            oncontextmenu="showFileContextMenu(event, '${escapeJS(file.id)}')"
+            ontouchstart="startFileLongPress(event, '${escapeJS(file.id)}')"
+            ontouchend="cancelFileLongPress()"
+            ontouchmove="cancelFileLongPress()"
+        >
+
+            <div class="file-info">
+
+                <div class="file-icon">
+
+                    ${icon}
+
+                </div>
+
+
+                <div style="min-width:0;">
+
+                    <div class="file-name">
+
+                        ${escapeHTML(
+                            getDisplayName(
+                                file.file_name
+                            )
+                        )}
+
+                    </div>
+
+
+                    <div class="file-details">
+
+                        ${size}
+                        ${date ? " • " + date : ""}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="file-menu-button"
+                onclick="
+                    event.stopPropagation();
+                    showFileContextMenu(
+                        event,
+                        '${escapeJS(file.id)}'
+                    );
+                "
+                aria-label="Menu">
+
+                ⋮
+
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   NOM AFFICHÉ
+========================= */
+
+function getDisplayName(
+    path
+){
+
+    if(!path)
+        return "Fichier";
+
+
+    const parts =
+        path.split("/");
+
+
+    return parts[
+        parts.length - 1
+    ];
+
+}
+
+
+/* =========================
+   ICONE FICHIER
+========================= */
+
+function getFileIcon(
+    fileName,
+    fileType
+){
+
+    const type =
+        fileType || "";
+
+
+    const name =
+        fileName || "";
+
+
+    if(type.startsWith("image/"))
+        return "🖼️";
+
+
+    if(type.startsWith("video/"))
+        return "🎥";
+
+
+    if(type.startsWith("audio/"))
+        return "🎵";
+
+
+    if(
+        type ===
+        "application/pdf" ||
+        /\.pdf$/i.test(name)
+    )
+        return "📕";
+
+
+    if(
+        /\.(doc|docx)$/i.test(name) ||
+        type.includes("word") ||
+        type.includes("document")
+    )
+        return "📄";
+
+
+    if(
+        /\.(xls|xlsx)$/i.test(name) ||
+        type.includes("excel") ||
+        type.includes("spreadsheet")
+    )
+        return "📊";
+
+
+    if(
+        /\.(ppt|pptx)$/i.test(name) ||
+        type.includes("powerpoint") ||
+        type.includes("presentation")
+    )
+        return "📙";
+
+
+    if(
+        /\.(zip|rar|7z)$/i.test(name)
+    )
+        return "🗜️";
+
+
+    if(
+        /\.(txt|csv)$/i.test(name)
+    )
+        return "📝";
+
+
+    return "📦";
 
 }
 
@@ -3632,11 +3216,29 @@ function changeViewMode(mode){
    MENU FICHIER
 ========================= */
 
-function openFileMenu(
-    file,
-    x = null,
-    y = null
+let selectedFileId =
+    null;
+
+
+let fileLongPressTimer =
+    null;
+
+
+function showFileContextMenu(
+    event,
+    fileId
 ){
+
+    if(event){
+
+        event.preventDefault();
+
+    }
+
+
+    selectedFileId =
+        fileId;
+
 
     const menu =
         document.getElementById(
@@ -3644,127 +3246,121 @@ function openFileMenu(
         );
 
 
-    if(!menu) return;
+    if(!menu)
+        return;
 
 
-    /* =========================
-       VOIR
-    ========================= */
-
-    document.getElementById(
-        "fileMenuView"
-    ).onclick = function(){
-
-        closeFileMenu();
-
-
-        viewFile(
-            encodeURIComponent(
-                file.file_path
-            ),
-            encodeURIComponent(
-                file.file_type || ""
-            ),
-            encodeURIComponent(
-                file.file_name
-            )
+    const viewButton =
+        document.getElementById(
+            "fileMenuView"
         );
 
-    };
 
-
-    /* =========================
-       TELECHARGER
-    ========================= */
-
-    document.getElementById(
-        "fileMenuDownload"
-    ).onclick = function(){
-
-        closeFileMenu();
-
-
-        downloadFile(
-            encodeURIComponent(
-                file.file_path
-            ),
-            encodeURIComponent(
-                file.file_name
-            )
+    const downloadButton =
+        document.getElementById(
+            "fileMenuDownload"
         );
 
-    };
 
-
-    /* =========================
-       SUPPRIMER
-    ========================= */
-
-    document.getElementById(
-        "fileMenuDelete"
-    ).onclick = function(){
-
-        closeFileMenu();
-
-
-        moveToTrash(
-            file.id
+    const deleteButton =
+        document.getElementById(
+            "fileMenuDelete"
         );
 
-    };
+
+    viewButton.onclick =
+        function(){
+
+            closeFileContextMenu();
+
+            previewFileById(
+                selectedFileId
+            );
+
+        };
+
+
+    downloadButton.onclick =
+        function(){
+
+            closeFileContextMenu();
+
+            downloadFileById(
+                selectedFileId
+            );
+
+        };
+
+
+    deleteButton.onclick =
+        function(){
+
+            closeFileContextMenu();
+
+            deleteFileById(
+                selectedFileId
+            );
+
+        };
 
 
     menu.style.display =
         "block";
 
 
+    let x = 20;
+
+    let y = 20;
+
+
+    if(event){
+
+        if(
+            typeof event.clientX ===
+            "number"
+        ){
+
+            x =
+                event.clientX;
+
+            y =
+                event.clientY;
+
+        }
+
+    }
+
+
     /*
-       Position
+        Raha mihoatra ny écran
+        dia amboarina.
     */
 
-    let posX =
-        x === null
-            ? 20
-            : x;
-
-
-    let posY =
-        y === null
-            ? 20
-            : y;
-
-
-    const menuWidth =
-        210;
-
-
-    const menuHeight =
-        175;
+    const rect =
+        menu.getBoundingClientRect();
 
 
     if(
-        posX +
-        menuWidth >
+        x + rect.width >
         window.innerWidth
     ){
 
-        posX =
+        x =
             window.innerWidth -
-            menuWidth -
+            rect.width -
             10;
 
     }
 
 
     if(
-        posY +
-        menuHeight >
+        y + rect.height >
         window.innerHeight
     ){
 
-        posY =
+        y =
             window.innerHeight -
-            menuHeight -
+            rect.height -
             10;
 
     }
@@ -3773,24 +3369,24 @@ function openFileMenu(
     menu.style.left =
         Math.max(
             10,
-            posX
+            x
         ) + "px";
 
 
     menu.style.top =
         Math.max(
             10,
-            posY
+            y
         ) + "px";
 
 }
 
 
 /* =========================
-   FERMER MENU
+   FERMETURE MENU
 ========================= */
 
-function closeFileMenu(){
+function closeFileContextMenu(){
 
     const menu =
         document.getElementById(
@@ -3808,10 +3404,6 @@ function closeFileMenu(){
 }
 
 
-/* =========================
-   CLICK AILLEURS
-========================= */
-
 document.addEventListener(
     "click",
     function(event){
@@ -3822,24 +3414,12 @@ document.addEventListener(
             );
 
 
-        if(!menu) return;
-
-
         if(
-
-            !menu.contains(
-                event.target
-            )
-
-            &&
-
-            !event.target.closest(
-                ".file-menu-button"
-            )
-
+            menu &&
+            !menu.contains(event.target)
         ){
 
-            closeFileMenu();
+            closeFileContextMenu();
 
         }
 
@@ -3848,410 +3428,759 @@ document.addEventListener(
 
 
 /* =========================
-   DISPLAY FILES
+   CLICK FICHIER
 ========================= */
 
-function displayFiles(files){
+function handleFileClick(
+    event,
+    fileId
+){
 
-    const list =
+    /*
+        Un simple clic n'ouvre pas
+        directement le fichier.
+
+        Le menu ⋮ est utilisé
+        pour Voir / Télécharger /
+        Supprimer.
+    */
+
+}
+
+
+/* =========================
+   APPUI LONG ANDROID
+========================= */
+
+function startFileLongPress(
+    event,
+    fileId
+){
+
+    cancelFileLongPress();
+
+
+    fileLongPressTimer =
+        setTimeout(
+            function(){
+
+                const touch =
+                    event.touches &&
+                    event.touches[0];
+
+
+                showFileContextMenu(
+                    {
+                        preventDefault:
+                            function(){},
+
+                        clientX:
+                            touch
+                                ? touch.clientX
+                                : 20,
+
+                        clientY:
+                            touch
+                                ? touch.clientY
+                                : 20
+
+                    },
+                    fileId
+                );
+
+            },
+            600
+        );
+
+}
+
+
+function cancelFileLongPress(){
+
+    if(fileLongPressTimer){
+
+        clearTimeout(
+            fileLongPressTimer
+        );
+
+        fileLongPressTimer =
+            null;
+
+    }
+
+}
+
+
+/* =========================
+   RECHERCHE
+========================= */
+
+function searchFiles(){
+
+    const input =
         document.getElementById(
-            "fileList"
+            "search"
         );
 
 
-    if(!list) return;
+    if(!input)
+        return;
 
 
-    if(!files.length){
+    const query =
+        input.value
+            .trim()
+            .toLowerCase();
 
-        list.innerHTML = `
 
-            <div class="empty">
+    if(!query){
 
-                📂 Aucun fichier.
+        if(currentFolder){
 
-            </div>
+            const folderFiles =
+                currentFiles.filter(
+                    file =>
+                        (
+                            file.file_name ||
+                            ""
+                        ).startsWith(
+                            currentFolder + "/"
+                        )
+                );
 
-        `;
+
+            renderFolder(
+                currentFolder,
+                folderFiles
+            );
+
+        }else if(currentCategory){
+
+            openCategory(
+                currentCategory
+            );
+
+        }else{
+
+            showHome();
+
+        }
 
         return;
 
     }
 
 
-    list.innerHTML = "";
+    const results =
+        allFiles.filter(
+            file =>
+                (
+                    file.file_name ||
+                    ""
+                )
+                .toLowerCase()
+                .includes(query)
+        );
 
 
-    const mode =
-        getViewMode();
+    currentFolder =
+        null;
 
 
-    list.classList.add(
-        mode + "-view"
-    );
+    document.getElementById(
+        "pageTitle"
+    ).textContent =
+        "🔍 Recherche";
 
 
-    const selector =
+    document.getElementById(
+        "content"
+    ).innerHTML = `
+
+        <div class="view-options">
+
+            <h2 class="section-title">
+
+                🔍 Résultats de recherche
+
+            </h2>
+
+        </div>
+
+
+        <div
+            id="fileList"
+            class="file-list">
+
+            ${
+                results.length
+                ? results
+                    .map(
+                        file =>
+                            createFileHTML(file)
+                    )
+                    .join("")
+                : `
+
+                    <div class="empty">
+
+                        Aucun fichier trouvé.
+
+                    </div>
+
+                `
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   VIEW MODE
+========================= */
+
+function changeViewMode(
+    mode
+){
+
+    const fileList =
+        document.getElementById(
+            "fileList"
+        );
+
+
+    if(!fileList)
+        return;
+
+
+    if(mode === "grid"){
+
+        fileList.classList.remove(
+            "list-view"
+        );
+
+        fileList.classList.add(
+            "grid-view"
+        );
+
+    }else{
+
+        fileList.classList.remove(
+            "grid-view"
+        );
+
+        fileList.classList.add(
+            "list-view"
+        );
+
+    }
+
+
+    try{
+
+        localStorage.setItem(
+            "zotoViewMode",
+            mode
+        );
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+
+/* =========================
+   VIEW MODE PAR DEFAUT
+========================= */
+
+function applySavedViewMode(){
+
+    const select =
         document.getElementById(
             "viewModeSelect"
         );
 
 
-    if(selector){
+    if(!select)
+        return;
 
-        selector.value =
-            mode;
+
+    let mode =
+        "list";
+
+
+    try{
+
+        mode =
+            localStorage.getItem(
+                "zotoViewMode"
+            ) || "list";
+
+    }catch(error){
+
+        mode = "list";
 
     }
 
 
-    files.forEach(
-        file => {
+    select.value =
+        mode;
 
-            const div =
-                document.createElement(
-                    "div"
-                );
 
-
-            div.className =
-                "file";
-
-
-            div.innerHTML = `
-
-                <div class="file-info">
-
-                    <div class="file-icon">
-
-                        ${getIcon(file)}
-
-                    </div>
-
-
-                    <div>
-
-                        <div class="file-name">
-
-                            ${escapeHtml(
-                                file.file_name
-                            )}
-
-                        </div>
-
-
-                        <div class="file-details">
-
-                            ${formatSize(
-                                file.file_size
-                            )}
-
-                            •
-
-                            ${new Date(
-                                file.created_at
-                            ).toLocaleString(
-                                "fr-FR"
-                            )}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    class="file-menu-button"
-                    title="Actions"
-                    aria-label="Actions">
-
-                    ⋮
-
-                </button>
-
-            `;
-
-
-            const menuButton =
-                div.querySelector(
-                    ".file-menu-button"
-                );
-
-
-            /* =========================
-               BOUTON ⋮
-            ========================= */
-
-            menuButton.addEventListener(
-                "click",
-                function(event){
-
-                    event.stopPropagation();
-
-
-                    const rect =
-                        menuButton
-                        .getBoundingClientRect();
-
-
-                    openFileMenu(
-                        file,
-                        rect.left,
-                        rect.bottom + 5
-                    );
-
-                }
-            );
-
-
-            /* =========================
-               CLICK DROIT
-            ========================= */
-
-            div.addEventListener(
-                "contextmenu",
-                function(event){
-
-                    event.preventDefault();
-
-
-                    openFileMenu(
-                        file,
-                        event.clientX,
-                        event.clientY
-                    );
-
-                }
-            );
-
-
-            /* =========================
-               DOUBLE CLICK
-            ========================= */
-
-            div.addEventListener(
-                "dblclick",
-                function(event){
-
-                    event.preventDefault();
-
-
-                    openFileMenu(
-                        file,
-                        event.clientX || 20,
-                        event.clientY || 20
-                    );
-
-                }
-            );
-
-
-            /* =========================
-               MAINTENIR ANDROID
-            ========================= */
-
-            let longPressTimer =
-                null;
-
-
-            let touchStartX =
-                0;
-
-
-            let touchStartY =
-                0;
-
-
-            div.addEventListener(
-                "touchstart",
-                function(event){
-
-                    const touch =
-                        event.touches[0];
-
-
-                    touchStartX =
-                        touch.clientX;
-
-
-                    touchStartY =
-                        touch.clientY;
-
-
-                    longPressTimer =
-                        setTimeout(
-                            function(){
-
-                                openFileMenu(
-                                    file,
-                                    touchStartX,
-                                    touchStartY
-                                );
-
-                            },
-                            600
-                        );
-
-                },
-                {
-                    passive:true
-                }
-            );
-
-
-            div.addEventListener(
-                "touchend",
-                function(){
-
-                    clearTimeout(
-                        longPressTimer
-                    );
-
-                }
-            );
-
-
-            div.addEventListener(
-                "touchcancel",
-                function(){
-
-                    clearTimeout(
-                        longPressTimer
-                    );
-
-                }
-            );
-
-
-            div.addEventListener(
-                "touchmove",
-                function(event){
-
-                    const touch =
-                        event.touches[0];
-
-
-                    const distance =
-                        Math.sqrt(
-
-                            Math.pow(
-                                touch.clientX -
-                                touchStartX,
-                                2
-                            )
-
-                            +
-
-                            Math.pow(
-                                touch.clientY -
-                                touchStartY,
-                                2
-                            )
-
-                        );
-
-
-                    if(
-                        distance > 10
-                    ){
-
-                        clearTimeout(
-                            longPressTimer
-                        );
-
-                    }
-
-                },
-                {
-                    passive:true
-                }
-            );
-
-
-            list.appendChild(
-                div
-            );
-
-        }
+    changeViewMode(
+        mode
     );
 
 }
 
 
 /* =========================
-   ICON
+   PREVIEW
 ========================= */
 
-function getIcon(file){
+async function previewFileById(
+    fileId
+){
+
+    const file =
+        allFiles.find(
+            item =>
+                String(item.id) ===
+                String(fileId)
+        );
+
+
+    if(!file)
+        return;
+
+
+    const preview =
+        document.getElementById(
+            "preview"
+        );
+
+
+    const content =
+        document.getElementById(
+            "previewContent"
+        );
+
+
+    if(!preview || !content)
+        return;
+
+
+    content.innerHTML =
+        "<p>⏳ Chargement...</p>";
+
+
+    preview.style.display =
+        "flex";
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .storage
+        .from("zoto-files")
+        .createSignedUrl(
+            file.file_path,
+            3600
+        );
+
+
+    if(error){
+
+        content.innerHTML = `
+
+            <p style="color:#dc2626;">
+
+                ❌ Impossible d'afficher
+                ce fichier.
+
+            </p>
+
+        `;
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    const url =
+        data.signedUrl;
+
 
     const type =
         file.file_type || "";
 
 
-    if(
-        type.startsWith(
-            "image/"
-        )
-    )
-
-        return "🖼️";
+    const name =
+        file.file_name || "";
 
 
-    if(
-        type.startsWith(
-            "video/"
-        )
-    )
+    if(type.startsWith("image/")){
 
-        return "🎥";
+        content.innerHTML = `
 
+            <img
+                src="${url}"
+                alt="${escapeHTML(name)}"
+            >
 
-    if(
-        type.startsWith(
-            "audio/"
-        )
-    )
+        `;
 
-        return "🎵";
+    }else if(
+        type.startsWith("video/")
+    ){
 
+        content.innerHTML = `
 
-    if(
+            <video
+                src="${url}"
+                controls
+                autoplay
+            ></video>
+
+        `;
+
+    }else if(
+        type.startsWith("audio/")
+    ){
+
+        content.innerHTML = `
+
+            <audio
+                src="${url}"
+                controls
+                autoplay
+            ></audio>
+
+        `;
+
+    }else if(
         type ===
-        "application/pdf"
-    )
+        "application/pdf" ||
+        /\.pdf$/i.test(name)
+    ){
 
-        return "📕";
+        content.innerHTML = `
 
+            <iframe
+                src="${url}">
+            </iframe>
 
-    if(
-        belongsTo(
-            file,
-            "document"
-        )
-    )
+        `;
 
-        return "📄";
+    }else{
 
+        content.innerHTML = `
 
-    return "📦";
+            <div class="empty">
+
+                📄 Aperçu non disponible
+                pour ce type de fichier.
+
+                <br><br>
+
+                <button
+                    class="setting-button"
+                    onclick="downloadFileById('${escapeJS(file.id)}')">
+
+                    📥 Télécharger
+
+                </button>
+
+            </div>
+
+        `;
+
+    }
 
 }
 
 
 /* =========================
-   TRASH
+   FERMER PREVIEW
+========================= */
+
+function closePreview(){
+
+    const preview =
+        document.getElementById(
+            "preview"
+        );
+
+
+    const content =
+        document.getElementById(
+            "previewContent"
+        );
+
+
+    if(preview){
+
+        preview.style.display =
+            "none";
+
+    }
+
+
+    if(content){
+
+        content.innerHTML =
+            "";
+
+    }
+
+}
+
+
+document.getElementById(
+    "preview"
+)?.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            event.target ===
+            this
+        ){
+
+            closePreview();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   TELECHARGER
+========================= */
+
+async function downloadFileById(
+    fileId
+){
+
+    const file =
+        allFiles.find(
+            item =>
+                String(item.id) ===
+                String(fileId)
+        );
+
+
+    if(!file)
+        return;
+
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+
+    if(status){
+
+        status.textContent =
+            "⏳ Préparation du téléchargement...";
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .storage
+        .from("zoto-files")
+        .createSignedUrl(
+            file.file_path,
+            3600,
+            {
+                download:
+                    getDisplayName(
+                        file.file_name
+                    )
+            }
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+
+        if(status){
+
+            status.textContent =
+                "❌ Erreur de téléchargement.";
+
+        }
+
+        return;
+
+    }
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        data.signedUrl;
+
+
+    link.download =
+        getDisplayName(
+            file.file_name
+        );
+
+
+    link.target =
+        "_blank";
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    if(status){
+
+        status.textContent =
+            "✅ Téléchargement lancé.";
+
+    }
+
+}
+
+
+/* =========================
+   SUPPRIMER
+========================= */
+
+async function deleteFileById(
+    fileId
+){
+
+    const file =
+        allFiles.find(
+            item =>
+                String(item.id) ===
+                String(fileId)
+        );
+
+
+    if(!file)
+        return;
+
+
+    const name =
+        getDisplayName(
+            file.file_name
+        );
+
+
+    const confirmed =
+        confirm(
+            `Voulez-vous supprimer "${name}" ?`
+        );
+
+
+    if(!confirmed)
+        return;
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("files")
+        .update({
+
+            deleted_at:
+                new Date().toISOString()
+
+        })
+        .eq(
+            "id",
+            file.id
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+
+        alert(
+            "❌ Erreur : " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        "✅ Fichier déplacé vers la corbeille."
+    );
+
+
+    await loadFiles();
+
+}
+
+
+/* =========================
+   CORBEILLE
 ========================= */
 
 async function showTrash(){
 
     closeMobileMenu();
 
+    currentCategory =
+        null;
+
+    currentFolder =
+        null;
+
+
+    document.getElementById(
+        "pageTitle"
+    ).textContent =
+        "🗑️ Corbeille";
+
+
     const user =
         await getUser();
 
 
-    if(!user) return;
+    if(!user)
+        return;
 
 
     const {
@@ -4280,79 +4209,15 @@ async function showTrash(){
 
     if(error){
 
-        alert(
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    document.getElementById(
-        "pageTitle"
-    ).textContent =
-        "🗑️ Corbeille";
-
-
-    document.getElementById(
-        "content"
-    ).innerHTML = `
-
-        <button
-            class="back"
-            onclick="showHome()">
-
-            ← Retour
-
-        </button>
-
-
-        <h2 class="section-title">
-
-            🗑️ Fichiers supprimés
-
-        </h2>
-
-
-        <div
-            id="fileList"
-            class="file-list">
-
-        </div>
-
-    `;
-
-
-    displayTrash(
-        data || []
-    );
-
-}
-
-
-/* =========================
-   DISPLAY TRASH
-========================= */
-
-function displayTrash(files){
-
-    const list =
         document.getElementById(
-            "fileList"
-        );
-
-
-    if(!list) return;
-
-
-    if(!files.length){
-
-        list.innerHTML = `
+            "content"
+        ).innerHTML = `
 
             <div class="empty">
 
-                🗑️ La corbeille est vide.
+                ❌ ${escapeHTML(
+                    error.message
+                )}
 
             </div>
 
@@ -4363,29 +4228,27 @@ function displayTrash(files){
     }
 
 
-    list.innerHTML = "";
+    const files =
+        data || [];
 
 
-    files.forEach(
-        file => {
-
-            const div =
-                document.createElement(
-                    "div"
-                );
+    let html = "";
 
 
-            div.className =
-                "file";
+    files.forEach(file => {
 
+        html += `
 
-            div.innerHTML = `
+            <div class="file">
 
                 <div class="file-info">
 
                     <div class="file-icon">
 
-                        ${getIcon(file)}
+                        ${getFileIcon(
+                            file.file_name,
+                            file.file_type
+                        )}
 
                     </div>
 
@@ -4394,8 +4257,10 @@ function displayTrash(files){
 
                         <div class="file-name">
 
-                            ${escapeHtml(
-                                file.file_name
+                            ${escapeHTML(
+                                getDisplayName(
+                                    file.file_name
+                                )
                             )}
 
                         </div>
@@ -4403,12 +4268,11 @@ function displayTrash(files){
 
                         <div class="file-details">
 
-                            Supprimé le
-
-                            ${new Date(
-                                file.deleted_at
-                            ).toLocaleString(
-                                "fr-FR"
+                            ${formatSize(
+                                Number(
+                                    file.file_size ||
+                                    0
+                                )
                             )}
 
                         </div>
@@ -4424,7 +4288,7 @@ function displayTrash(files){
                         class="restore"
                         onclick="
                             restoreFile(
-                                '${file.id}'
+                                '${escapeJS(file.id)}'
                             )
                         ">
 
@@ -4436,45 +4300,72 @@ function displayTrash(files){
                     <button
                         class="delete-permanent"
                         onclick="
-                            deleteForever(
-                                '${file.id}',
-                                '${encodeURIComponent(
-                                    file.file_path
-                                )}'
+                            permanentlyDeleteFile(
+                                '${escapeJS(file.id)}'
                             )
                         ">
 
-                        ❌ Supprimer définitivement
+                        🗑️ Supprimer
 
                     </button>
 
                 </div>
 
-            `;
+            </div>
+
+        `;
+
+    });
 
 
-            list.appendChild(
-                div
-            );
+    if(!html){
 
-        }
-    );
+        html = `
+
+            <div class="empty">
+
+                🗑️ La corbeille est vide.
+
+            </div>
+
+        `;
+
+    }
+
+
+    document.getElementById(
+        "content"
+    ).innerHTML = `
+
+        <div class="view-options">
+
+            <h2 class="section-title">
+
+                🗑️ Corbeille
+
+            </h2>
+
+        </div>
+
+
+        <div class="file-list">
+
+            ${html}
+
+        </div>
+
+    `;
 
 }
 
 
 /* =========================
-   MOVE TO TRASH
+   RESTAURER
 ========================= */
 
-async function moveToTrash(id){
-
-    if(!confirm(
-        "Voulez-vous déplacer ce fichier dans la corbeille ?"
-    ))
-
-        return;
-
+async function restoreFile(
+    fileId
+){
 
     const {
         error
@@ -4482,18 +4373,21 @@ async function moveToTrash(id){
     await supabaseClient
         .from("files")
         .update({
+
             deleted_at:
-                new Date().toISOString()
+                null
+
         })
         .eq(
             "id",
-            id
+            fileId
         );
 
 
     if(error){
 
         alert(
+            "❌ " +
             error.message
         );
 
@@ -4502,10 +4396,9 @@ async function moveToTrash(id){
     }
 
 
-    document.getElementById(
-        "status"
-    ).textContent =
-        "🗑️ Fichier déplacé dans la corbeille.";
+    alert(
+        "✅ Fichier restauré."
+    );
 
 
     await loadFiles();
@@ -4514,113 +4407,79 @@ async function moveToTrash(id){
 
 
 /* =========================
-   RESTORE
+   SUPPRESSION DEFINITIVE
 ========================= */
 
-async function restoreFile(id){
-
-    if(!confirm(
-        "Voulez-vous restaurer ce fichier ?"
-    ))
-
-        return;
-
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from("files")
-        .update({
-            deleted_at:null
-        })
-        .eq(
-            "id",
-            id
-        );
-
-
-    if(error){
-
-        alert(
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    document.getElementById(
-        "status"
-    ).textContent =
-        "♻️ Fichier restauré.";
-
-
-    await showTrash();
-
-}
-
-
-/* =========================
-   DELETE FOREVER
-========================= */
-
-async function deleteForever(
-    id,
-    pathEncoded
+async function permanentlyDeleteFile(
+    fileId
 ){
 
-    if(!confirm(
-        "⚠️ Supprimer définitivement ce fichier ?"
-    ))
-
-        return;
-
-
-    const path =
-        decodeURIComponent(
-            pathEncoded
+    const file =
+        await getFileFromDatabase(
+            fileId
         );
 
 
+    if(!file)
+        return;
+
+
+    const confirmed =
+        confirm(
+            "⚠️ Cette action est définitive. Continuer ?"
+        );
+
+
+    if(!confirmed)
+        return;
+
+
+    /*
+        Suppression Storage
+    */
+
     const {
-        error:storageError
+        error:
+        storageError
     } =
     await supabaseClient
         .storage
         .from("zoto-files")
         .remove([
-            path
+            file.file_path
         ]);
 
 
     if(storageError){
 
-        alert(
-            storageError.message
+        console.error(
+            storageError
         );
-
-        return;
 
     }
 
 
+    /*
+        Suppression Database
+    */
+
     const {
-        error:dbError
+        error:
+        dbError
     } =
     await supabaseClient
         .from("files")
         .delete()
         .eq(
             "id",
-            id
+            fileId
         );
 
 
     if(dbError){
 
         alert(
+            "❌ " +
             dbError.message
         );
 
@@ -4629,375 +4488,68 @@ async function deleteForever(
     }
 
 
-    document.getElementById(
-        "status"
-    ).textContent =
-        "❌ Fichier supprimé définitivement.";
+    alert(
+        "✅ Fichier supprimé définitivement."
+    );
 
 
-    await showTrash();
+    showTrash();
 
 }
 
 
 /* =========================
-   VIEW
+   GET FILE DATABASE
 ========================= */
 
-async function viewFile(
-    pathEncoded,
-    typeEncoded,
-    nameEncoded
+async function getFileFromDatabase(
+    fileId
 ){
-
-    const path =
-        decodeURIComponent(
-            pathEncoded
-        );
-
-
-    const type =
-        decodeURIComponent(
-            typeEncoded
-        );
-
-
-    const name =
-        decodeURIComponent(
-            nameEncoded
-        );
-
 
     const {
         data,
         error
     } =
     await supabaseClient
-        .storage
-        .from("zoto-files")
-        .createSignedUrl(
-            path,
-            3600
-        );
+        .from("files")
+        .select("*")
+        .eq(
+            "id",
+            fileId
+        )
+        .single();
 
 
     if(error){
 
-        alert(
-            error.message
+        console.error(
+            error
         );
 
-        return;
+        return null;
 
     }
 
 
-    const url =
-        data.signedUrl;
-
-
-    const content =
-        document.getElementById(
-            "previewContent"
-        );
-
-
-    content.innerHTML = "";
-
-
-    if(
-        type.startsWith(
-            "image/"
-        )
-    ){
-
-        content.innerHTML = `
-
-            <h2>
-
-                ${escapeHtml(name)}
-
-            </h2>
-
-
-            <br>
-
-
-            <img
-                src="${url}"
-                alt="${escapeHtml(name)}">
-
-        `;
-
-    }
-
-    else if(
-        type.startsWith(
-            "video/"
-        )
-    ){
-
-        content.innerHTML = `
-
-            <h2>
-
-                ${escapeHtml(name)}
-
-            </h2>
-
-
-            <br>
-
-
-            <video
-                src="${url}"
-                controls>
-            </video>
-
-        `;
-
-    }
-
-    else if(
-        type.startsWith(
-            "audio/"
-        )
-    ){
-
-        content.innerHTML = `
-
-            <h2>
-
-                ${escapeHtml(name)}
-
-            </h2>
-
-
-            <br>
-
-
-            <audio
-                src="${url}"
-                controls>
-            </audio>
-
-        `;
-
-    }
-
-    else if(
-        type ===
-        "application/pdf"
-    ){
-
-        content.innerHTML = `
-
-            <h2>
-
-                ${escapeHtml(name)}
-
-            </h2>
-
-
-            <br>
-
-
-            <iframe
-                src="${url}">
-            </iframe>
-
-        `;
-
-    }
-
-    else{
-
-        content.innerHTML = `
-
-            <h2>
-
-                📦
-                ${escapeHtml(name)}
-
-            </h2>
-
-
-            <br>
-
-
-            <p>
-
-                Aperçu direct non disponible.
-
-            </p>
-
-        `;
-
-    }
-
-
-    document.getElementById(
-        "preview"
-    ).style.display =
-        "flex";
+    return data;
 
 }
 
 
 /* =========================
-   DOWNLOAD
-========================= */
-
-async function downloadFile(
-    pathEncoded,
-    nameEncoded
-){
-
-    const path =
-        decodeURIComponent(
-            pathEncoded
-        );
-
-
-    const name =
-        decodeURIComponent(
-            nameEncoded
-        );
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .storage
-        .from("zoto-files")
-        .download(
-            path
-        );
-
-
-    if(error){
-
-        alert(
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    const url =
-        URL.createObjectURL(
-            data
-        );
-
-
-    const a =
-        document.createElement(
-            "a"
-        );
-
-
-    a.href =
-        url;
-
-
-    a.download =
-        name;
-
-
-    document.body.appendChild(
-        a
-    );
-
-
-    a.click();
-
-
-    a.remove();
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-}
-
-
-/* =========================
-   SEARCH
-========================= */
-
-function searchFiles(){
-
-    const input =
-        document.getElementById(
-            "search"
-        );
-
-
-    if(!input) return;
-
-
-    const value =
-        input.value
-            .toLowerCase()
-            .trim();
-
-
-    if(!value){
-
-        if(currentCategory)
-
-            openCategory(
-                currentCategory
-            );
-
-        else
-
-            showHome();
-
-        return;
-
-    }
-
-
-    const results =
-        allFiles.filter(
-            file =>
-
-                (
-                    file.file_name ||
-                    ""
-                )
-                .toLowerCase()
-                .includes(value)
-        );
-
-
-    document.getElementById(
-        "pageTitle"
-    ).textContent =
-        "🔍 Résultats de recherche";
-
-
-    renderFiles(
-        results,
-        "🔍 Résultats"
-    );
-
-}
-
-
-/* =========================
-   SETTINGS
+   PARAMETRES
 ========================= */
 
 function showSettings(){
 
     closeMobileMenu();
+
+    currentCategory =
+        null;
+
+    currentFolder =
+        null;
+
 
     document.getElementById(
         "pageTitle"
@@ -5009,62 +4561,53 @@ function showSettings(){
         "content"
     ).innerHTML = `
 
-        <button
-            class="back"
-            onclick="showHome()">
-
-            ← Retour
-
-        </button>
-
-
         <div class="settings-panel">
+
+            <div class="setting-group">
+
+                <h3>
+                    👤 Compte
+                </h3>
+
+                <p>
+                    ${
+                        currentUser &&
+                        currentUser.email
+                            ? escapeHTML(
+                                currentUser.email
+                              )
+                            : "Utilisateur"
+                    }
+                </p>
+
+            </div>
 
 
             ${storageSettingsHTML()}
 
 
-            <!-- LANGUE -->
-
             <div class="setting-group">
 
                 <h3>
-
-                    🌍 Langue
-
+                    🎨 Affichage
                 </h3>
 
 
                 <label>
-
-                    Choisir la langue
-
+                    Mode d'affichage des fichiers
                 </label>
 
 
                 <select
-                    id="languageSelect"
                     class="setting-select"
-                    onchange="changeLanguage(this.value)">
+                    onchange="changeViewMode(this.value)">
 
-                    <option value="fr">
-
-                        Français
-
+                    <option value="list">
+                        ☰ Liste
                     </option>
 
-
-                    <option value="mg">
-
-                        Malagasy
-
-                    </option>
-
-
-                    <option value="en">
-
-                        English
-
+                    <option value="grid">
+                        ▦ Grille
                     </option>
 
                 </select>
@@ -5072,81 +4615,19 @@ function showSettings(){
             </div>
 
 
-            <!-- MOT DE PASSE -->
-
             <div class="setting-group">
 
                 <h3>
-
-                    🔐 Mot de passe
-
+                    ℹ️ ZOTO CLOUD
                 </h3>
 
 
-                <p
-                    style="margin-bottom:12px">
+                <p>
 
-                    Ampiasao ity formulaire ity raha
-                    hanova ny mot de passe.
+                    Votre espace personnel
+                    de stockage cloud.
 
                 </p>
-
-
-                <input
-                    id="newPassword"
-                    class="setting-input"
-                    type="password"
-                    minlength="6"
-                    placeholder="Nouveau mot de passe">
-
-
-                <button
-                    class="setting-button"
-                    onclick="changePassword()">
-
-                    🔐 Modifier le mot de passe
-
-                </button>
-
-            </div>
-
-
-            <!-- FOND D'ÉCRAN -->
-
-            <div class="setting-group">
-
-                <h3>
-
-                    🖼️ Fond d'écran
-
-                </h3>
-
-
-                <div
-                    id="wallpaperPreview"
-                    class="wallpaper-preview">
-                </div>
-
-
-                <input
-                    id="wallpaperInput"
-                    class="setting-input"
-                    type="file"
-                    accept="image/*"
-                    onchange="
-                        changeWallpaper(
-                            this.files[0]
-                        )
-                    ">
-
-
-                <button
-                    class="setting-button danger-button"
-                    onclick="removeWallpaper()">
-
-                    Réinitialiser le fond
-
-                </button>
 
             </div>
 
@@ -5154,609 +4635,68 @@ function showSettings(){
 
     `;
 
-
-    const language =
-        localStorage.getItem(
-            "zoto_language_" +
-            currentUser.id
-        ) ||
-        "fr";
-
-
-    document.getElementById(
-        "languageSelect"
-    ).value =
-        language;
-
-
-    showWallpaperPreview();
-
 }
 
 
 /* =========================
-   PASSWORD
+   FORMAT SIZE
 ========================= */
 
-async function changePassword(){
-
-    const input =
-        document.getElementById(
-            "newPassword"
-        );
-
-
-    if(!input) return;
-
-
-    const password =
-        input.value.trim();
-
-
-    if(password.length < 6){
-
-        alert(
-            "Le mot de passe doit contenir au moins 6 caractères."
-        );
-
-        return;
-
-    }
-
-
-    const {
-        error
-    } =
-        await supabaseClient
-            .auth
-            .updateUser({
-                password:
-                    password
-            });
-
-
-    if(error){
-
-        alert(
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    input.value = "";
-
-
-    alert(
-        "✅ Mot de passe modifié avec succès."
-    );
-
-}
-
-
-/* =========================
-   LANGUAGE
-========================= */
-
-function changeLanguage(
-    language
+function formatSize(
+    bytes
 ){
 
-    localStorage.setItem(
-        "zoto_language_" +
-        currentUser.id,
-        language
-    );
+    bytes =
+        Number(bytes) || 0;
 
 
-    applyLanguage(
-        language
-    );
-
-}
+    if(bytes === 0)
+        return "0 B";
 
 
-function applyLanguage(
-    language
-){
+    const units = [
+        "B",
+        "KB",
+        "MB",
+        "GB",
+        "TB"
+    ];
 
-    document.documentElement.lang =
-        language === "mg"
-            ? "mg"
-            : language;
 
-
-    const title =
-        document.getElementById(
-            "pageTitle"
+    const index =
+        Math.floor(
+            Math.log(bytes) /
+            Math.log(1024)
         );
 
 
-    const welcome =
-        document.querySelector(
-            ".welcome"
-        );
-
-
-    if(language === "mg"){
-
-        if(title)
-
-            title.textContent =
-                "Tongasoa eto amin'ny ZOTO CLOUD 👋";
-
-
-        if(welcome)
-
-            welcome.textContent =
-                "Ny toerana manokananao hitahirizana rakitra.";
-
-    }
-
-    else if(language === "en"){
-
-        if(title)
-
-            title.textContent =
-                "Welcome to ZOTO CLOUD 👋";
-
-
-        if(welcome)
-
-            welcome.textContent =
-                "Your personal online storage space.";
-
-    }
-
-    else{
-
-        if(title)
-
-            title.textContent =
-                "Bienvenue sur ZOTO CLOUD 👋";
-
-
-        if(welcome)
-
-            welcome.textContent =
-                "Votre espace personnel de stockage en ligne.";
-
-    }
-
-}
-
-
-/* =========================
-   WALLPAPER
-========================= */
-
-function changeWallpaper(
-    file
-){
-
-    if(!file) return;
-
-
-    const reader =
-        new FileReader();
-
-
-    reader.onload =
-        function(event){
-
-            const image =
-                event.target.result;
-
-
-            localStorage.setItem(
-                "zoto_wallpaper_" +
-                currentUser.id,
-                image
-            );
-
-
-            applyWallpaper(
-                image
-            );
-
-
-            showWallpaperPreview();
-
-        };
-
-
-    reader.readAsDataURL(
-        file
-    );
-
-}
-
-
-/* =========================
-   AUTO TEXT COLOR
-========================= */
-
-function applyWallpaper(
-    image
-){
-
-    if(!image){
-
-        document.body.style
-            .backgroundImage = "";
-
-
-        setTextTheme(
-            false
-        );
-
-
-        return;
-
-    }
-
-
-    document.body.style
-        .backgroundImage =
-        `url("${image}")`;
-
-
-    document.body.style
-        .backgroundSize =
-        "cover";
-
-
-    document.body.style
-        .backgroundAttachment =
-        "fixed";
-
-
-    document.body.style
-        .backgroundPosition =
-        "center";
-
-
-    detectWallpaperBrightness(
-        image
-    );
-
-}
-
-
-function detectWallpaperBrightness(
-    image
-){
-
-    const img =
-        new Image();
-
-
-    img.onload =
-        function(){
-
-            const canvas =
-                document.createElement(
-                    "canvas"
-                );
-
-
-            const ctx =
-                canvas.getContext(
-                    "2d"
-                );
-
-
-            const width =
-                100;
-
-
-            const height =
-                100;
-
-
-            canvas.width =
-                width;
-
-
-            canvas.height =
-                height;
-
-
-            ctx.drawImage(
-                img,
-                0,
-                0,
-                width,
-                height
-            );
-
-
-            const data =
-                ctx.getImageData(
-                    0,
-                    0,
-                    width,
-                    height
-                ).data;
-
-
-            let total =
-                0;
-
-
-            let count =
-                0;
-
-
-            for(
-                let i=0;
-                i<data.length;
-                i+=4
-            ){
-
-                const r =
-                    data[i];
-
-
-                const g =
-                    data[i+1];
-
-
-                const b =
-                    data[i+2];
-
-
-                const brightness =
-                    (
-                        r*299 +
-                        g*587 +
-                        b*114
-                    ) / 1000;
-
-
-                total +=
-                    brightness;
-
-
-                count++;
-
-            }
-
-
-            const average =
-                total / count;
-
-
-            if(
-                average > 145
-            )
-
-                setTextTheme(
-                    false
-                );
-
-            else
-
-                setTextTheme(
-                    true
-                );
-
-        };
-
-
-    img.src =
-        image;
-
-}
-
-
-/* =========================
-   THEME
-========================= */
-
-function setTextTheme(
-    darkBackground
-){
-
-    if(darkBackground){
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--text-color",
-                "#ffffff"
-            );
-
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--muted-color",
-                "#e5e7eb"
-            );
-
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--card-bg",
-                "rgba(0,0,0,.72)"
-            );
-
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--border-color",
-                "rgba(255,255,255,.20)"
-            );
-
-    }
-
-    else{
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--text-color",
-                "#222222"
-            );
-
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--muted-color",
-                "#666666"
-            );
-
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--card-bg",
-                "rgba(255,255,255,.94)"
-            );
-
-
-        document.documentElement
-            .style
-            .setProperty(
-                "--border-color",
-                "rgba(0,0,0,.12)"
-            );
-
-    }
-
-}
-
-
-/* =========================
-   WALLPAPER PREVIEW
-========================= */
-
-function showWallpaperPreview(){
-
-    if(!currentUser)
-        return;
-
-
-    const image =
-        localStorage.getItem(
-            "zoto_wallpaper_" +
-            currentUser.id
-        );
-
-
-    applyWallpaper(
-        image
-    );
-
-
-    const preview =
-        document.getElementById(
-            "wallpaperPreview"
-        );
-
-
-    if(preview){
-
-        preview.style
-            .backgroundImage =
-
-            image
-
-                ? `url("${image}")`
-
-                : "";
-
-    }
-
-}
-
-
-function removeWallpaper(){
-
-    if(!currentUser)
-        return;
-
-
-    localStorage.removeItem(
-        "zoto_wallpaper_" +
-        currentUser.id
-    );
-
-
-    applyWallpaper(
-        null
-    );
-
-
-    showWallpaperPreview();
-
-}
-
-
-/* =========================
-   NOTIFICATIONS
-========================= */
-
-async function loadNotifications(){
-
-    if(!currentUser)
-        return;
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .from("notifications")
-        .select(
-            "id,message,created_at"
+    return (
+        bytes /
+        Math.pow(
+            1024,
+            index
         )
-        .eq(
-            "user_id",
-            currentUser.id
-        )
-        .eq(
-            "is_read",
-            false
-        )
-        .order(
-            "created_at",
-            {
-                ascending:false
-            }
-        )
-        .limit(1);
-
-
-    if(error){
-
-        console.error(
-            "NOTIFICATION ERROR:",
-            error
-        );
-
-        return;
-
-    }
-
-
-    if(
-        !data ||
-        data.length === 0
+    ).toFixed(
+        index === 0 ? 0 : 2
     )
+    + " "
+    + units[index];
 
-        return;
+}
 
 
-    const notification =
-        data[0];
+/* =========================
+   NOTIFICATION
+========================= */
+
+function showNotification(
+    message
+){
+
+    const popup =
+        document.getElementById(
+            "notificationPopup"
+        );
 
 
     const text =
@@ -5765,46 +4705,26 @@ async function loadNotifications(){
         );
 
 
-    const popup =
-        document.getElementById(
-            "notificationPopup"
-        );
+    if(!popup || !text)
+        return;
 
 
-    if(text)
-
-        text.textContent =
-            notification.message;
+    text.textContent =
+        message;
 
 
-    if(popup)
-
-        popup.style.display =
-            "block";
+    popup.style.display =
+        "block";
 
 
-    const {
-        error:updateError
-    } =
-        await supabaseClient
-            .from("notifications")
-            .update({
-                is_read:true
-            })
-            .eq(
-                "id",
-                notification.id
-            );
+    setTimeout(
+        function(){
 
+            closeNotification();
 
-    if(updateError){
-
-        console.error(
-            "READ NOTIFICATION ERROR:",
-            updateError
-        );
-
-    }
+        },
+        5000
+    );
 
 }
 
@@ -5817,102 +4737,12 @@ function closeNotification(){
         );
 
 
-    if(popup)
+    if(popup){
 
         popup.style.display =
             "none";
 
-}
-
-
-/* =========================
-   CLOSE PREVIEW
-========================= */
-
-function closePreview(){
-
-    document.getElementById(
-        "preview"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "previewContent"
-    ).innerHTML =
-        "";
-
-}
-
-
-/* =========================
-   FORMAT SIZE
-========================= */
-
-function formatSize(bytes){
-
-    if(!bytes)
-        return "0 B";
-
-
-    const units = [
-        "B",
-        "KB",
-        "MB",
-        "GB"
-    ];
-
-
-    let size =
-        bytes;
-
-
-    let i =
-        0;
-
-
-    while(
-        size >= 1024 &&
-        i <
-        units.length - 1
-    ){
-
-        size /=
-            1024;
-
-        i++;
-
     }
-
-
-    return (
-        size.toFixed(2) +
-        " " +
-        units[i]
-    );
-
-}
-
-
-/* =========================
-   SECURITY
-========================= */
-
-function escapeHtml(
-    text
-){
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.textContent =
-        text || "";
-
-
-    return div.innerHTML;
 
 }
 
@@ -5922,6 +4752,16 @@ function escapeHtml(
 ========================= */
 
 async function logout(){
+
+    const confirmed =
+        confirm(
+            "Voulez-vous vraiment vous déconnecter ?"
+        );
+
+
+    if(!confirmed)
+        return;
+
 
     await supabaseClient
         .auth
@@ -5935,10 +4775,80 @@ async function logout(){
 
 
 /* =========================
-   START
+   ESCAPE HTML
 ========================= */
 
-async function startApp(){
+function escapeHTML(
+    value
+){
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =========================
+   ESCAPE JAVASCRIPT
+========================= */
+
+function escapeJS(
+    value
+){
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /\\/g,
+        "\\\\"
+    )
+    .replace(
+        /'/g,
+        "\\'"
+    )
+    .replace(
+        /"/g,
+        '\\"'
+    )
+    .replace(
+        /\n/g,
+        "\\n"
+    )
+    .replace(
+        /\r/g,
+        "\\r"
+    );
+
+}
+
+
+/* =========================
+   INITIALISATION
+========================= */
+
+async function init(){
 
     const user =
         await getUser();
@@ -5948,78 +4858,42 @@ async function startApp(){
         return;
 
 
-    showWallpaperPreview();
-
-
     await loadFiles();
-
-
-    applyLanguage(
-        localStorage.getItem(
-            "zoto_language_" +
-            currentUser.id
-        ) || "fr"
-    );
-
-
-    await loadNotifications();
-
-
-    setInterval(
-        loadNotifications,
-        10000
-    );
 
 }
 
 
-startApp();
+init();
 
 
 /* =========================
-   PWA
+   AUTH STATE
 ========================= */
 
-if(
-    "serviceWorker"
-    in navigator
-){
+supabaseClient
+    .auth
+    .onAuthStateChange(
+        function(
+            event,
+            session
+        ){
 
-    window.addEventListener(
-        "load",
-        () => {
+            if(
+                event ===
+                "SIGNED_OUT"
+            ){
 
-            navigator
-                .serviceWorker
-                .register(
-                    "/service-worker.js"
-                )
-                .then(() => {
+                window.location.href =
+                    "/auth.html";
 
-                    console.log(
-                        "ZOTO CLOUD PWA activée"
-                    );
-
-                })
-                .catch(
-                    error => {
-
-                        console.error(
-                            "PWA erreur:",
-                            error
-                        );
-
-                    }
-                );
+            }
 
         }
     );
 
-}
-
 
 /* =========================
-   FERMER MENU AVEC ESC
+   ESCAPE PREVIEW
 ========================= */
 
 document.addEventListener(
@@ -6031,28 +4905,16 @@ document.addEventListener(
             "Escape"
         ){
 
-            closeFileMenu();
+            closeFileContextMenu();
+
+            closePreview();
 
         }
 
     }
 );
 
-
-/* =========================
-   FERMER MENU AU SCROLL
-========================= */
-
-window.addEventListener(
-    "scroll",
-    function(){
-
-        closeFileMenu();
-
-    },
-    true
-);
-
+}
 </script>
 
 </body>
