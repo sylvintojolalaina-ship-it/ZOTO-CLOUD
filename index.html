@@ -1341,6 +1341,69 @@ main{
     }
 
 }
+/* =========================
+   TRANSFERT
+========================= */
+
+.transfer-upload-btn{
+    background:#16a34a !important;
+    color:white !important;
+    text-align:center !important;
+}
+
+.transfer-upload-btn:hover{
+    background:#15803d !important;
+}
+
+/* =========================
+   TRANSFERT MODAL
+========================= */
+
+.transfer-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.55);
+    padding:20px;
+}
+
+.transfer-box{
+    position:relative;
+    width:100%;
+    max-width:480px;
+    background:#fff;
+    color:#222;
+    border-radius:16px;
+    padding:24px;
+    box-shadow:0 15px 50px rgba(0,0,0,.25);
+}
+
+.transfer-close{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:34px;
+    height:34px;
+    border:0;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:18px;
+}
+
+#transferSourceInfo{
+    margin-top:15px;
+    padding:14px;
+    border-radius:10px;
+    background:#f3f4f6;
+    word-break:break-word;
+}
+
+#transferReceiverArea{
+    margin-top:18px;
+}
 
 </style>
 
@@ -1499,6 +1562,21 @@ main{
         style="display:none"
         onchange="uploadFiles(this.files)"
     >
+    <button
+    class="transfer-upload-btn"
+    onclick="openTransferFromDevice()">
+
+    📤 Envoyer un fichier
+
+</button>
+
+
+<input
+    type="file"
+    id="transferDeviceInput"
+    style="display:none"
+    onchange="prepareDeviceTransfer(this.files[0])"
+>
 
 
     <button class="folder-upload" onclick="document.getElementById('folderInput').click()">
@@ -1637,6 +1715,34 @@ main{
             ✕
 
         </button>
+
+        <div id="transferModal" class="transfer-modal">
+
+    <div class="transfer-box">
+
+        <button
+            class="transfer-close"
+            onclick="closeTransferModal()">
+            ✕
+        </button>
+
+        <h2>📤 Envoyer un fichier</h2>
+
+        <div id="transferSourceInfo">
+            Aucun fichier sélectionné.
+        </div>
+
+        <div id="transferReceiverArea">
+
+            <p>
+                Étape suivante : choisir le destinataire.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
 
 
         <div id="previewContent"></div>
@@ -6079,6 +6185,59 @@ window.addEventListener(
     },
     true
 );
+/* =========================
+   TRANSFERT - ETAPE 1/2
+========================= */
+
+let transferSource = null;
+
+function openTransferFromDevice(){
+    const input = document.getElementById("transferDeviceInput");
+
+    if(input){
+        input.click();
+    }
+}
+
+function prepareDeviceTransfer(file){
+    if(!file) return;
+
+    transferSource = file;
+
+    const info = document.getElementById("transferSourceInfo");
+
+    if(info){
+        const safeName = escapeHtml(file.name);
+
+        info.innerHTML = `
+            <strong>📄 ${safeName}</strong><br>
+            ${formatSize(file.size)}
+        `;
+    }
+
+    const modal = document.getElementById("transferModal");
+
+    if(modal){
+        modal.style.display = "flex";
+    }
+}
+
+function closeTransferModal(){
+
+    const modal = document.getElementById("transferModal");
+
+    if(modal){
+        modal.style.display = "none";
+    }
+
+    transferSource = null;
+
+    const input = document.getElementById("transferDeviceInput");
+
+    if(input){
+        input.value = "";
+    }
+}
 
 </script>
 
