@@ -1653,16 +1653,12 @@ async function sendNotification() {
     try {
 
         const {
-            data: users,
-            error: usersError
-        } =
-            await supabaseClient
-                .from("profiles")
-                .select("id")
-                .neq(
-                    "role",
-                    "admin"
-                );
+    data: users,
+    error: usersError
+} =
+    await supabaseClient
+        .from("profiles")
+        .select("id");
 
 
         if (usersError) {
