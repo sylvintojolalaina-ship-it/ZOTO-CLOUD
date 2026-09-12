@@ -6851,22 +6851,50 @@ function selectTransferReceiver(receiverId){
     }
 }
 function prepareDeviceTransfer(file){
-    if(!file) return;
 
-    transferSource = file;
+    if(!file){
+        return;
+    }
 
-    const info = document.getElementById("transferSourceInfo");
+    transferSource = {
+        type: "device",
+        file: file
+    };
+
+    transferReceiverId = null;
+
+    const info =
+        document.getElementById("transferSourceInfo");
+
+    const receiverArea =
+        document.getElementById("transferReceiverArea");
 
     if(info){
-        const safeName = escapeHtml(file.name);
 
         info.innerHTML = `
-            <strong>📄 ${safeName}</strong><br>
-            ${formatSize(file.size)}
+            <strong>💻 Fichier sélectionné</strong>
+
+            <br><br>
+
+            📄 ${escapeHtml(file.name)}
+
+            <br>
+
+            📦 ${formatSize(file.size)}
         `;
     }
 
-    const modal = document.getElementById("transferModal");
+    if(receiverArea){
+
+        receiverArea.innerHTML = `
+            <p>⏳ Chargement des destinataires...</p>
+        `;
+
+        loadTransferReceivers();
+    }
+
+    const modal =
+        document.getElementById("transferModal");
 
     if(modal){
         modal.style.display = "flex";
