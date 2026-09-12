@@ -6277,58 +6277,230 @@ function chooseCloudFile(){
         return;
     }
 
-    let html = `
-        <h3>☁️ Choisir un fichier</h3>
+    info.innerHTML = `
+        <h3>☁️ Choisir une catégorie</h3>
 
         <div style="
-            display:flex;
-            flex-direction:column;
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
             gap:10px;
             margin-top:15px;
         ">
-    `;
 
-    allFiles.forEach((file,index) => {
-
-        html += `
-            <button
-                type="button"
-                onclick="selectCloudTransferFile(${index})"
-                style="
-                    width:100%;
-                    padding:12px;
-                    border:1px solid #ddd;
-                    border-radius:10px;
-                    background:#f8fafc;
-                    cursor:pointer;
-                    text-align:left;
-                "
-            >
-                📄 ${escapeHtml(file.file_name)}
-
-                <br>
-
-                <small>
-                    ${formatSize(file.file_size)}
-                </small>
+            <button type="button"
+                onclick="showTransferCategory('Images')"
+                style="padding:15px;border:1px solid #ddd;border-radius:12px;background:#f8fafc;cursor:pointer;">
+                🖼️<br>
+                <strong>Images</strong>
             </button>
-        `;
-    });
 
-    html += `</div>`;
+            <button type="button"
+                onclick="showTransferCategory('Vidéos')"
+                style="padding:15px;border:1px solid #ddd;border-radius:12px;background:#f8fafc;cursor:pointer;">
+                🎥<br>
+                <strong>Vidéos</strong>
+            </button>
 
-    info.innerHTML = html;
+            <button type="button"
+                onclick="showTransferCategory('Documents')"
+                style="padding:15px;border:1px solid #ddd;border-radius:12px;background:#f8fafc;cursor:pointer;">
+                📄<br>
+                <strong>Documents</strong>
+            </button>
+
+            <button type="button"
+                onclick="showTransferCategory('PDF')"
+                style="padding:15px;border:1px solid #ddd;border-radius:12px;background:#f8fafc;cursor:pointer;">
+                📕<br>
+                <strong>PDF</strong>
+            </button>
+
+            <button type="button"
+                onclick="showTransferCategory('Audio')"
+                style="padding:15px;border:1px solid #ddd;border-radius:12px;background:#f8fafc;cursor:pointer;">
+                🎵<br>
+                <strong>Audio</strong>
+            </button>
+
+            <button type="button"
+                onclick="showTransferCategory('Autres')"
+                style="padding:15px;border:1px solid #ddd;border-radius:12px;background:#f8fafc;cursor:pointer;">
+                📦<br>
+                <strong>Autres</strong>
+            </button>
+
+        </div>
+    `;
 
     receiverArea.innerHTML = `
         <p>
-            Sélectionnez le fichier que vous souhaitez envoyer.
+            Sélectionnez d'abord une catégorie.
         </p>
     `;
 
     modal.style.display = "flex";
 }
 
+function showTransferCategory(category){
 
+    const info =
+        document.getElementById("transferSourceInfo");
+
+    if(!info){
+        return;
+    }
+
+    let files = [];
+
+    allFiles.forEach((file,index) => {
+
+        const name =
+            (file.file_name || "").toLowerCase();
+
+        const type =
+            (file.file_type || "").toLowerCase();
+
+        let fileCategory = "Autres";
+
+        if(
+            type.startsWith("image/") ||
+            /\.(jpg|jpeg|png|gif|webp|bmp|svg|ico)$/i.test(name)
+        ){
+            fileCategory = "Images";
+        }
+
+        else if(
+            type.startsWith("video/") ||
+            /\.(mp4|webm|avi|mov|mkv|3gp)$/i.test(name)
+        ){
+            fileCategory = "Vidéos";
+        }
+
+        else if(
+            type === "application/pdf" ||
+            /\.pdf$/i.test(name)
+        ){
+            fileCategory = "PDF";
+        }
+
+        else if(
+            type.startsWith("audio/") ||
+            /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(name)
+        ){
+            fileCategory = "Audio";
+        }
+
+        else if(
+            /\.(doc|docx|xls|xlsx|ppt|pptx|txt|csv|rtf|odt)$/i.test(name)
+        ){
+            fileCategory = "Documents";
+        }
+
+        if(fileCategory === category){
+
+            files.push({
+                file:file,
+                index:index
+            });
+
+        }
+
+    });
+
+
+    let html = `
+        <button
+            type="button"
+            onclick="chooseCloudFile()"
+            style="
+                border:0;
+                background:none;
+                color:#2563eb;
+                cursor:pointer;
+                margin-bottom:10px;
+            "
+        >
+            ← Retour aux catégories
+        </button>
+
+        <h3>
+            ${category}
+        </h3>
+    `;
+
+
+    if(files.length === 0){
+
+        html += `
+            <p style="margin-top:15px;">
+                📂 Aucun fichier dans cette catégorie.
+            </p>
+        `;
+
+    }else{
+
+        html += `
+            <div style="
+                display:flex;
+                flex-direction:column;
+                gap:10px;
+                margin-top:15px;
+                max-height:300px;
+                overflow-y:auto;
+            ">
+        `;
+
+        files.forEach(item => {
+
+            const file = item.file;
+
+            html += `
+                <button
+                    type="button"
+                    onclick="selectCloudTransferFile(${item.index})"
+                    style="
+                        width:100%;
+                        padding:12px;
+                        border:1px solid #ddd;
+                        border-radius:10px;
+                        background:#f8fafc;
+                        cursor:pointer;
+                        text-align:left;
+                    "
+                >
+
+                    📄 ${escapeHtml(file.file_name)}
+
+                    <br>
+
+                    <small>
+                        ${formatSize(file.file_size)}
+                    </small>
+
+                </button>
+            `;
+
+        });
+
+        html += `</div>`;
+    }
+
+
+    info.innerHTML = html;
+
+
+    const receiverArea =
+        document.getElementById("transferReceiverArea");
+
+    if(receiverArea){
+
+        receiverArea.innerHTML = `
+            <p>
+                Sélectionnez le fichier à envoyer.
+            </p>
+        `;
+    }
+}
 function selectCloudTransferFile(index){
 
     if(!allFiles || !allFiles[index]){
