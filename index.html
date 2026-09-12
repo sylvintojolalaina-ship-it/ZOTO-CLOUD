@@ -1728,7 +1728,16 @@ main{
 
         </button>
 
-        <div id="transferModal" class="transfer-modal">
+   
+
+
+        <div id="previewContent"></div>
+
+    </div>
+
+</div>
+<!-- MODAL TRANSFERT -->
+<div id="transferModal" class="transfer-modal">
 
     <div class="transfer-box">
 
@@ -1745,24 +1754,14 @@ main{
         </div>
 
         <div id="transferReceiverArea">
-
             <p>
                 Étape suivante : choisir le destinataire.
             </p>
-
         </div>
 
     </div>
 
 </div>
-
-
-        <div id="previewContent"></div>
-
-    </div>
-
-</div>
-
 
 <script>
 
@@ -6216,18 +6215,6 @@ function openTransferChoice(){
 
 }
 
-function chooseCloudFile(){
-
-    const choice =
-        document.getElementById("transferChoice");
-
-    if(choice){
-        choice.style.display = "none";
-    }
-
-    alert("☁️ Safidio ny fichier ao amin'ny ZOTO CLOUD.");
-
-}
 function openTransferChoice(){
 
     const choice =
@@ -6243,6 +6230,16 @@ function openTransferChoice(){
 }
 
 
+let transferSource = null;
+let transferReceiverId = null;
+
+function openTransferFromDevice(){
+    const input = document.getElementById("transferDeviceInput");
+
+    if(input){
+        input.click();
+    }
+}
 function chooseCloudFile(){
 
     const choice =
@@ -6252,19 +6249,401 @@ function chooseCloudFile(){
         choice.style.display = "none";
     }
 
-    alert("☁️ Safidio aloha ny fichier ao amin'ny ZOTO CLOUD.");
+    const modal =
+        document.getElementById("transferModal");
+
+    const info =
+        document.getElementById("transferSourceInfo");
+
+    const receiverArea =
+        document.getElementById("transferReceiverArea");
+
+    if(!modal || !info || !receiverArea){
+        return;
+    }
+
+    if(!allFiles || allFiles.length === 0){
+
+        info.innerHTML = `
+            <p>
+                📂 Aucun fichier disponible dans votre ZOTO CLOUD.
+            </p>
+        `;
+
+        receiverArea.innerHTML = "";
+
+        modal.style.display = "flex";
+
+        return;
+    }
+
+    let html = `
+        <h3>☁️ Choisir un fichier</h3>
+
+        <div style="
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            margin-top:15px;
+        ">
+    `;
+
+    allFiles.forEach((file,index) => {
+
+        html += `
+            <button
+                type="button"
+                onclick="selectCloudTransferFile(${index})"
+                style="
+                    width:100%;
+                    padding:12px;
+                    border:1px solid #ddd;
+                    border-radius:10px;
+                    background:#f8fafc;
+                    cursor:pointer;
+                    text-align:left;
+                "
+            >
+                📄 ${escapeHtml(file.file_name)}
+
+                <br>
+
+                <small>
+                    ${formatSize(file.file_size)}
+                </small>
+            </button>
+        `;
+    });
+
+    html += `</div>`;
+
+    info.innerHTML = html;
+
+    receiverArea.innerHTML = `
+        <p>
+            Sélectionnez le fichier que vous souhaitez envoyer.
+        </p>
+    `;
+
+    modal.style.display = "flex";
 }
 
-let transferSource = null;
 
-function openTransferFromDevice(){
-    const input = document.getElementById("transferDeviceInput");
+function selectCloudTransferFile(index){
 
-    if(input){
-        input.click();
+    if(!allFiles || !allFiles[index]){
+        return;
+    }
+
+    const file = allFiles[index];
+
+    transferSource = {
+        type: "cloud",
+        file: file
+    };
+
+    const info =
+        document.getElementById("transferSourceInfo");
+
+    const receiverArea =
+        document.getElementById("transferReceiverArea");
+
+    if(info){
+
+        info.innerHTML = `
+            <strong>☁️ Fichier sélectionné</strong>
+
+            <br><br>
+
+            📄 ${escapeHtml(file.file_name)}
+
+            <br>
+
+            📦 ${formatSize(file.file_size)}
+        `;
+    }
+
+}
+
+async function loadTransferReceivers(){
+
+    const area =
+        document.getElementById("transferReceiverArea");
+
+    if(!area || !currentUser){
+        return;
+    }
+
+    area.innerHTML = `
+        <p>⏳ Chargement des utilisateurs...</p>
+    `;
+
+    const { data, error } =
+        await supabaseClient
+            .from("profiles")
+            .select("id,email,full_name,country,city,status")
+            .eq("status","active")
+            .neq("id",currentUser.id)
+            .order("full_name",{ascending:true});
+
+    if(error){
+
+        console.error(error);
+
+        area.innerHTML = `
+            <p style="color:#dc2626;">
+                ❌ Impossible de charger les destinataires.
+            </p>
+        `;
+
+        return;
+    }
+
+    if(!data || data.length === 0){
+
+        area.innerHTML = `
+            <p>
+                👤 Aucun autre utilisateur disponible.
+            </p>
+        `;
+
+        return;
+    }
+
+    let html = `
+        <h3>👤 Choisir le destinataire</h3>
+
+        <div style="
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            margin-top:15px;
+            max-height:300px;
+            overflow-y:auto;
+        ">
+    `;
+
+    data.forEach(user => {
+
+        const name =
+            user.full_name ||
+            user.email ||
+            "Utilisateur";
+
+        html += `
+            <button
+                type="button"
+                onclick="selectTransferReceiver('${user.id}')"
+                style="
+                    width:100%;
+                    padding:12px;
+                    border:1px solid #ddd;
+                    border-radius:10px;
+                    background:#f8fafc;
+                    cursor:pointer;
+                    text-align:left;
+                "
+            >
+                👤 ${escapeHtml(name)}
+
+                <br>
+
+                <small>
+                    ${escapeHtml(user.email || "")}
+                </small>
+            </button>
+        `;
+    });
+
+    html += `</div>`;
+
+    area.innerHTML = html;
+}
+
+
+function selectTransferReceiver(receiverId){
+
+    if(!receiverId){
+        return;
+    }
+
+    transferReceiverId = receiverId;
+
+    const area =
+        document.getElementById("transferReceiverArea");
+
+    if(area){
+
+        area.innerHTML = `
+            <div style="
+                padding:14px;
+                background:#ecfdf5;
+                border-radius:10px;
+                color:#166534;
+            ">
+                ✅ Destinataire sélectionné.
+            </div>
+
+            <button
+                type="button"
+                onclick="sendTransfer()"
+                style="
+                    width:100%;
+                    margin-top:15px;
+                    padding:13px;
+                    border:0;
+                    border-radius:10px;
+                    background:#16a34a;
+                    color:white;
+                    cursor:pointer;
+                    font-weight:600;
+                "
+            >
+                📤 Envoyer le fichier
+            </button>
+        `;
     }
 }
 
+async function loadTransferReceivers(){
+
+    const area =
+        document.getElementById("transferReceiverArea");
+
+    if(!area || !currentUser){
+        return;
+    }
+
+    area.innerHTML = `
+        <p>⏳ Chargement des utilisateurs...</p>
+    `;
+
+    const { data, error } =
+        await supabaseClient
+            .from("profiles")
+            .select("id,email,full_name,country,city,status")
+            .eq("status","active")
+            .neq("id",currentUser.id)
+            .order("full_name",{ascending:true});
+
+    if(error){
+
+        console.error(error);
+
+        area.innerHTML = `
+            <p style="color:#dc2626;">
+                ❌ Impossible de charger les destinataires.
+            </p>
+        `;
+
+        return;
+    }
+
+    if(!data || data.length === 0){
+
+        area.innerHTML = `
+            <p>
+                👤 Aucun autre utilisateur disponible.
+            </p>
+        `;
+
+        return;
+    }
+
+    let html = `
+        <h3>👤 Choisir le destinataire</h3>
+
+        <div style="
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            margin-top:15px;
+            max-height:300px;
+            overflow-y:auto;
+        ">
+    `;
+
+    data.forEach(user => {
+
+        const name =
+            user.full_name ||
+            user.email ||
+            "Utilisateur";
+
+        html += `
+            <button
+                type="button"
+                onclick="selectTransferReceiver('${user.id}')"
+                style="
+                    width:100%;
+                    padding:12px;
+                    border:1px solid #ddd;
+                    border-radius:10px;
+                    background:#f8fafc;
+                    cursor:pointer;
+                    text-align:left;
+                "
+            >
+                👤 ${escapeHtml(name)}
+
+                <br>
+
+                <small>
+                    ${escapeHtml(user.email || "")}
+                </small>
+            </button>
+        `;
+    });
+
+    html += `</div>`;
+
+    area.innerHTML = html;
+}
+
+
+function selectTransferReceiver(receiverId){
+
+    if(!receiverId){
+        return;
+    }
+
+    transferReceiverId = receiverId;
+
+    const area =
+        document.getElementById("transferReceiverArea");
+
+    if(area){
+
+        area.innerHTML = `
+            <div style="
+                padding:14px;
+                background:#ecfdf5;
+                border-radius:10px;
+                color:#166534;
+            ">
+                ✅ Destinataire sélectionné.
+            </div>
+
+            <button
+                type="button"
+                onclick="sendTransfer()"
+                style="
+                    width:100%;
+                    margin-top:15px;
+                    padding:13px;
+                    border:0;
+                    border-radius:10px;
+                    background:#16a34a;
+                    color:white;
+                    cursor:pointer;
+                    font-weight:600;
+                "
+            >
+                📤 Envoyer le fichier
+            </button>
+        `;
+    }
+}
 function prepareDeviceTransfer(file){
     if(!file) return;
 
