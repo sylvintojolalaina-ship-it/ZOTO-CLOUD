@@ -6542,30 +6542,53 @@ async function loadTransferReceivers(){
     const area =
         document.getElementById("transferReceiverArea");
 
-    if(!area || !currentUser){
+    if(!area){
+        return;
+    }
+
+    if(!currentUser){
+        area.innerHTML = `
+            <p style="color:#dc2626;">
+                ❌ Aucun utilisateur connecté.
+            </p>
+        `;
         return;
     }
 
     area.innerHTML = `
-        <p>⏳ Chargement des utilisateurs...</p>
+        <p>⏳ Chargement des destinataires...</p>
     `;
+
+    console.log("Utilisateur connecté :", currentUser.id);
 
     const { data, error } =
         await supabaseClient
             .from("profiles")
             .select("id,email,full_name,country,city,status")
-            .eq("status","active")
-            .neq("id",currentUser.id)
-            .order("full_name",{ascending:true});
+            .neq("id", currentUser.id)
+            .eq("status", "active")
+            .order("full_name", {
+                ascending: true
+            });
+
+    console.log("Destinataires reçus :", data);
+    console.log("Erreur profiles :", error);
 
     if(error){
 
-        console.error(error);
-
         area.innerHTML = `
-            <p style="color:#dc2626;">
-                ❌ Impossible de charger les destinataires.
-            </p>
+            <div style="
+                padding:15px;
+                background:#fee2e2;
+                color:#991b1b;
+                border-radius:10px;
+            ">
+                ❌ Erreur lors du chargement des destinataires.
+                <br><br>
+                <small>
+                    ${escapeHtml(error.message || "Erreur inconnue")}
+                </small>
+            </div>
         `;
 
         return;
@@ -6574,9 +6597,14 @@ async function loadTransferReceivers(){
     if(!data || data.length === 0){
 
         area.innerHTML = `
-            <p>
+            <div style="
+                padding:15px;
+                background:#fff7ed;
+                color:#9a3412;
+                border-radius:10px;
+            ">
                 👤 Aucun autre utilisateur disponible.
-            </p>
+            </div>
         `;
 
         return;
@@ -6608,7 +6636,7 @@ async function loadTransferReceivers(){
                 onclick="selectTransferReceiver('${user.id}')"
                 style="
                     width:100%;
-                    padding:12px;
+                    padding:13px;
                     border:1px solid #ddd;
                     border-radius:10px;
                     background:#f8fafc;
@@ -6616,18 +6644,24 @@ async function loadTransferReceivers(){
                     text-align:left;
                 "
             >
-                👤 ${escapeHtml(name)}
+
+                👤 <strong>
+                    ${escapeHtml(name)}
+                </strong>
 
                 <br>
 
                 <small>
                     ${escapeHtml(user.email || "")}
                 </small>
+
             </button>
         `;
     });
 
-    html += `</div>`;
+    html += `
+        </div>
+    `;
 
     area.innerHTML = html;
 }
