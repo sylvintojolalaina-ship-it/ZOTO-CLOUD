@@ -1562,13 +1562,25 @@ main{
         style="display:none"
         onchange="uploadFiles(this.files)"
     >
-    <button
+   <button 
     class="transfer-upload-btn"
-    onclick="openTransferFromDevice()">
+    onclick="openTransferChoice()">
 
     📤 Envoyer un fichier
 
 </button>
+
+<div id="transferChoice" class="transfer-choice" style="display:none;">
+
+    <button onclick="chooseCloudFile()">
+        ☁️ Depuis ZOTO CLOUD
+    </button>
+
+    <button onclick="openTransferFromDevice()">
+        💻 Depuis mon appareil
+    </button>
+
+</div>
 
 
 <input
@@ -6188,6 +6200,60 @@ window.addEventListener(
 /* =========================
    TRANSFERT - ETAPE 1/2
 ========================= */
+function openTransferChoice(){
+
+    const choice =
+        document.getElementById("transferChoice");
+
+    if(choice){
+
+        choice.style.display =
+            choice.style.display === "block"
+                ? "none"
+                : "block";
+
+    }
+
+}
+
+function chooseCloudFile(){
+
+    const choice =
+        document.getElementById("transferChoice");
+
+    if(choice){
+        choice.style.display = "none";
+    }
+
+    alert("☁️ Safidio ny fichier ao amin'ny ZOTO CLOUD.");
+
+}
+function openTransferChoice(){
+
+    const choice =
+        document.getElementById("transferChoice");
+
+    if(!choice) return;
+
+    if(choice.style.display === "none" || choice.style.display === ""){
+        choice.style.display = "block";
+    }else{
+        choice.style.display = "none";
+    }
+}
+
+
+function chooseCloudFile(){
+
+    const choice =
+        document.getElementById("transferChoice");
+
+    if(choice){
+        choice.style.display = "none";
+    }
+
+    alert("☁️ Safidio aloha ny fichier ao amin'ny ZOTO CLOUD.");
+}
 
 let transferSource = null;
 
