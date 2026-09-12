@@ -1512,6 +1512,7 @@ main{
         <div class="notification-title">
             📢 Notification ZOTO CLOUD
         </div>
+        <div id="receivedTransfersArea"></div>
 
 
         <button
@@ -5846,7 +5847,7 @@ function removeWallpaper(){
 /* =========================
    NOTIFICATIONS
 ========================= */
-
+<div id="receivedTransfersArea"></div>
 async function loadNotifications(){
 
     if(!currentUser)
@@ -5950,6 +5951,426 @@ async function loadNotifications(){
 
     }
 
+}
+
+/* =========================
+   TRANSFERTS REÇUS
+========================= */
+
+async function loadReceivedTransfers(){
+
+    if(!currentUser){
+        return;
+    }
+
+    const area =
+        document.getElementById("receivedTransfersArea");
+
+    if(!area){
+        return;
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("file_transfers")
+            .select(`
+                id,
+                sender_id,
+                receiver_id,
+                file_name,
+                file_path,
+                file_size,
+                file_type,
+                status,
+                created_at
+            `)
+            .eq("receiver_id", currentUser.id)
+            .eq("status","pending")
+            .order("created_at",{ascending:false});
+
+    if(error){
+
+        console.error(
+            "Erreur transferts reçus :",
+            error
+        );
+
+        area.innerHTML = `
+            <p style="color:#dc2626;">
+                ❌ Impossible de charger les fichiers reçus.
+            </p>
+        `;
+
+        return;
+    }
+
+    if(!data || data.length === 0){
+
+        area.innerHTML = `
+            <p style="
+                color:#6b7280;
+                text-align:center;
+                padding:20px;
+            ">
+                📭 Aucun fichier reçu pour le moment.
+            </p>
+        `;
+
+        return;
+    }
+
+    let html = `
+        <h3 style="margin-bottom:15px;">
+            📥 Fichiers reçus
+        </h3>
+
+        <div style="
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        ">
+    `;
+
+    data.forEach(transfer => {
+
+        html += `
+            <div style="
+                border:1px solid #e5e7eb;
+                border-radius:14px;
+                padding:15px;
+                background:#fff;
+            ">
+
+                <strong>
+                    📄 ${escapeHtml(transfer.file_name)}
+                </strong>
+
+                <br>
+
+                <small style="color:#6b7280;">
+                    📦 ${formatSize(transfer.file_size)}
+                </small>
+
+                <div style="
+                    display:flex;
+                    gap:10px;
+                    margin-top:12px;
+                ">
+
+                    <button
+                        type="button"
+                        onclick="acceptTransfer('${transfer.id}')"
+                        style="
+                            flex:1;
+                            padding:10px;
+                            border:0;
+                            border-radius:9px;
+                            background:#16a34a;
+                            color:white;
+                            cursor:pointer;
+                            font-weight:600;
+                        "
+                    >
+                        ✅ Accepter
+                    </button>
+
+                    async function refuseTransfer(transferId){
+
+    if(!currentUser){
+        alert("Vous devez être connecté.");
+        return;
+    }
+
+    if(!transferId){
+        return;
+    }
+
+    try{
+
+        const { error } =
+            await supabaseClient
+                .from("file_transfers")
+                .update({
+                    status:"refused",
+                    responded_at:
+                        new Date().toISOString()
+                })
+                .eq("id",transferId)
+                .eq(
+                    "receiver_id",
+                    currentUser.id
+                )
+                .eq(
+                    "status",
+                    "pending"
+                );
+
+        if(error){
+            throw error;
+        }
+
+        alert(
+            "❌ Le fichier a été refusé."
+        );
+
+        await loadReceivedTransfers();
+
+    }catch(error){
+
+        console.error(
+            "Erreur refus transfert :",
+            error
+        );
+
+        alert(
+            "❌ Impossible de refuser le fichier.\n\n" +
+            (
+                error.message ||
+                "Erreur inconnue"
+            )
+        );
+
+    }
+}
+
+                    <button
+                        type="button"
+                        onclick="refuseTransfer('${transfer.id}')"
+                        style="
+                            flex:1;
+                            padding:10px;
+                            border:0;
+                            border-radius:9px;
+                            background:#dc2626;
+                            color:white;
+                            cursor:pointer;
+                            font-weight:600;
+                        "
+                    >
+                        ❌ Refuser
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+
+    area.innerHTML = html;
+}
+async function acceptTransfer(transferId){
+
+    if(!currentUser){
+        alert("Vous devez être connecté.");
+        return;
+    }
+
+    if(!transferId){
+        return;
+    }
+
+    try{
+
+        const area =
+            document.getElementById(
+                "receivedTransfersArea"
+            );
+
+        if(area){
+
+            area.innerHTML = `
+                <p style="
+                    text-align:center;
+                    padding:20px;
+                ">
+                    ⏳ Acceptation du fichier...
+                </p>
+            `;
+
+        }
+
+        /* =========================
+           1. RÉCUPÉRER LE TRANSFERT
+        ========================= */
+
+        const {
+            data:transfer,
+            error:transferError
+        } =
+            await supabaseClient
+                .from("file_transfers")
+                .select("*")
+                .eq("id",transferId)
+                .eq(
+                    "receiver_id",
+                    currentUser.id
+                )
+                .eq(
+                    "status",
+                    "pending"
+                )
+                .single();
+
+        if(transferError){
+            throw transferError;
+        }
+
+        if(!transfer){
+            throw new Error(
+                "Transfert introuvable ou déjà traité."
+            );
+        }
+
+        /* =========================
+           2. TÉLÉCHARGER LE FICHIER
+        ========================= */
+
+        const {
+            data:fileBlob,
+            error:downloadError
+        } =
+            await supabaseClient
+                .storage
+                .from("zoto-files")
+                .download(
+                    transfer.file_path
+                );
+
+        if(downloadError){
+            throw downloadError;
+        }
+
+        if(!fileBlob){
+            throw new Error(
+                "Le fichier reçu est introuvable."
+            );
+        }
+
+        /* =========================
+           3. CRÉER LE NOUVEAU CHEMIN
+        ========================= */
+
+        const safeName =
+            transfer.file_name
+                .replace(
+                    /[^a-zA-Z0-9._-]/g,
+                    "_"
+                );
+
+        const newPath =
+            currentUser.id +
+            "/" +
+            Date.now() +
+            "_" +
+            safeName;
+
+        /* =========================
+           4. COPIER LE FICHIER
+        ========================= */
+
+        const {
+            data:uploadData,
+            error:uploadError
+        } =
+            await supabaseClient
+                .storage
+                .from("zoto-files")
+                .upload(
+                    newPath,
+                    fileBlob,
+                    {
+                        contentType:
+                            transfer.file_type ||
+                            "application/octet-stream",
+                        upsert:false
+                    }
+                );
+
+        if(uploadError){
+            throw uploadError;
+        }
+
+        /* =========================
+           5. AJOUTER DANS "files"
+        ========================= */
+
+        const {
+            error:fileInsertError
+        } =
+            await supabaseClient
+                .from("files")
+                .insert({
+                    user_id:currentUser.id,
+                    file_name:transfer.file_name,
+                    file_path:uploadData.path,
+                    file_type:
+                        transfer.file_type ||
+                        "application/octet-stream",
+                    file_size:transfer.file_size
+                });
+
+        if(fileInsertError){
+            throw fileInsertError;
+        }
+
+        /* =========================
+           6. MARQUER ACCEPTÉ
+        ========================= */
+
+        const {
+            error:updateError
+        } =
+            await supabaseClient
+                .from("file_transfers")
+                .update({
+                    status:"accepted",
+                    responded_at:
+                        new Date().toISOString()
+                })
+                .eq(
+                    "id",
+                    transferId
+                )
+                .eq(
+                    "receiver_id",
+                    currentUser.id
+                );
+
+        if(updateError){
+            throw updateError;
+        }
+
+        /* =========================
+           7. RAFRAÎCHIR
+        ========================= */
+
+        await loadFiles();
+
+        await loadReceivedTransfers();
+
+        alert(
+            "✅ Fichier accepté et ajouté à votre ZOTO CLOUD."
+        );
+
+    }catch(error){
+
+        console.error(
+            "Erreur acceptation transfert :",
+            error
+        );
+
+        alert(
+            "❌ Impossible d'accepter le fichier.\n\n" +
+            (
+                error.message ||
+                "Erreur inconnue"
+            )
+        );
+
+        await loadReceivedTransfers();
+    }
 }
 
 
@@ -6109,10 +6530,12 @@ async function startApp(){
     await loadNotifications();
 
 
-    setInterval(
-        loadNotifications,
-        10000
-    );
+    setInterval(() => {
+
+    loadNotifications();
+    loadReceivedTransfers();
+
+}, 10000);
 
 }
 
