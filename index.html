@@ -6514,6 +6514,8 @@ function selectCloudTransferFile(index){
         file: file
     };
 
+    transferReceiverId = null;
+
     const info =
         document.getElementById("transferSourceInfo");
 
@@ -6535,6 +6537,14 @@ function selectCloudTransferFile(index){
         `;
     }
 
+    if(receiverArea){
+
+        receiverArea.innerHTML = `
+            <p>⏳ Chargement des destinataires...</p>
+        `;
+
+        loadTransferReceivers();
+    }
 }
 
 async function loadTransferReceivers(){
